@@ -86,5 +86,30 @@ To ensure absolute experimental validity and maintain high engineering defensibi
 +--------------------------------------------------+-------------------------------------------------+
 ```
 
-### Action for Phase 2:
-In compliance with Phase 2 rules, **no large datasets will be downloaded or processed in this phase**. The dataset schema, leakage controls, and graph construction rules are fully specified and locked for implementation in Phase 3.
+### Status:
+In Phase 2, the dataset schema, leakage controls, and graph construction rules were specified and locked. In Phase 3, these specifications were fully implemented, tested, and validated as detailed below.
+
+---
+
+## 5. Phase 3 Implementation & Fixture Generation Results
+
+### 5.1 Deterministic Synthetic Generator (`synthetic_generator.py`)
+- **Topologies Supported:** Power-law (vectorized Barabási–Albert), uniform random, star (hub-and-spoke extreme degree skew), and empty graph.
+- **Performance:** Optimized with preallocated NumPy buffers and vectorized node selection, generating 10,000 nodes and ~95,000 edges in under 1 second.
+- **Guarantees:** Deterministic pseudo-random generation via `np.random.default_rng(seed)`, finite single-precision floating-point features (`np.float32`), and full adherence to all 8 CSR invariants.
+
+### 5.2 Temporal Transaction Graph Builder (`transaction_graph_builder.py`)
+- **Temporal Causality:** Strictly enforces directed edges forward in time ($t_u \le t_v$). Future transactions cannot influence past transactions.
+- **Null / Missing Sentinel Rejection:** Rejects missing entity values (`NaN`, empty strings, `-1`) before edge matching to eliminate false hub cliques.
+- **Target Quarantine:** Completely separates `isFraud` from graph node features ($X$) into an isolated metadata vector.
+- **Raw Dataset Offline Fallback:** Gracefully inspects local data directories (`data/raw/`) for raw IEEE-CIS files and reports availability without triggering unauthorized network downloads.
+
+### 5.3 Generated Baseline Fixtures
+1. **Toy Fixture (`data/fixtures/toy_graph_5nodes.npz`):**
+   - 5 nodes, 4 edges, feature dimension $D = 4$.
+   - Includes isolated node and asymmetry for instant edge-case verification.
+2. **Tier A Benchmark Fixture (`data/fixtures/synthetic_tier_a_10k.npz`):**
+   - 10,000 nodes, 94,945 directed edges, feature dimension $D = 16$.
+   - Mean degree: 9.49; maximum degree: 433; isolated nodes: 0.
+   - Serialized archive size: 1.62 MB with structured manifest JSON.
+

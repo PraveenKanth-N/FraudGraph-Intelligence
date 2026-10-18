@@ -16,7 +16,7 @@
 | **Phase 0** | Workspace Audit & Feasibility | FGI-MOD-01 | **PASSED (Complete)** | Environment audited, D: verified (116.8 GB free), tools detected, Stitch connected, reference assets recorded, execution strategy formulated. |
 | **Phase 1** | Project Foundation & Dependency Setup | FGI-MOD-01 | **PASSED (Complete)** | Git repository initialized, `.venv` created, baseline directory scaffolding established, complete documentation suite created, health endpoint verified via pytest (2/2 passing), frontend scaffold verified via TypeScript/Vite build (0 errors). |
 | **Phase 2** | **Literature Review & Research Specification** | FGI-MOD-02 | **PASSED (Complete)** | Rigorous review of verified literature (Bell & Garland '09, NVIDIA CUDA Guides, Huang et al. '20, Hu et al. '20, Wang et al. '16, Dou et al. '20, Weber et al. '19, Wang et al. '19); evidence-backed gap analysis (`RESEARCH_GAP.md`); testable hypotheses & variable matrices (`RESEARCH_SPECIFICATION.md`); candidate dataset evaluation & Dual-Dataset strategy (`DATASET_SELECTION.md`); mathematical CSR & zero-degree operator specifications (`ALGORITHM_SPECIFICATION.md`); benchmark protocol & tri-state schema (`EXPERIMENT_PROTOCOL.md`); ADRs 005–007 recorded (`DECISIONS.md`). |
-| **Phase 3** | Dataset Pipeline & Graph Representation | FGI-MOD-02, FGI-MOD-03 | **PENDING APPROVAL** | CSR builder (`csr_graph.py`), synthetic graph fixture generator, temporal splitting without target leakage. |
+| **Phase 3** | **Dataset Pipeline & Graph Representation** | FGI-MOD-02, FGI-MOD-03 | **PASSED (Complete)** | Canonical CSR graph implementation (`csr_graph.py`) enforcing 8 invariants; deterministic synthetic power-law/star/uniform generator (`synthetic_generator.py`); temporal transaction graph builder (`transaction_graph_builder.py`) with zero leakage; 20 unit/invariant tests passing (22/22 total suite in 2.03s); `toy_graph_5nodes.npz` and `synthetic_tier_a_10k.npz` (10K nodes, 95K edges) generated; `GRAPH_DATA_CONTRACT.md` authored; ADRs 008-009 recorded. |
 | **Phase 4** | CPU Reference Implementation | FGI-MOD-04 | **PENDING** | NumPy/SciPy parallel neighbor aggregator, deterministic fraud scoring baseline, unit test fixtures passing. |
 | **Phase 5** | Baseline CUDA Implementation | FGI-MOD-05 | **PENDING** | Baseline CUDA C++ kernel (1 thread per node), thread/block layout, memory transfers, CPU/GPU tolerance verification (`atol <= 1e-5`). |
 | **Phase 6** | CUDA Optimization Laboratory | FGI-MOD-06 | **PENDING** | Memory coalesced kernel, warp-per-node mapping, shared-memory reuse evaluation, CUDA event timing separation. |
@@ -51,4 +51,50 @@
 
 ## 3. Phase 2 Gate Acceptance
 - **Gate Status:** **PASSED (Complete)**
-- **Action Required:** Await User authorization to initiate Phase 3 (Dataset Pipeline & Graph Representation).
+
+---
+
+## 4. Phase 3 Deliverables Summary
+
+### 4.1 Graph Engine & Representation
+- **`backend/cpu_engine/csr_graph.py`:** Canonical CSR graph class enforcing all 8 structural CSR invariants:
+  1. `row_ptr[0] == 0`.
+  2. Monotonic non-decreasing sequence ($row\_ptr[i] \le row\_ptr[i+1]$).
+  3. Last entry equals edge count ($row\_ptr[N] == M$).
+  4. Column index validity ($0 \le col\_idx[j] < N$).
+  5. Contiguous array alignment and 32-bit integer typing (`np.int32`).
+  6. Feature matrix shape ($N \times D$) and single-precision typing (`np.float32`).
+  7. Finite numerical guarantee (zero NaNs or Infs).
+  8. Bidirectional edge symmetry for undirected graphs.
+  Includes `.save()` / `.load()` with JSON manifest, isolated node support, duplicate edge deduplication, and edge list conversions.
+
+### 4.2 Deterministic Synthetic Generation
+- **`backend/cpu_engine/synthetic_generator.py`:** High-speed vectorized Barabási–Albert preferential attachment generator producing scale-free power-law graphs ($\gamma \approx 2.5$) in under 1 second for 10,000 nodes.
+- Also supports uniform random, star (hub stress-testing), and empty graph generation, all guaranteed finite and reproducible.
+
+### 4.3 Temporal Pipeline & Leakage Controls
+- **`backend/cpu_engine/transaction_graph_builder.py`:** Tabular transaction graph builder with:
+  - Causal forward-in-time edge direction ($t_u \le t_v$).
+  - Sentinel rejection (`NaN`, empty strings, `-1`) preventing artificial dense hub cliques.
+  - Complete quarantine of target label `isFraud` outside node features.
+  - Clean offline fallback when raw external files are absent.
+
+### 4.4 Fixtures & Test Verification
+- **Generated Fixtures:**
+  - `data/fixtures/toy_graph_5nodes.npz` (5 nodes, 4 edges, $D=4$).
+  - `data/fixtures/synthetic_tier_a_10k.npz` (10,000 nodes, 94,945 directed edges, $D=16$, 1.62 MB).
+- **Automated Tests (`backend/tests/test_csr_graph.py`):** 20 comprehensive unit tests covering all 8 invariants, edge cases, round-trips, and leakage rules. All 22/22 tests across the backend suite pass in 2.03s.
+- **Frontend Build:** Clean compilation with 0 TypeScript/Vite errors in 1.85s.
+
+### 4.5 Specifications & Architectural Records
+- **`docs/GRAPH_DATA_CONTRACT.md`:** Authoritative specification for memory layouts, types, schemas, and invariants.
+- **`docs/DATA_DICTIONARY.md`:** Updated with CSR representation details and tabular-to-graph mapping fields.
+- **`docs/DECISIONS.md`:** Appended `ADR-008` (32-bit Integer Indexing for CSR) and `ADR-009` (Temporal Causality and Sentinel Rejection).
+- **`docs/CHANGELOG.md`:** Added release `0.3.0` milestones.
+
+---
+
+## 5. Phase 3 Gate Acceptance
+- **Gate Status:** **PASSED (Complete)**
+- **Action Required:** Await User authorization to initiate Phase 4 (CPU Reference Implementation).
+

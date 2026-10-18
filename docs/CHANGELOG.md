@@ -7,10 +7,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-### Planned for Phase 3: Dataset Pipeline & Graph Representation
-- Implementation of CSR graph representation builder (`backend/cpu_engine/csr_graph.py`).
-- Synthetic power-law graph generator for CI/CD test fixtures.
-- IEEE-CIS / Elliptic data ingestion pipeline with strict temporal splitting and target leakage prevention.
+### Planned for Phase 4: CPU Reference Implementation
+- NumPy and SciPy reference parallel neighbor aggregation engine (`mean`, `sum`, `max`).
+- Baseline graph-augmented fraud classification pipeline using scikit-learn.
+- End-to-end CPU performance timing harness and numerical verification ground truth.
+
+---
+
+## [0.3.0] - 2026-10-18 — Phase 3: Dataset Pipeline & Graph Representation
+
+### Added
+- **Canonical CSR Graph Representation (`backend/cpu_engine/csr_graph.py`):**
+  - Fully documented `CSRGraph` data class encapsulating `row_ptr` (`int32`), `col_idx` (`int32`), and `features` (`float32`).
+  - Strict validation enforcing all 8 structural CSR invariants (start at 0, monotonic non-decreasing, end matches edge count, valid col index range, feature dimension match, finite values, and undirected symmetry).
+  - Explicit handling for isolated nodes ($d_i = 0$), duplicate edge deduplication, self-loop pruning/retention, and directed/undirected edge semantics.
+  - Serialization to `.npz` format pairing binary arrays with structured JSON manifest metadata (`save()` and `load()`).
+  - Conversion methods between CSR and coordinate edge lists (`from_edge_list()`, `to_edge_list()`).
+- **Deterministic Synthetic Graph Generator (`backend/cpu_engine/synthetic_generator.py`):**
+  - High-performance vectorized Barabási–Albert generator producing power-law degree distributions ($\gamma \approx 2.5$) in $< 1$ second for 10,000 nodes.
+  - Support for uniform random graphs (Erdős–Rényi style), star graphs (extreme degree skew stress-testing), and empty graphs.
+  - Guaranteed finite `float32` node features and zero external network dependencies for CI/CD.
+- **Temporal Transaction Graph Builder (`backend/cpu_engine/transaction_graph_builder.py`):**
+  - Financial tabular-to-graph constructor enforcing strict temporal causality ($t_u \le t_v$).
+  - Missing/null sentinel rejection (`NaN`, empty strings, `-1`) preventing artificial hub clique formation.
+  - Quarantine of target label `isFraud` completely outside the graph structure into a separate array.
+  - Offline fallback checking local raw directory without making unverified network requests.
+- **Fixture Generation Utility (`backend/cpu_engine/generate_fixtures.py`):**
+  - Generated `data/fixtures/toy_graph_5nodes.npz` (5 nodes, 4 edges, $D=4$) for instant edge-case testing.
+  - Generated `data/fixtures/synthetic_tier_a_10k.npz` (10,000 nodes, 94,945 edges, $D=16$, 1.62 MB) for Tier A scalability benchmarks.
+- **Comprehensive Test Suite (`backend/tests/test_csr_graph.py`):**
+  - 20 unit, invariant, and edge-case tests verifying row pointers, out-of-bounds column indices, NaN/Inf feature rejection, empty neighborhoods, round-trip serialization, and temporal leakage prevention.
+  - Test suite passes 22/22 tests in 2.03s.
+- **Formal Graph Data Contract (`docs/GRAPH_DATA_CONTRACT.md`):** Authoritative contract specifying memory layouts, byte offsets, invariant definitions, and serialization schemas.
+- **Updated Data Dictionary (`docs/DATA_DICTIONARY.md`):** Complete field-level mappings, types, nullability rules, and leakage prevention protocols.
+- **Architectural Decisions (`docs/DECISIONS.md`):** Added `ADR-008` (32-bit Integer Indexing for CSR Arrays) and `ADR-009` (Temporal Causality and Sentinel Rejection).
+
 
 ---
 

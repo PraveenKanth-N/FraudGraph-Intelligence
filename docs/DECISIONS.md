@@ -76,3 +76,26 @@
   2. Measure Host-to-Device and Device-to-Host transfer latencies as separate metrics.
   3. Enforce the tri-state measurement standard: every reported datapoint must be explicitly marked as `MEASURED`, `SAMPLE`, or `NOT_RUN`.
 - **Consequences:** Unimpeachable research integrity, reproducible benchmarks, and transparent performance accounting.
+
+---
+
+## ADR-008: 32-bit Integer Indexing for CSR Indirection Arrays
+
+- **Status:** Accepted (Phase 3)
+- **Context:** Graph indirection arrays (`row_ptr` and `col_idx`) are read continuously during neighbor aggregation. 64-bit integer indexing (`int64`) doubles memory bandwidth requirements, consumes two 32-bit registers per index, and increases cache pressure on GPUs. A 32-bit signed integer (`int32`) indexes up to $2,147,483,647$ elements, which vastly exceeds the edge capacity of our target GPU hardware (2 GB NVIDIA GeForce MX450 or 16 GB Colab NVIDIA T4).
+- **Decision:** Standardize `row_ptr` and `col_idx` as signed 32-bit integers (`np.int32` / C++ `int`). Reject or convert arrays with 64-bit precision during graph construction.
+- **Consequences:** Optimal memory bandwidth utilization, minimized register pressure in CUDA thread blocks, and direct alignment with standard CUDA sparse linear algebra routines.
+
+---
+
+## ADR-009: Strict Temporal Causality, Sentinel Rejection, and Target Quarantine in Transaction Graph Construction
+
+- **Status:** Accepted (Phase 3)
+- **Context:** Tabular financial transaction records contain missing values and timestamps. Treating missing values (`NaN`, empty strings, `-1`) as identical entity identifiers creates massive artificial cliques (false hub nodes). Moreover, bidirectional edges allow future fraud events to propagate backwards into historical transactions, producing severe temporal leakage and invalidating real-world predictive validity.
+- **Decision:**
+  1. *Temporal Causality:* All relational edges are directed strictly forward in time ($t_u \le t_v$).
+  2. *Sentinel Rejection:* Null, missing, or negative entity identifiers are rejected prior to grouping, preventing spurious edge creation.
+  3. *Target Quarantine:* The target label `isFraud` is completely excluded from node feature matrices ($X$) and graph edge definitions, existing solely in a separate ground-truth vector.
+  4. *Finite Features Guarantee:* All continuous and categorical feature values are guaranteed to be finite (`np.float32`), with missing values imputed deterministically via feature-wise medians.
+- **Consequences:** Mathematically sound graph topologies, zero future-to-past data leakage, zero label contamination, and robust input tensors for parallel aggregation kernels.
+
