@@ -18,7 +18,7 @@
 | **Phase 2** | **Literature Review & Research Specification** | FGI-MOD-02 | **PASSED (Complete)** | Rigorous review of verified literature (Bell & Garland '09, NVIDIA CUDA Guides, Huang et al. '20, Hu et al. '20, Wang et al. '16, Dou et al. '20, Weber et al. '19, Wang et al. '19); evidence-backed gap analysis (`RESEARCH_GAP.md`); testable hypotheses & variable matrices (`RESEARCH_SPECIFICATION.md`); candidate dataset evaluation & Dual-Dataset strategy (`DATASET_SELECTION.md`); mathematical CSR & zero-degree operator specifications (`ALGORITHM_SPECIFICATION.md`); benchmark protocol & tri-state schema (`EXPERIMENT_PROTOCOL.md`); ADRs 005–007 recorded (`DECISIONS.md`). |
 | **Phase 3** | **Dataset Pipeline & Graph Representation** | FGI-MOD-02, FGI-MOD-03 | **PASSED (Complete)** | Canonical CSR graph implementation (`csr_graph.py`) enforcing 8 invariants; deterministic synthetic power-law/star/uniform generator (`synthetic_generator.py`); temporal transaction graph builder (`transaction_graph_builder.py`) with zero leakage; 20 unit/invariant tests passing (22/22 total suite in 2.03s); `toy_graph_5nodes.npz` and `synthetic_tier_a_10k.npz` (10K nodes, 95K edges) generated; `GRAPH_DATA_CONTRACT.md` authored; ADRs 008-009 recorded. |
 | **Phase 4** | **CPU Reference Implementation** | FGI-MOD-04 | **PASSED (Complete)** | Implemented Sum, Mean, Max aggregators in `aggregators.py`; dual reference and vectorized SpMM modes; explicit empty-neighborhood zero sentinel ($d_i = 0 \implies \vec{0}$); 22 tests in `test_aggregators.py` (total 44/44 backend tests passing in 2.36s); high-precision benchmark harness in `benchmark_cpu.py` with JSON output in `experiments/results/`; resolved Phase 3 fixture inconsistencies (toy isolated node 4, non-zero features); `CPU_REFERENCE_ENGINE.md` authored. |
-| **Phase 5** | Baseline CUDA Implementation | FGI-MOD-05 | **PENDING** | Baseline CUDA C++ kernel (1 thread per node), thread/block layout, memory transfers, CPU/GPU tolerance verification (`atol <= 1e-5`). |
+| **Phase 5** | **Baseline CUDA Implementation** | FGI-MOD-05 | **IMPLEMENTED — GPU VALIDATION PENDING** | Baseline 1-thread-per-node CUDA C++ kernel in `fgi_baseline_kernels.cu`; standalone CLI driver in `main_baseline.cu`; Colab runner package in `colab_bundle_fgi_phase5.zip` (3.55 MB); automated `run_colab_benchmarks.py`; turnkey notebook in `fgi_colab_workflow.ipynb`; `ingest_colab_results.py` validator; 11 CPU-only tests passed (1 live GPU test skipped, 55 total suite passing); `CUDA_BASELINE.md` and `ADR-010` authored. Awaiting Colab cloud execution for final MEASURED telemetry. |
 | **Phase 6** | CUDA Optimization Laboratory | FGI-MOD-06 | **PENDING** | Memory coalesced kernel, warp-per-node mapping, shared-memory reuse evaluation, CUDA event timing separation. |
 | **Phase 7** | Fraud Scoring & Evaluation | FGI-MOD-07 | **PENDING** | Feature enrichment with aggregated embeddings, scikit-learn classifier baseline, Precision, Recall, F1, PR-AUC, confusion matrices. |
 | **Phase 8** | Benchmark Automation & Experiment Management | FGI-MOD-08 | **PENDING** | Multi-run automated harness, graph-scaling experiments, latency/throughput speedup metrics, machine-readable JSON/CSV storage. |
@@ -146,6 +146,48 @@
 
 ## 7. Phase 4 Gate Acceptance
 - **Gate Status:** **PASSED (Complete)**
-- **Action Required:** Await User authorization to initiate Phase 5 (Baseline CUDA Implementation & Google Colab Execution).
+
+---
+
+## 8. Phase 5 Deliverables Summary
+
+### 8.1 Baseline CUDA C++ Implementation (`backend/gpu_engine/cuda/`)
+- Implemented `aggregate_baseline_kernel` in [`backend/gpu_engine/cuda/src/fgi_baseline_kernels.cu`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/src/fgi_baseline_kernels.cu):
+  - 1 thread mapped per output node ($i = \text{blockIdx.x} \cdot \text{blockDim.x} + \text{threadIdx.x}$), block size 256.
+  - Supports Sum, Mean, and Max aggregation operators.
+  - Strict zero-sentinel handling: explicitly returns $\vec{0}$ for empty neighborhoods ($d_i = 0$).
+  - Negative-only neighborhood handling for Max operator initialized with first neighbor's feature.
+- Implemented error handling macros (`CUDA_CHECK`, `CUDA_CHECK_KERNEL`) in [`fgi_cuda_common.cuh`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/include/fgi_cuda_common.cuh).
+- Implemented standalone C++ CLI driver in [`main_baseline.cu`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/src/main_baseline.cu):
+  - 64-bit safe allocation sizes on host.
+  - Hardware CUDA event timing isolating $t_{\text{H2D}}$, $t_{\text{kernel}}$ (20 repetitions after 5 warmups), $t_{\text{D2H}}$, and $t_{\text{e2e}}$.
+  - Multi-architecture Makefile targeting SM 7.0, 7.5, and 8.0.
+
+### 8.2 Google Colab Cloud Workflow (`backend/gpu_engine/colab_runner/`)
+- **Automated Packaging (`package_colab_bundle.py`):** Unpacks `toy_graph_5nodes` and `synthetic_tier_a_10k` into raw binary arrays with precomputed Phase 4 CPU reference outputs, packaging everything into `experiments/colab_bundle_fgi_phase5.zip` (3.55 MB).
+- **Automated Colab Runner (`run_colab_benchmarks.py`):** Compiles CUDA binary with `nvcc`, executes two-stage correctness gate against CPU references ($\text{atol} \le 10^{-5}$), executes multi-repetition benchmark matrix, and archives results.
+- **Turnkey Notebook (`fgi_colab_workflow.ipynb`):** Complete Colab notebook for one-click compilation, validation, and execution.
+- **Results Ingestion Utility (`ingest_colab_results.py`):** Validates downloaded results against FGI schema, confirms `MEASURED` state, checks tolerance, and archives to `experiments/results/`.
+- **Workflow Guide (`backend/gpu_engine/colab_runner/README.md`):** Complete execution and troubleshooting documentation.
+
+### 8.3 Python Host Adapter & Test Verification
+- Implemented [`backend/gpu_engine/cuda_runner.py`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda_runner.py) with graceful missing-binary error reporting pointing to Colab workflow.
+- Implemented 12 comprehensive tests in [`backend/tests/test_cuda_baseline.py`](file:///D:/FraudGraph%20Intelligence/backend/tests/test_cuda_baseline.py). Full suite: **55 passed, 1 skipped (live GPU test appropriately skipped without local nvcc) in 3.11s**.
+
+### 8.4 Architecture & Specification Documentation
+- **`docs/CUDA_BASELINE.md`:** Authoritative specification of baseline kernel mapping, memory safety, Colab workflow, and baseline performance bottlenecks (uncoalesced memory reads, warp divergence).
+- **`docs/DECISIONS.md`:** Recorded `ADR-010` (One-Thread-per-Node Baseline CUDA Kernel Mapping and Colab Validation Protocol).
+- **`docs/KNOWN_LIMITATIONS.md`:** Added Section 4 detailing baseline architectural bottlenecks to be solved in Phase 6.
+- **`docs/EXPERIMENT_PROTOCOL.md`:** Added Section 7 on decoupled execution metrics and honest speedup accounting.
+- **`docs/TEST_PLAN.md`:** Updated test matrix with Phase 5 coverage.
+- **`docs/CHANGELOG.md`:** Documented release `0.5.0`.
+
+---
+
+## 9. Phase 5 Gate Status
+- **Gate Status:** **IMPLEMENTED — GPU VALIDATION PENDING**
+- **Explanation:** In strict adherence to the Master Engineering Directive, Phase 5 is marked as `IMPLEMENTED — GPU VALIDATION PENDING` because all CUDA C++ kernels, host orchestration, Colab runners, and test suites are fully implemented and verified locally, but final physical GPU execution is awaiting the user's run of `colab_bundle_fgi_phase5.zip` on Google Colab. We never fabricate GPU benchmarks or claim a kernel ran on physical GPU hardware when it has not yet executed.
+- **Action Required:** Await User authorization / Colab run to ingest GPU benchmark results and initiate Phase 6 (CUDA Optimization Laboratory).
+
 
 

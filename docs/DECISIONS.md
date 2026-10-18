@@ -99,3 +99,18 @@
   4. *Finite Features Guarantee:* All continuous and categorical feature values are guaranteed to be finite (`np.float32`), with missing values imputed deterministically via feature-wise medians.
 - **Consequences:** Mathematically sound graph topologies, zero future-to-past data leakage, zero label contamination, and robust input tensors for parallel aggregation kernels.
 
+---
+
+## ADR-010: One-Thread-per-Node Baseline CUDA Kernel Mapping and Colab Validation Protocol
+
+- **Status:** Accepted (Phase 5)
+- **Context:** Establishing a trustworthy GPU acceleration baseline requires isolating a straightforward parallel implementation from advanced memory optimizations (which belong to Phase 6). Furthermore, because the local Windows development machine lacks `nvcc` and MSVC build tools, GPU compilation and execution must be performed in a reproducible Google Colab cloud environment without fabricating telemetry on the local host.
+- **Decision:**
+  1. *Baseline Kernel Mapping:* Assign exactly one CUDA thread per graph node ($i = \text{blockIdx.x} \cdot \text{blockDim.x} + \text{threadIdx.x}$), with thread block size fixed at 256.
+  2. *Defensive Execution:* Handle empty neighborhoods ($d_i = 0$) by explicitly returning $\vec{0} \in \mathbb{R}^D$; initialize max reduction with the first neighbor's feature to support negative-only neighborhoods; use 64-bit byte size calculations on host.
+  3. *Cloud Workflow:* Package native CUDA source, raw graph binary arrays, and precomputed Phase 4 CPU reference outputs into `experiments/colab_bundle_fgi_phase5.zip` for execution on Google Colab (NVIDIA T4 / V100 / A100).
+  4. *Enforced Verification Gate:* GPU outputs must match Phase 4 CPU reference outputs within $\text{atol} \le 1.0 \times 10^{-5}$ before multi-repetition benchmark runs proceed.
+  5. *Integrity Standard:* Require `measurement_state: "MEASURED"` on all ingested results; display `AWAITING_GPU_RUN` for unexecuted configurations.
+- **Consequences:** Clean separation between unoptimized baseline and memory-aware optimizations, absolute research integrity, and reproducible GPU validation.
+
+

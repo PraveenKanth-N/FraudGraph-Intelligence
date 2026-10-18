@@ -161,3 +161,25 @@ All benchmark results are automatically written to `experiments/results/{experim
     - Sum Vectorized (SpMM): $3.624 \text{ ms}$ ($26,196,494 \text{ edges/s}$) | Status: `PASSED`
     - Max Reference: $167.173 \text{ ms}$ ($567,945 \text{ edges/s}$) | Status: `PASSED`
 
+---
+
+## 7. Phase 5 Baseline CUDA Execution & Speedup Accounting
+
+### 7.1 Decoupled Execution Phases
+Every GPU benchmark run decomposes execution into four decoupled measurements:
+1. **$t_{\text{H2D}}$ (Host-to-Device Transfer):** Measured via CUDA events around `cudaMemcpy` for `row_ptr`, `col_idx`, and `features`.
+2. **$t_{\text{kernel}}$ (Kernel-Only Time):** Measured via CUDA events strictly enclosing the kernel invocation over $R = 20$ repetitions following 5 unrecorded warm-up iterations.
+3. **$t_{\text{D2H}}$ (Device-to-Host Transfer):** Measured via CUDA events around `cudaMemcpy` for output tensor $Y$.
+4. **$t_{\text{e2e}}$ (End-to-End Elapsed Time):** Sum of PCIe data transfers and kernel execution time ($t_{\text{H2D}} + \bar{t}_{\text{kernel}} + t_{\text{D2H}}$).
+
+### 7.2 Rigorous Speedup Accounting
+Speedup must never conflate kernel-only acceleration with end-to-end execution:
+- **Kernel-Only Speedup:**
+  $$S_{\text{kernel}} = \frac{T_{\text{CPU,ref,kernel}}}{T_{\text{GPU,kernel}}}$$
+  (Identifies the raw algorithmic advantage of parallel SIMT execution).
+- **End-to-End Speedup:**
+  $$S_{\text{e2e}} = \frac{T_{\text{CPU,e2e}}}{T_{\text{GPU,e2e}}}$$
+  (Accounts for PCIe bus transfer latency over the motherboard bus).
+- In small graphs (e.g. $N < 1,000$), $S_{\text{e2e}}$ may be less than $1.0\times$ due to launch and transfer overheads; this must be reported transparently without fabrication.
+
+

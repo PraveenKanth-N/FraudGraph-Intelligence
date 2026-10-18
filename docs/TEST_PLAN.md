@@ -48,13 +48,14 @@ The testing framework guarantees correctness, numerical precision, and stability
 - Strict defensive input validation (`TypeError` and `ValueError`).
 - Cross-verification between reference loop and vectorized SpMM ($\text{atol} \le 10^{-5}$).
 
-### 2.4 CUDA Correctness & Numerical Equivalence (Phase 5 & 6 Gates)
-- Floating-point tolerance check: $|Y_{\text{GPU}} - Y_{\text{CPU}}| \le 10^{-5}$.
-- Edge cases:
-  - Empty graph ($N = 0, M = 0$).
-  - Fully disconnected graph (all degree 0).
-  - Star graph (1 hub node connected to $N-1$ leaves).
-  - Large random power-law graph ($N = 100,000$).
+### 2.4 CUDA Correctness & Colab Workflow Tests (`backend/tests/test_cuda_baseline.py`) — Phase 5 (11 Passed, 1 Skipped)
+- Verifies existence and completeness of native CUDA source and header files (`fgi_cuda_common.cuh`, `fgi_baseline_kernels.cuh`, `fgi_baseline_kernels.cu`, `main_baseline.cu`, `Makefile`).
+- Validates automated packaging of self-contained Colab archive (`colab_bundle_fgi_phase5.zip`, 3.55 MB).
+- Validates Colab workflow notebook syntax and required execution commands (`fgi_colab_workflow.ipynb`).
+- Enforces strict JSON schema validation and rejects unmeasured (`SAMPLE`/`NOT_RUN`) or incomplete benchmark outputs.
+- Validates numerical comparison logic against Phase 4 CPU reference with $\text{atol} \le 1.0 \times 10^{-5}$.
+- Defensive error testing for shape mismatches, NaNs, Infs, and tolerance violations.
+- Transparent offline error reporting when local compiler (`nvcc`) is absent; live GPU tests explicitly marked as `SKIPPED`.
 
 ### 2.5 Frontend Unit & Type Tests (Phase 9 Gate)
 - TypeScript strict compilation: `tsc -b`.

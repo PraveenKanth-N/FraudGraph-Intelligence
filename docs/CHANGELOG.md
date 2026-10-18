@@ -7,11 +7,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-### Planned for Phase 5: Baseline CUDA Implementation
-- Native baseline CUDA C++ kernel (`1 thread per node`) in `backend/gpu_engine/cuda/src/`.
-- CUDA host orchestrator and memory allocation (`cudaMalloc`, `cudaMemcpy`).
-- Google Colab execution adapter and benchmark packaging utility.
-- Numerical equivalence verification harness comparing GPU output against Phase 4 CPU reference.
+### Planned for Phase 6: CUDA Optimization Laboratory
+- Warp-per-node parallelization (`fgi_aggregator_coalesced_kernel.cu`) for coalesced memory transactions.
+- Shared-memory caching and reduction tiles (`__shared__`) for high-degree hub nodes.
+- Degree-aware load balancing separating isolated/leaf nodes from dense fraud rings.
+- Direct benchmark comparisons against Phase 5 baseline kernel.
+
+---
+
+## [0.5.0] - 2026-10-18 — Phase 5: Baseline CUDA Implementation & Colab Workflow
+
+### Added
+- **Native Baseline CUDA C++ Engine (`backend/gpu_engine/cuda/`):**
+  - Implemented `aggregate_baseline_kernel` in [`backend/gpu_engine/cuda/src/fgi_baseline_kernels.cu`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/src/fgi_baseline_kernels.cu) with 1 thread mapped per output node.
+  - Supports Sum, Mean, and Max aggregation operators in full compliance with the FGI mathematical specification.
+  - Explicit empty-neighborhood handling writing $\vec{0}$ for isolated nodes ($d_i = 0$), preventing division-by-zero in Mean and $-\infty$ propagation in Max.
+  - First-neighbor initialization for Max aggregation to correctly handle negative-only neighborhoods.
+  - Created [`backend/gpu_engine/cuda/include/fgi_cuda_common.cuh`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/include/fgi_cuda_common.cuh) with robust `CUDA_CHECK` and `CUDA_CHECK_KERNEL` error handling macros.
+  - Implemented standalone CLI driver executable in [`backend/gpu_engine/cuda/src/main_baseline.cu`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/src/main_baseline.cu) with 64-bit safe allocations, hardware CUDA event timing, decoupled transfer metrics ($t_{\text{H2D}}$, $t_{\text{kernel}}$, $t_{\text{D2H}}$, $t_{\text{e2e}}$), and machine-readable JSON export.
+  - Authored multi-architecture `Makefile` targeting SM 7.0, 7.5, and 8.0.
+- **Google Colab Cloud Execution Adapter (`backend/gpu_engine/colab_runner/`):**
+  - Implemented [`package_colab_bundle.py`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/colab_runner/package_colab_bundle.py) producing `experiments/colab_bundle_fgi_phase5.zip` (3.55 MB) containing CUDA sources, headers, Makefile, raw binary fixtures (`toy_graph_5nodes`, `synthetic_tier_a_10k`), and precomputed Phase 4 CPU references.
+  - Implemented automated Colab runner script [`run_colab_benchmarks.py`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/colab_runner/run_colab_benchmarks.py) enforcing a two-stage correctness gate before benchmark execution.
+  - Created interactive Jupyter notebook [`fgi_colab_workflow.ipynb`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/colab_runner/fgi_colab_workflow.ipynb) for turnkey execution on Colab T4/A100 runtimes.
+  - Created [`ingest_colab_results.py`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/colab_runner/ingest_colab_results.py) for validating and archiving downloaded benchmark JSON results into `experiments/results/`.
+  - Authored comprehensive workflow guide in [`backend/gpu_engine/colab_runner/README.md`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/colab_runner/README.md).
+- **Host-Side Python Adapter (`backend/gpu_engine/cuda_runner.py`):**
+  - Python interface exposing `execute_cuda_aggregation`, `is_nvcc_available`, and `validate_gpu_against_cpu`.
+  - Graceful fallback raising actionable runtime errors pointing to the Colab workflow when local compilation tools are absent.
+- **Automated Verification Test Suite (`backend/tests/test_cuda_baseline.py`):**
+  - 12 comprehensive unit tests covering source completeness, Colab bundle packaging, notebook JSON structure, JSON schema validation, numerical comparison logic with tolerance ($\text{atol} \le 10^{-5}$), and graceful missing-binary handling.
+  - Total backend test suite now passes 55 tests (with 1 live GPU test appropriately skipped).
+- **Architecture Documentation & Decisions:**
+  - Authored [`docs/CUDA_BASELINE.md`](file:///D:/FraudGraph%20Intelligence/docs/CUDA_BASELINE.md) detailing kernel design, memory mapping, and identified baseline bottlenecks (divergence, uncoalesced global reads).
+  - Recorded `ADR-010` in [`docs/DECISIONS.md`](file:///D:/FraudGraph%20Intelligence/docs/DECISIONS.md).
+
 
 ---
 
