@@ -1,76 +1,136 @@
-# Experiment Protocol & Benchmark Standard — FraudGraph Intelligence (FGI)
+# Benchmark Experiment Protocol & Reproducibility Standard — FraudGraph Intelligence (FGI)
 
-## 1. Benchmarking Integrity Standard
-
-In strict accordance with Section 3, Section 10, and Section 12 of the Master Engineering Directive:
-- **Zero Fabrication:** Benchmark timings, kernel speedups, and hardware throughput metrics must **NEVER** be synthesized, fabricated, or hardcoded.
-- **Explicit Unexecuted State:** Any experiment configuration that has not yet been executed on physical hardware must display the explicit status:
-  `STATUS: AWAITING_GPU_RUN` or `STATUS: NOT_YET_EXECUTED`.
-- **Timing Decoupling:** Every benchmark run must strictly separate:
-  1. **Kernel Execution Time:** High-resolution GPU device runtime measured using `cudaEventRecord` / `cudaEventElapsedTime`.
-  2. **Memory Transfer Time:** PCIe Host-to-Device (`cudaMemcpyHostToDevice`) and Device-to-Host (`cudaMemcpyDeviceToHost`) transfer latencies.
-  3. **End-to-End Latency:** Complete wall-clock duration from graph input ingestion to output tensor return.
+**Course:** VIT Vellore — CSI4007 GPU Programming  
+**Document Status:** Phase 2 Authoritative Specification  
 
 ---
 
-## 2. Standard Benchmark Execution Protocol
+## 1. Benchmarking Integrity Standards
 
-### Step 1: Warm-up Phase
-- To eliminate GPU clock ramp-up latency and CUDA context creation overhead, execute **5 warm-up iterations** prior to recording timing events.
-- Discard all warm-up measurements from statistics.
-
-### Step 2: Repetition & Statistical Aggregation
-- Execute each experiment configuration across **$R \ge 20$ independent repetitions**.
-- Record raw observations vector: $T = [t_1, t_2, \dots, t_R]$.
-- Compute summary statistics:
-  - Arithmetic Mean: $\mu = \frac{1}{R} \sum t_i$
-  - Standard Deviation: $\sigma = \sqrt{\frac{1}{R-1} \sum (t_i - \mu)^2}$
-  - Median: $t_{50}$
-  - 95th Percentile: $t_{95}$
-  - 99th Percentile: $t_{99}$
-
-### Step 3: Numerical Verification Gate
-Prior to recording speedup, the output tensor $Y_{\text{GPU}}$ must be compared against the CPU reference tensor $Y_{\text{CPU}}$:
-$$\max_{i, k} |Y_{\text{GPU}}[i, k] - Y_{\text{CPU}}[i, k]| \le \text{atol} = 10^{-5}$$
-If verification fails, the benchmark run is marked as `VERIFICATION_FAILED` and invalid.
+In strict accordance with the Master Engineering Directive:
+- **Zero Fabrication:** Performance speedups, latency values, and throughput metrics must **NEVER** be hardcoded, faked, or estimated.
+- **Explicit Measurement States:** Every metric reported in exported JSON/CSV files and UI dashboards must carry one of three explicit state labels:
+  - `MEASURED`: Empirically recorded from an actual execution on physical GPU/CPU hardware.
+  - `SAMPLE`: Illustrative reference data used strictly for mock frontend layout testing.
+  - `NOT_RUN`: Benchmark configuration defined but not yet executed on hardware.
 
 ---
 
-## 3. Experiment Result JSON Schema
+## 2. Experimental Factor Matrix
 
-All results are saved under `experiments/results/{experiment_id}.json` adhering to this schema:
+To thoroughly test Hypotheses $H_1$, $H_2$, and $H_3$, experiments will execute across the following orthogonal factors:
+
+| Factor | Parameter Space | Values |
+| :--- | :--- | :--- |
+| **Compute Implementations** | Engine Architecture | 1. `cpu_reference` (NumPy vector-parallel)<br>2. `cuda_baseline_thread_per_node`<br>3. `cuda_optimized_warp_coalesced`<br>4. `cuda_optimized_shared_memory` |
+| **Graph Scale ($N, M$)** | Node and Edge Counts | - **Tier A (Small / Debug):** $N = 10,000$, $M = 50,000$<br>- **Tier B (Medium / Workload):** $N = 50,000$, $M = 350,000$<br>- **Tier C (Large / Stress):** $N = 200,000$, $M = 1,800,000$ |
+| **Feature Width ($D$)** | Node Feature Dimensionality | $D \in \{16, 32, 64, 128\}$ |
+| **Degree Distributions** | Graph Topology Profile | 1. **Uniform Random:** Erdős–Rényi graph (low variance in degree)<br>2. **Power-Law Skew:** Barabási–Albert ($\gamma \approx 2.5$) |
+| **Aggregation Operators** | Mathematical Operator | `mean` (primary), `sum`, `max` |
+
+---
+
+## 3. High-Precision Timing Methodology
+
+### 3.1 Kernel Timing via CUDA Events
+To eliminate host CPU scheduling noise and PCIe asynchronous queue latency, GPU kernel execution time must be measured exclusively with hardware CUDA events:
+```cpp
+cudaEvent_t start_event, stop_event;
+cudaEventCreate(&start_event);
+cudaEventCreate(&stop_event);
+
+cudaEventRecord(start_event, stream);
+fgi_aggregator_coalesced_kernel<<<grid, block, 0, stream>>>(...);
+cudaEventRecord(stop_event, stream);
+cudaEventSynchronize(stop_event);
+
+float kernel_time_ms = 0.0f;
+cudaEventElapsedTime(&kernel_time_ms, start_event, stop_event);
+```
+
+### 3.2 Decoupled PCIe Transfer Timing
+Separate timers measure the data movement across the PCIe bus:
+- $t_{\text{H2D}}$: Host-to-Device transfer of `row_ptr`, `col_idx`, and `features`.
+- $t_{\text{kernel}}$: Pure GPU execution time.
+- $t_{\text{D2H}}$: Device-to-Host transfer of the aggregated tensor $Y$.
+- $t_{\text{e2e}}$: Total end-to-end elapsed time ($t_{\text{H2D}} + t_{\text{kernel}} + t_{\text{D2H}} + \text{synchronization}$).
+
+### 3.3 Warm-Up & Repetition Protocol
+1. **Warm-Up Runs:** Prior to taking measurements, execute **5 consecutive warm-up iterations** on the target GPU to stabilize GPU core clock frequencies (P-states) and warm up instruction caches.
+2. **Repetition Count:** Execute each test configuration for $R = 20$ recorded iterations.
+3. **Statistical Metrics:**
+   - Sample Mean: $\bar{t} = \frac{1}{R} \sum_{i=1}^R t_i$
+   - Standard Deviation: $\sigma = \sqrt{\frac{1}{R-1} \sum_{i=1}^R (t_i - \bar{t})^2}$
+   - Median: $t_{50}$
+   - 95th Percentile: $t_{95}$
+   - Throughput (Edges/sec): $\text{Throughput} = \frac{M}{\bar{t}_{\text{kernel}} \times 10^{-3}}$
+   - Effective Memory Bandwidth (GB/s):
+     $$\text{BW}_{\text{eff}} = \frac{(N+1) \times 4 + M \times 4 + M \times D \times 4 + N \times D \times 4}{\bar{t}_{\text{kernel}} \times 10^{-3} \times 10^9}$$
+
+---
+
+## 4. Failure & Out-of-Memory (OOM) Handling
+
+The GPU memory footprint is strictly bounded prior to launching kernels:
+$$\text{Memory Required} = \Big( (N+1) \times 4 + M \times 4 + 2 \times N \times D \times 4 \Big) \text{ bytes}$$
+
+If $\text{Memory Required} \ge 0.85 \times \text{VRAM}_{\text{free}}$:
+1. Local execution halts immediately without attempting an unsafe allocation.
+2. The experiment is logged with status `EXCEEDS_LOCAL_VRAM_COLAB_REQUIRED`.
+3. The graph is marked for execution via the Google Colab cloud runner (T4 / A100 with 16 GB+ VRAM).
+
+---
+
+## 5. Machine-Readable JSON Result Schema
+
+All benchmark results are automatically written to `experiments/results/{experiment_id}.json`:
 
 ```json
 {
+  "schema_version": "1.0.0",
   "experiment_id": "EXP-20261018-001",
-  "timestamp": "2026-10-18T19:30:00Z",
-  "graph_tier": "Tier_A",
-  "num_nodes": 10000,
-  "num_edges": 50000,
-  "feature_dim": 32,
+  "measurement_state": "NOT_RUN",
+  "timestamp": null,
   "hardware": {
     "device_name": "NVIDIA GeForce MX450",
     "compute_capability": "7.5",
-    "driver_version": "581.83"
+    "driver_version": "581.83",
+    "total_vram_mb": 2048.0
   },
-  "implementation": "cuda_coalesced_warp_per_node",
-  "repetitions": 20,
-  "warmup_runs": 5,
+  "graph_configuration": {
+    "tier": "Tier_A",
+    "num_nodes": 10000,
+    "num_edges": 50000,
+    "feature_dim": 32,
+    "degree_distribution": "power_law",
+    "power_law_gamma": 2.5
+  },
+  "benchmark_parameters": {
+    "implementation": "cuda_optimized_warp_coalesced",
+    "operator": "mean",
+    "warmup_iterations": 5,
+    "recorded_repetitions": 20
+  },
+  "timing_results_ms": {
+    "kernel_mean": null,
+    "kernel_std": null,
+    "kernel_p50": null,
+    "kernel_p95": null,
+    "h2d_transfer_mean": null,
+    "d2h_transfer_mean": null,
+    "end_to_end_mean": null
+  },
+  "performance_metrics": {
+    "edges_per_second": null,
+    "effective_bandwidth_gbps": null,
+    "speedup_vs_cpu_kernel": null,
+    "speedup_vs_cpu_e2e": null
+  },
   "numerical_verification": {
-    "status": "PASSED",
-    "max_absolute_error": 3.2e-6,
-    "tolerance_threshold": 1.0e-5
-  },
-  "timing_ms": {
-    "h2d_transfer_mean": 1.42,
-    "kernel_exec_mean": 0.88,
-    "d2h_transfer_mean": 1.35,
-    "end_to_end_mean": 3.65,
-    "kernel_exec_std": 0.04
-  },
-  "speedup_vs_cpu_reference": {
-    "kernel_only_speedup": 18.4,
-    "end_to_end_speedup": 4.2
+    "status": "PENDING_EXECUTION",
+    "max_absolute_error": null,
+    "tolerance_threshold": 1.0e-5,
+    "nan_detected": false
   }
 }
 ```
