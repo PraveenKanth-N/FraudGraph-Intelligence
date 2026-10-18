@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FraudGraph Intelligence // Dedicated Model Evaluation Center</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts: Newsreader for high-contrast serif headlines, Geist for dense tabular/code precision -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-lowest": "#0b0e12",
+            "surface-container-highest": "#32353a",
+            "surface-obsidian": "#05070A",
+            "error-container": "#93000a",
+            "surface": "#111418",
+            "tertiary-container": "#dedbd5",
+            "on-tertiary-fixed": "#1c1c18",
+            "surface-bright": "#36393e",
+            "inverse-surface": "#e1e2e8",
+            "on-primary-container": "#006a70",
+            "primary": "#e0fdff",
+            "primary-container": "#00f2fe",
+            "surface-dim": "#111418",
+            "on-surface": "#e1e2e8",
+            "secondary-container": "#01e7b6",
+            "surface-raised": "#161B22",
+            "error": "#ffb4ab",
+            "editorial-cream": "#F8F7F4",
+            "secondary-fixed": "#41fecb",
+            "on-secondary-fixed": "#002117",
+            "border-active": "#00F2FE",
+            "on-surface-variant": "#b9cacb",
+            "on-secondary-container": "#00624c",
+            "surface-container-high": "#272a2f",
+            "primary-fixed": "#6ff6ff",
+            "inverse-primary": "#00696f",
+            "on-secondary": "#00382a",
+            "primary-fixed-dim": "#00dce6",
+            "surface-container-low": "#191c20",
+            "tertiary-fixed": "#e5e2dc",
+            "on-tertiary": "#31302d",
+            "surface-variant": "#32353a",
+            "outline": "#849495",
+            "on-primary": "#00373a",
+            "secondary": "#7dffd5",
+            "on-primary-fixed": "#002022",
+            "tertiary": "#faf7f1",
+            "inverse-on-surface": "#2e3135",
+            "tertiary-fixed-dim": "#c9c6c1",
+            "alert-critical": "#FF3B30",
+            "surface-graphite": "#0D1117",
+            "on-tertiary-fixed-variant": "#474743",
+            "secondary-fixed-dim": "#00e0b1",
+            "background": "#111418",
+            "on-tertiary-container": "#61605b",
+            "surface-tint": "#00dce6",
+            "on-background": "#e1e2e8",
+            "on-error-container": "#ffdad6",
+            "on-primary-fixed-variant": "#004f53",
+            "outline-variant": "#3a494b",
+            "border-hairline": "#21262D",
+            "on-secondary-fixed-variant": "#00513e",
+            "surface-container": "#1d2024",
+            "metric-dim": "#484F58",
+            "on-error": "#690005"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "gutter-mobile": "0.75rem",
+            "space-lg": "1.5rem",
+            "margin-mobile": "1rem",
+            "space-xl": "2.5rem",
+            "margin": "2.5rem",
+            "gutter": "1.5rem"
+          },
+          "fontFamily": {
+            "body-md": ["Geist", "sans-serif"],
+            "body-sm": ["Geist", "sans-serif"],
+            "label-code": ["JetBrains Mono", "Geist", "monospace"],
+            "headline-sm": ["Newsreader", "serif"],
+            "metric-display": ["Geist", "sans-serif"],
+            "headline-lg": ["Newsreader", "serif"],
+            "headline-md": ["Newsreader", "serif"],
+            "display-hero-mobile": ["Newsreader", "serif"],
+            "display-hero": ["Newsreader", "serif"],
+            "body-lg": ["Geist", "sans-serif"],
+            "headline-lg-mobile": ["Newsreader", "serif"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "label-code": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "500" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "500" }],
+            "metric-display": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "400" }],
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Absolute architectural right-angles override */
+    * {
+      border-radius: 0 !important;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #05070A;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #21262D;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #00F2FE;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      background: #161B22;
+      height: 4px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 14px;
+      width: 14px;
+      background: #00F2FE;
+      cursor: pointer;
+      border: 1px solid #05070A;
+      box-shadow: 0 0 8px rgba(0,242,254,0.6);
+    }
+  </style>
+</head>
+<body class="bg-surface-obsidian text-on-surface font-body-md antialiased min-h-screen selection:bg-primary-container selection:text-surface-obsidian">
+<!-- ========================================================================= -->
+<!-- TOP APP BAR (from Shared Components JSON: TopNavBar)                      -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-0 w-full z-50 rounded-none bg-surface-graphite/85 dark:bg-surface-graphite/85 backdrop-blur-md border-b border-border-hairline dark:border-border-hairline shadow-none">
+<div class="flex justify-between items-center w-full px-space-lg md:px-margin max-w-full h-14">
+<!-- Brand & Product Identity -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-headline-sm" data-icon="shield">shield</span>
+<span class="text-headline-sm font-headline-sm tracking-tight text-editorial-cream dark:text-editorial-cream uppercase font-semibold">FraudGraph Intelligence</span>
+</div>
+<div class="hidden xl:flex items-center gap-space-xs text-metric-dim font-label-code text-label-code px-space-xs py-0.5 border border-border-hairline bg-surface-obsidian">
+<span class="text-primary-container">SYS_LOC:</span>
+<span>US-EAST-CUDA-VA</span>
+<span class="text-metric-dim mx-1">|</span>
+<span class="w-1.5 h-1.5 bg-secondary-container inline-block animate-pulse"></span>
+<span class="text-secondary-container">SYNCHRONIZED</span>
+</div>
+</div>
+<!-- Navigation Links from JSON -->
+<nav class="hidden lg:flex items-center gap-space-lg text-label-code font-label-code">
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#explorer">Explorer</a>
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#gpulab">GPU Laboratory</a>
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#arch">Architecture</a>
+<a class="text-primary-container dark:text-primary-container border-b-2 border-border-active py-1 tracking-wider uppercase transition-none" href="#eval">Benchmarks</a>
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#briefs">Intelligence Briefs</a>
+</nav>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-space-md">
+<!-- Cluster Telemetry Chip -->
+<div class="hidden sm:flex items-center gap-space-xs bg-surface-raised px-space-sm py-1 border border-border-hairline text-label-code font-label-code text-on-surface">
+<span class="w-2 h-2 bg-primary-container"></span>
+<span class="text-primary-container font-semibold">H100-SXM5 8/8 Online</span>
+<span class="text-metric-dim">[FP8 v4.2]</span>
+</div>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center border-l border-border-hairline pl-space-sm gap-1 text-outline">
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised transition-none" title="Terminal Console">
+<span class="material-symbols-outlined text-[18px]" data-icon="terminal">terminal</span>
+</button>
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised transition-none" title="Analytics Vector">
+<span class="material-symbols-outlined text-[18px]" data-icon="analytics">analytics</span>
+</button>
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised transition-none relative" title="Notifications">
+<span class="material-symbols-outlined text-[18px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-1.5 h-1.5 bg-alert-critical"></span>
+</button>
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised transition-none" title="System Settings">
+<span class="material-symbols-outlined text-[18px]" data-icon="settings">settings</span>
+</button>
+</div>
+<!-- Trailing Primary Action -->
+<button class="bg-primary-container text-surface-obsidian px-space-md py-1.5 text-label-code font-label-code font-semibold tracking-wider uppercase hover:bg-secondary-container active:scale-[0.99] transition-none flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]" data-icon="rocket_launch">rocket_launch</span>
+<span>Deploy Cluster</span>
+</button>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- SIDE NAVIGATION (from Shared Components JSON: SideNavBar)                 -->
+<!-- Active Tab: Evaluation                                                   -->
+<!-- ========================================================================= -->
+<aside class="fixed top-14 left-0 h-[calc(100vh-3.5rem)] w-64 rounded-none z-40 bg-surface-graphite dark:bg-surface-graphite border-r border-border-hairline dark:border-border-hairline flex flex-col justify-between p-space-sm">
+<!-- Top Part: Header + Nav list -->
+<div class="flex flex-col gap-space-sm">
+<!-- Node Header Area -->
+<div class="p-space-sm bg-surface-obsidian border border-border-hairline flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-metric-dim uppercase">Cluster Host</span>
+<span class="text-[10px] font-label-code px-1 bg-surface-raised text-primary-container border border-border-hairline">ROOT #0</span>
+</div>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="material-symbols-outlined text-primary-container text-body-lg" data-icon="security">security</span>
+<div>
+<div class="text-body-sm font-body-sm text-editorial-cream font-medium tracking-tight">FraudGraph Core</div>
+<div class="text-[10px] font-label-code text-metric-dim leading-tight">H100-SXM5 Cluster: 8/8 Online</div>
+</div>
+</div>
+</div>
+<!-- Execute Pipeline CTA -->
+<button class="w-full bg-surface-raised border border-border-hairline text-primary-container hover:border-border-active py-2 px-space-sm flex items-center justify-center gap-space-sm text-label-code font-label-code uppercase tracking-wider transition-none active:scale-[0.99]">
+<span class="material-symbols-outlined text-[16px]" data-icon="play_arrow">play_arrow</span>
+<span>Execute Pipeline</span>
+</button>
+<!-- Navigation Tabs (8 tabs from JSON) -->
+<nav class="flex flex-col gap-0.5 mt-space-xs">
+<!-- Overview -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#overview">
+<span class="material-symbols-outlined text-[18px]" data-icon="dashboard">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Graph Explorer -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#graphexplorer">
+<span class="material-symbols-outlined text-[18px]" data-icon="hub">hub</span>
+<span>Graph Explorer</span>
+</a>
+<!-- Transactions -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#transactions">
+<span class="material-symbols-outlined text-[18px]" data-icon="receipt_long">receipt_long</span>
+<span>Transactions</span>
+</a>
+<!-- GPU Lab -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#gpulab">
+<span class="material-symbols-outlined text-[18px]" data-icon="memory">memory</span>
+<span>GPU Lab</span>
+</a>
+<!-- Experiments -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#experiments">
+<span class="material-symbols-outlined text-[18px]" data-icon="science">science</span>
+<span>Experiments</span>
+</a>
+<!-- Evaluation (ACTIVE TAB) -->
+<a class="bg-surface-raised dark:bg-surface-raised text-primary-container dark:text-primary-container border-l-2 border-border-active flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase" href="#evaluation">
+<span class="material-symbols-outlined text-[18px]" data-icon="rule" style="font-variation-settings: 'FILL' 1;">rule</span>
+<span class="font-semibold">Evaluation</span>
+<span class="ml-auto text-[9px] bg-primary-container/10 border border-primary-container text-primary-container px-1">ACTIVE</span>
+</a>
+<!-- Reports -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#reports">
+<span class="material-symbols-outlined text-[18px]" data-icon="assessment">assessment</span>
+<span>Reports</span>
+</a>
+<!-- System Health -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#systemhealth">
+<span class="material-symbols-outlined text-[18px]" data-icon="vital_signs">vital_signs</span>
+<span>System Health</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Footer Area from SideNavBar JSON -->
+<div class="flex flex-col gap-space-xs border-t border-border-hairline pt-space-sm">
+<nav class="flex flex-col gap-0.5 text-label-code font-label-code">
+<a class="text-outline hover:text-on-surface flex items-center gap-space-sm px-space-sm py-1 tracking-wider uppercase" href="#docs">
+<span class="material-symbols-outlined text-[16px]" data-icon="menu_book">menu_book</span>
+<span>Documentation</span>
+</a>
+<a class="text-outline hover:text-on-surface flex items-center gap-space-sm px-space-sm py-1 tracking-wider uppercase" href="#cluster">
+<span class="material-symbols-outlined text-[16px]" data-icon="dns">dns</span>
+<span>Cluster Status</span>
+</a>
+<a class="text-outline hover:text-on-surface flex items-center gap-space-sm px-space-sm py-1 tracking-wider uppercase" href="#prefs">
+<span class="material-symbols-outlined text-[16px]" data-icon="tune">tune</span>
+<span>Preferences</span>
+</a>
+</nav>
+<!-- Operator Signature Tag -->
+<div class="p-space-xs bg-surface-obsidian border border-border-hairline mt-1 flex items-center justify-between">
+<div class="flex items-center gap-1.5 overflow-hidden">
+<span class="w-1.5 h-1.5 bg-secondary-container"></span>
+<span class="text-[10px] font-label-code text-metric-dim truncate">k.valenti@sec.fg</span>
+</div>
+<span class="text-[9px] font-label-code text-outline border border-border-hairline px-1">FED-AUDIT</span>
+</div>
+</div>
+</aside>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE CANVAS                                                     -->
+<!-- ========================================================================= -->
+<main class="ml-64 pt-14 min-h-screen bg-surface-obsidian">
+<!-- SUB-HEADER: Workstation Command Ribbon -->
+<div class="bg-surface-graphite border-b border-border-hairline px-space-lg py-3 flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md flex-wrap">
+<div>
+<span class="text-[10px] font-label-code text-metric-dim uppercase tracking-wider block">Workspace Domain</span>
+<h1 class="text-headline-sm font-headline-sm text-editorial-cream font-medium tracking-tight flex items-center gap-2">
+            FRAUDGRAPH // EVALUATION CENTER
+            <span class="text-label-code font-label-code text-primary-container text-[11px] font-normal px-2 py-0.5 bg-surface-raised border border-border-hairline">
+              PROD-VALIDATION-SUITE
+            </span>
+</h1>
+</div>
+<div class="h-8 w-px bg-border-hairline hidden md:block"></div>
+<!-- Active Dataset Selector dropdown -->
+<div class="flex flex-col">
+<span class="text-[10px] font-label-code text-metric-dim uppercase tracking-wider">Evaluation Ingest Partition</span>
+<div class="flex items-center gap-2 bg-surface-obsidian border border-border-hairline px-3 py-1 text-label-code font-label-code text-editorial-cream hover:border-border-active cursor-pointer">
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-icon="database">database</span>
+<span class="text-editorial-cream font-medium">FedWire-Synthetic-2025-Q1 (12.4M records) [Sample / Benchmark Split]</span>
+<span class="material-symbols-outlined text-[14px] text-outline ml-1" data-icon="unfold_more">unfold_more</span>
+</div>
+</div>
+</div>
+<!-- Global Actions -->
+<div class="flex items-center gap-space-sm">
+<button class="bg-surface-raised border border-border-hairline text-on-surface hover:text-primary-container hover:border-border-active px-space-md py-1.5 text-label-code font-label-code uppercase tracking-wider flex items-center gap-1.5 transition-none">
+<span class="material-symbols-outlined text-[16px]" data-icon="refresh">refresh</span>
+<span>Run Cross-Validation</span>
+</button>
+<button class="bg-surface-graphite border border-primary-container text-primary-container hover:bg-primary-container hover:text-surface-obsidian px-space-md py-1.5 text-label-code font-label-code uppercase tracking-wider flex items-center gap-1.5 transition-none font-medium">
+<span class="material-symbols-outlined text-[16px]" data-icon="file_download">file_download</span>
+<span>Export Evaluation Dossier (JSON/LaTeX)</span>
+</button>
+</div>
+</div>
+<!-- INNER WORKSPACE CONTENT -->
+<div class="p-space-lg space-y-space-md">
+<!-- ========================================================================= -->
+<!-- SECTION 2: EPISTEMIC INTEGRITY CALLOUT BANNER                            -->
+<!-- ========================================================================= -->
+<div class="bg-surface-graphite border-l-4 border-l-primary-container border-y border-r border-border-hairline p-space-md relative overflow-hidden">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-3">
+<div class="p-1 bg-surface-obsidian border border-primary-container/40 text-primary-container mt-0.5">
+<span class="material-symbols-outlined text-[20px]" data-icon="verified_user">verified_user</span>
+</div>
+<div class="space-y-1 max-w-5xl">
+<div class="flex items-center gap-2">
+<span class="text-label-code font-label-code text-primary-container font-semibold tracking-wider uppercase">EPISTEMIC GUARD // THEOREM ON HARDWARE-INDEPENDENT INFERENCE</span>
+<span class="text-[10px] font-label-code bg-surface-obsidian border border-border-hairline px-1.5 py-0.2 text-secondary-container">FORMAL PROOF VERIFIED</span>
+</div>
+<p class="text-body-sm font-body-sm text-editorial-cream leading-relaxed">
+                Model &amp; Fraud-Scoring Quality is strictly independent of Hardware Acceleration. GPU FP8 tensor core optimization preserves mathematical equivalence (<span class="text-primary-container font-mono font-medium">Zero-Drift bit-exactness: 100.00%</span>); architectural speedup does <span class="underline decoration-primary-container underline-offset-2">NOT</span> alter underlying statistical classification accuracy. Any variance between FP8 and FP32 numerical baselines is strictly bounded (<span class="font-mono text-secondary-container">ε &lt; 1e-7</span>, IEEE 754 parity).
+              </p>
+</div>
+</div>
+<div class="hidden xl:flex flex-col text-right font-label-code text-label-code border-l border-border-hairline pl-4">
+<span class="text-metric-dim uppercase text-[10px]">Verification Signature</span>
+<span class="text-editorial-cream font-mono text-[11px]">SHA-256: 9b2d...f40e</span>
+<span class="text-secondary-container text-[10px] mt-0.5">CUDA Bit-Exact Passed</span>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- SECTION 3: EVALUATION PROTOCOL & MODEL CONFIGURATION STRIP               -->
+<!-- ========================================================================= -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-px bg-border-hairline border border-border-hairline">
+<!-- Metric measurement status badge -->
+<div class="bg-surface-graphite p-space-md flex flex-col justify-between">
+<span class="text-[10px] font-label-code text-metric-dim uppercase tracking-wider">Protocol Audit State</span>
+<div class="mt-2">
+<span class="inline-block px-2 py-1 bg-surface-obsidian border border-secondary-container text-secondary-container font-label-code text-[11px] font-medium tracking-wide uppercase">
+              STATUS: EMPIRICALLY MEASURED ON 1.86M TEST CASES
+            </span>
+</div>
+<div class="mt-3 text-[11px] font-label-code text-outline">
+            Protocol: SEC-REG-FINRA-2025 // Out-of-Time Partition
+          </div>
+</div>
+<!-- Temporal Split -->
+<div class="bg-surface-graphite p-space-md">
+<span class="text-[10px] font-label-code text-metric-dim uppercase tracking-wider block">Dataset Partitioning Protocol</span>
+<div class="text-body-sm font-body-sm text-editorial-cream font-medium mt-1">Temporal Out-of-Time Split</div>
+<div class="text-label-code font-label-code text-outline text-[11px] mt-1 space-y-0.5">
+<div>Train: 70% (T-90d → T-30d)</div>
+<div>Val: 15% (T-30d → T-15d)</div>
+<div class="text-primary-container">Test: 15% (1,862,400 entities, Live Ingest)</div>
+</div>
+</div>
+<!-- Target Archetypes -->
+<div class="bg-surface-graphite p-space-md">
+<span class="text-[10px] font-label-code text-metric-dim uppercase tracking-wider block">Evaluated Fraud Archetypes</span>
+<div class="text-body-sm font-body-sm text-editorial-cream font-medium mt-1">Non-Linear Subgraph Topologies</div>
+<div class="flex flex-wrap gap-1 mt-1.5">
+<span class="text-[10px] font-label-code px-1.5 py-0.5 bg-surface-obsidian border border-border-hairline text-on-surface">3-Hop Cycle Isomorphism</span>
+<span class="text-[10px] font-label-code px-1.5 py-0.5 bg-surface-obsidian border border-border-hairline text-on-surface">Multi-Hop Structuring</span>
+<span class="text-[10px] font-label-code px-1.5 py-0.5 bg-surface-obsidian border border-border-hairline text-on-surface">Rapid Fan-Out Laundering</span>
+</div>
+</div>
+<!-- Model Under Test -->
+<div class="bg-surface-graphite p-space-md">
+<span class="text-[10px] font-label-code text-metric-dim uppercase tracking-wider block">Model Under Evaluation</span>
+<div class="text-body-sm font-body-sm text-editorial-cream font-medium mt-1 flex items-center justify-between">
+<span>GraphSage-FP8 + Subgraph Kernel v4.2</span>
+</div>
+<div class="text-[11px] font-label-code text-outline mt-1">
+            Challenger Model: <span class="text-editorial-cream">XGBoost Tabular Baseline</span>
+</div>
+<div class="mt-2 text-[10px] font-label-code text-secondary-container flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+<span>Mathematical Equivalence Verified (FP8/FP32)</span>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- SECTION 4: PRIMARY QUALITY KPI GRID (MODEL QUALITY METRICS)               -->
+<!-- ========================================================================= -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-px bg-border-hairline border border-border-hairline">
+<!-- Precision -->
+<div class="bg-surface-graphite p-space-md relative hover:bg-surface-raised transition-none">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-metric-dim uppercase tracking-wider">Precision</span>
+<span class="text-[10px] font-label-code text-primary-container">τ=0.82</span>
+</div>
+<div class="text-metric-display font-metric-display text-primary-container mt-1">
+            98.42<span class="text-body-md font-body-md font-normal text-outline">%</span>
+</div>
+<div class="text-label-code font-label-code text-metric-dim text-[11px] mt-1 flex items-center gap-1">
+<span class="text-on-surface">±0.12%</span> <span>5-fold CV</span>
+</div>
+</div>
+<!-- Recall -->
+<div class="bg-surface-graphite p-space-md relative hover:bg-surface-raised transition-none">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-metric-dim uppercase tracking-wider">Recall</span>
+<span class="text-[10px] font-label-code text-secondary-container">HIGH-CAPTURE</span>
+</div>
+<div class="text-metric-display font-metric-display text-editorial-cream mt-1">
+            94.18<span class="text-body-md font-body-md font-normal text-outline">%</span>
+</div>
+<div class="text-label-code font-label-code text-metric-dim text-[11px] mt-1">
+<span>Operating threshold 0.82</span>
+</div>
+</div>
+<!-- F1-Score -->
+<div class="bg-surface-graphite p-space-md relative hover:bg-surface-raised transition-none border-l-2 border-l-primary-container">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-metric-dim uppercase tracking-wider">F1-Score</span>
+<span class="text-[10px] font-label-code text-primary-container uppercase">HARMONIC OPT</span>
+</div>
+<div class="text-metric-display font-metric-display text-editorial-cream mt-1">
+            0.9625
+          </div>
+<div class="text-label-code font-label-code text-metric-dim text-[11px] mt-1 flex justify-between">
+<span>Micro: <strong class="text-on-surface font-normal">0.962</strong></span>
+<span>Macro: <strong class="text-on-surface font-normal">0.948</strong></span>
+</div>
+</div>
+<!-- PR-AUC -->
+<div class="bg-surface-graphite p-space-md relative hover:bg-surface-raised transition-none">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-metric-dim uppercase tracking-wider">PR-AUC</span>
+<span class="text-[10px] font-label-code text-secondary-container">+32.0% LIFT</span>
+</div>
+<div class="text-metric-display font-metric-display text-primary-container mt-1">
+            0.9784
+          </div>
+<div class="text-label-code font-label-code text-metric-dim text-[11px] mt-1">
+<span>vs 0.7412 Tabular Base</span>
+</div>
+</div>
+<!-- ROC-AUC -->
+<div class="bg-surface-graphite p-space-md relative hover:bg-surface-raised transition-none">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-metric-dim uppercase tracking-wider">ROC-AUC</span>
+<span class="text-[10px] font-label-code text-outline">EMPIRICAL</span>
+</div>
+<div class="text-metric-display font-metric-display text-editorial-cream mt-1">
+            0.9912
+          </div>
+<div class="text-label-code font-label-code text-metric-dim text-[11px] mt-1">
+<span>Separation: Near-Unitary</span>
+</div>
+</div>
+<!-- False Positive Rate -->
+<div class="bg-surface-graphite p-space-md relative hover:bg-surface-raised transition-none">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-metric-dim uppercase tracking-wider">FPR (Friction)</span>
+<span class="text-[10px] font-label-code text-secondary-container">LOW NOISE</span>
+</div>
+<div class="text-metric-display font-metric-display text-secondary-container mt-1">
+            0.0031<span class="text-body-md font-body-md font-normal text-outline">%</span>
+</div>
+<div class="text-label-code font-label-code text-metric-dim text-[11px] mt-1">
+<span>31 per 1,000,000 wires</span>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- SECTION 5 & 6: THRESHOLD SLIDER, CONFUSION MATRIX & PR CURVE VISUALS      -->
+<!-- ========================================================================= -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<!-- Left: Interactive Threshold Selector & High-Density Confusion Matrix (5 cols) -->
+<div class="lg:col-span-5 bg-surface-graphite border border-border-hairline p-space-md flex flex-col justify-between space-y-space-md">
+<div>
+<!-- Panel Header -->
+<div class="flex items-center justify-between border-b border-border-hairline pb-space-sm mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[18px]" data-icon="tune">tune</span>
+<span class="text-label-code font-label-code text-editorial-cream uppercase tracking-wider font-semibold">Decision Boundary Calibration</span>
+</div>
+<span class="text-[10px] font-label-code text-metric-dim">INTERACTIVE INSPECTOR</span>
+</div>
+<!-- Operating Threshold Slider -->
+<div class="space-y-space-sm bg-surface-obsidian border border-border-hairline p-space-sm">
+<div class="flex items-center justify-between">
+<label class="text-label-code font-label-code text-outline uppercase text-[11px]" for="thresholdRange">Classification Cutoff (τ)</label>
+<div class="flex items-center gap-2">
+<span class="text-metric-dim font-label-code text-[11px]">ACTIVE THRESHOLD:</span>
+<span class="text-primary-container font-mono font-bold text-body-md" id="tauValue">0.82</span>
+</div>
+</div>
+<input class="w-full" id="thresholdRange" max="0.99" min="0.10" step="0.01" type="range" value="0.82"/>
+<div class="grid grid-cols-3 gap-1 pt-1 text-[10px] font-label-code">
+<div class="bg-surface-raised p-1 border border-border-hairline text-center text-outline">
+<span class="text-metric-dim block">HIGH RECALL</span>
+<span class="text-on-surface">τ = 0.65</span>
+</div>
+<div class="bg-surface-raised p-1 border border-primary-container text-center text-primary-container font-medium">
+<span class="text-primary-container block">F1 OPTIMUM</span>
+<span>τ = 0.82 [ACTIVE]</span>
+</div>
+<div class="bg-surface-raised p-1 border border-border-hairline text-center text-outline">
+<span class="text-metric-dim block">AUTO-FREEZE</span>
+<span class="text-on-surface">τ = 0.91</span>
+</div>
+</div>
+</div>
+<!-- High-Density Confusion Matrix -->
+<div class="mt-space-md">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-code font-label-code text-metric-dim uppercase text-[11px]">Empirical Confusion Matrix (τ=0.82)</span>
+<span class="text-[10px] font-label-code text-metric-dim">N = 1,862,400 Records</span>
+</div>
+<!-- 2x2 Grid -->
+<div class="grid grid-cols-2 gap-2 text-label-code font-label-code">
+<!-- True Positives -->
+<div class="bg-surface-obsidian border border-border-active p-3 relative overflow-hidden">
+<div class="text-[10px] text-primary-container uppercase font-semibold flex items-center justify-between">
+<span>True Positives (TP)</span>
+<span class="w-1.5 h-1.5 bg-primary-container"></span>
+</div>
+<div class="text-headline-md font-metric-display text-primary-container font-bold mt-1">
+                    3,410
+                  </div>
+<div class="text-[11px] text-editorial-cream mt-1 font-body-sm">
+                    Synthetic Rings Intercepted
+                  </div>
+<div class="text-[10px] text-metric-dim mt-0.5">
+                    Capture Rate: 94.18%
+                  </div>
+</div>
+<!-- False Positives -->
+<div class="bg-surface-obsidian border border-border-hairline p-3 relative hover:border-alert-critical/50">
+<div class="text-[10px] text-alert-critical uppercase font-semibold flex items-center justify-between">
+<span>False Positives (FP)</span>
+<span class="w-1.5 h-1.5 bg-alert-critical"></span>
+</div>
+<div class="text-headline-md font-metric-display text-editorial-cream font-bold mt-1">
+                    58
+                  </div>
+<div class="text-[11px] text-outline mt-1 font-body-sm">
+                    Investigated / Released
+                  </div>
+<div class="text-[10px] text-metric-dim mt-0.5">
+                    FPR: 0.0031% (31/1M)
+                  </div>
+</div>
+<!-- False Negatives -->
+<div class="bg-surface-obsidian border border-border-hairline p-3 relative hover:border-alert-critical/50">
+<div class="text-[10px] text-outline uppercase font-semibold flex items-center justify-between">
+<span>False Negatives (FN)</span>
+<span class="w-1.5 h-1.5 bg-metric-dim"></span>
+</div>
+<div class="text-headline-md font-metric-display text-outline font-bold mt-1">
+                    210
+                  </div>
+<div class="text-[11px] text-outline mt-1 font-body-sm">
+                    Sub-threshold Leaks
+                  </div>
+<div class="text-[10px] text-metric-dim mt-0.5">
+                    Miss Rate: 5.82%
+                  </div>
+</div>
+<!-- True Negatives -->
+<div class="bg-surface-obsidian border border-border-hairline p-3 relative">
+<div class="text-[10px] text-secondary-container uppercase font-semibold flex items-center justify-between">
+<span>True Negatives (TN)</span>
+<span class="w-1.5 h-1.5 bg-secondary-container"></span>
+</div>
+<div class="text-headline-md font-metric-display text-editorial-cream font-bold mt-1">
+                    1,858,722
+                  </div>
+<div class="text-[11px] text-secondary-container mt-1 font-body-sm">
+                    Clean Wire Clearances
+                  </div>
+<div class="text-[10px] text-metric-dim mt-0.5">
+                    Auto-Passed (100%)
+                  </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Breakdown of Cost Impact -->
+<div class="bg-surface-obsidian border border-border-hairline p-space-sm mt-space-sm font-label-code">
+<span class="text-[10px] text-metric-dim uppercase tracking-wider block mb-1">Financial &amp; Friction Cost Ledger (Δ)</span>
+<div class="flex items-center justify-between text-body-sm font-body-sm border-b border-border-hairline pb-1.5 mb-1.5">
+<span class="text-editorial-cream flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-secondary-container" data-icon="savings">savings</span>
+                Capital Loss Intercepted:
+              </span>
+<span class="text-secondary-container font-mono font-semibold">+$14,218,500</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-outline flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-alert-critical" data-icon="support_agent">support_agent</span>
+                Manual Analyst Friction:
+              </span>
+<span class="text-alert-critical font-mono">-$2,400 <span class="text-[10px] text-metric-dim">(58 reviews @ $41.38/ea)</span></span>
+</div>
+<div class="mt-2 text-[10px] text-metric-dim">
+              Net Alpha: <strong class="text-primary-container font-normal">+$14,216,100</strong> per 1.86M transaction slice.
+            </div>
+</div>
+</div>
+<!-- Right: Visualizations (Precision-Recall Curve & Threshold Tuning) (7 cols) -->
+<div class="lg:col-span-7 bg-surface-graphite border border-border-hairline p-space-md flex flex-col justify-between">
+<div>
+<!-- Header -->
+<div class="flex items-center justify-between border-b border-border-hairline pb-space-sm mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[18px]" data-icon="show_chart">show_chart</span>
+<span class="text-label-code font-label-code text-editorial-cream uppercase tracking-wider font-semibold">Precision-Recall Characteristic (PR-AUC)</span>
+</div>
+<div class="flex items-center gap-3 text-[11px] font-label-code">
+<span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-primary-container"></span> cuGraph FP8 GNN</span>
+<span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-outline"></span> Baseline GNN</span>
+<span class="flex items-center gap-1"><span class="w-3 h-0.5 border-t border-dashed border-tertiary-fixed-dim"></span> Tabular Baseline</span>
+</div>
+</div>
+<!-- SVG Render of PR-AUC Curve -->
+<div class="relative w-full h-72 bg-surface-obsidian border border-border-hairline p-3 overflow-hidden">
+<!-- Grid Lines -->
+<div class="absolute inset-0 grid grid-rows-4 grid-cols-4 pointer-events-none opacity-20">
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-border-hairline"></div>
+<div class="border-r border-border-hairline"></div>
+<div class="border-r border-border-hairline"></div>
+<div class="border-r border-border-hairline"></div>
+<div></div>
+</div>
+<!-- SVG Canvas for curves -->
+<svg class="w-full h-full preserve-3d" preserveaspectratio="none" viewbox="0 0 500 240">
+<defs>
+<lineargradient id="cyanArea" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#00f2fe" stop-opacity="0.18"></stop>
+<stop offset="100%" stop-color="#00f2fe" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Random classifier baseline at bottom -->
+<line stroke="#484F58" stroke-dasharray="2,2" stroke-width="1" x1="30" x2="480" y1="220" y2="220"></line>
+<text fill="#484F58" font-family="JetBrains Mono" font-size="9" x="410" y="215">Random y=0.002</text>
+<!-- Curve 3: Tabular XGBoost Baseline (Muted dashed line) PR-AUC = 0.7412 -->
+<path d="M 30,30 Q 180,35 280,95 T 480,210" fill="none" opacity="0.6" stroke="#dedbd5" stroke-dasharray="4,4" stroke-width="1.5"></path>
+<!-- Curve 2: Baseline GNN without Isomorphic Features (Dim blue) PR-AUC = 0.8841 -->
+<path d="M 30,22 Q 220,24 350,60 T 480,200" fill="none" stroke="#849495" stroke-width="1.8"></path>
+<!-- Curve 1: cuGraph FP8 GNN + Graph Isomorphism (Cyan) PR-AUC = 0.9784 -->
+<!-- Shaded Area Under Curve -->
+<path d="M 30,12 L 400,14 Q 440,16 460,90 T 480,195 L 480,230 L 30,230 Z" fill="url(#cyanArea)"></path>
+<!-- Bright Cyan Stroke -->
+<path d="M 30,12 L 400,14 Q 440,16 460,90 T 480,195" fill="none" stroke="#00f2fe" stroke-width="2.5"></path>
+<!-- Operating Point at tau = 0.82 (Recall ~94.18%, Precision ~98.42%) -->
+<!-- Point Coordinates approx: X=430, Y=18 -->
+<circle cx="430" cy="18" fill="#00f2fe" r="5" stroke="#05070a" stroke-width="2"></circle>
+<line opacity="0.7" stroke="#00f2fe" stroke-dasharray="2,2" stroke-width="1" x1="430" x2="430" y1="18" y2="230"></line>
+<line opacity="0.7" stroke="#00f2fe" stroke-dasharray="2,2" stroke-width="1" x1="30" x2="430" y1="18" y2="18"></line>
+<!-- Callout Annotation on Chart -->
+<rect fill="#161B22" height="42" stroke="#00f2fe" stroke-width="1" width="135" x="290" y="32"></rect>
+<text fill="#00f2fe" font-family="JetBrains Mono" font-size="9.5" font-weight="bold" x="298" y="46">τ=0.82 OPERATING POINT</text>
+<text fill="#F8F7F4" font-family="JetBrains Mono" font-size="9" x="298" y="58">Precision: 98.42%</text>
+<text fill="#01e7b6" font-family="JetBrains Mono" font-size="9" x="298" y="69">Recall: 94.18% (TP: 3410)</text>
+</svg>
+<!-- Axis Labels -->
+<div class="absolute bottom-1 left-8 right-2 flex justify-between text-[9px] font-label-code text-metric-dim">
+<span>0.0 (Recall)</span>
+<span>0.25</span>
+<span>0.50</span>
+<span>0.75</span>
+<span class="text-primary-container">1.00 (Recall)</span>
+</div>
+<div class="absolute top-2 left-1 text-[9px] font-label-code text-metric-dim -rotate-90 origin-top-left">
+                Precision →
+              </div>
+</div>
+</div>
+<!-- Bottom Legend & Model Scores Comparison Strip -->
+<div class="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-border-hairline text-label-code font-label-code">
+<div class="bg-surface-obsidian p-2 border border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 bg-primary-container"></span>
+<span class="text-on-surface font-semibold text-[11px]">cuGraph-FP8 + IsoKernel</span>
+</div>
+<div class="flex justify-between mt-1 text-[11px]">
+<span class="text-metric-dim">PR-AUC:</span>
+<span class="text-primary-container font-mono font-bold">0.9784</span>
+</div>
+<div class="flex justify-between text-[10px] text-metric-dim">
+<span>F1: 0.9625</span>
+<span>FPR: 0.003%</span>
+</div>
+</div>
+<div class="bg-surface-obsidian p-2 border border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 bg-outline"></span>
+<span class="text-on-surface font-semibold text-[11px]">Baseline GNN (Standard)</span>
+</div>
+<div class="flex justify-between mt-1 text-[11px]">
+<span class="text-metric-dim">PR-AUC:</span>
+<span class="text-outline font-mono">0.8841</span>
+</div>
+<div class="flex justify-between text-[10px] text-metric-dim">
+<span>F1: 0.8710</span>
+<span>FPR: 0.042%</span>
+</div>
+</div>
+<div class="bg-surface-obsidian p-2 border border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 bg-tertiary-fixed-dim"></span>
+<span class="text-on-surface font-semibold text-[11px]">Tabular Metadata (XGB)</span>
+</div>
+<div class="flex justify-between mt-1 text-[11px]">
+<span class="text-metric-dim">PR-AUC:</span>
+<span class="text-tertiary-fixed-dim font-mono">0.7412</span>
+</div>
+<div class="flex justify-between text-[10px] text-metric-dim">
+<span>F1: 0.7240</span>
+<span>FPR: 0.280%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- SECTION 7: BASELINE VS GRAPH-DERIVED FEATURE ABLATION COMPARISON         -->
+<!-- ========================================================================= -->
+<div class="bg-surface-graphite border border-border-hairline p-space-md">
+<div class="flex flex-col md:flex-row md:items-center justify-between border-b border-border-hairline pb-space-sm mb-space-sm gap-2">
+<div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[18px]" data-icon="table_rows">table_rows</span>
+<span class="text-label-code font-label-code text-editorial-cream uppercase tracking-wider font-semibold">Architectural Ablation &amp; Inference Economy Matrix</span>
+</div>
+<p class="text-[11px] font-body-sm text-metric-dim mt-0.5">
+              Empirical assessment across feature modalities, throughput limits, and floating-point drift constraints.
+            </p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-label-code px-2 py-0.5 bg-surface-obsidian border border-border-hairline text-secondary-container">
+              PARITY Δ = 0.0001 (ZERO DRIFT)
+            </span>
+</div>
+</div>
+<!-- Matrix Table -->
+<div class="overflow-x-auto custom-scrollbar">
+<table class="w-full text-left font-label-code text-label-code border-collapse">
+<thead>
+<tr class="border-b border-border-hairline text-metric-dim uppercase text-[10px] bg-surface-obsidian">
+<th class="py-2.5 px-3">Modality / Pipeline Architecture</th>
+<th class="py-2.5 px-3">Representational Scope</th>
+<th class="py-2.5 px-3 text-right">F1-Score</th>
+<th class="py-2.5 px-3 text-right">PR-AUC</th>
+<th class="py-2.5 px-3 text-right">Cost / 1k Wires</th>
+<th class="py-2.5 px-3 text-right">Inference Latency</th>
+<th class="py-2.5 px-3 text-center">FP8 Bit-Exact Drift</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-hairline">
+<!-- Modality 1 -->
+<tr class="hover:bg-primary-container/[0.02] transition-none">
+<td class="py-3 px-3 font-medium text-editorial-cream flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-metric-dim"></span>
+<span>Modality 1: Tabular Metadata Only</span>
+</td>
+<td class="py-3 px-3 text-outline font-body-sm">Amount, Trans Velocity, Geo Country Code</td>
+<td class="py-3 px-3 text-right font-mono text-outline">0.724</td>
+<td class="py-3 px-3 text-right font-mono text-outline">0.741</td>
+<td class="py-3 px-3 text-right font-mono text-outline">$0.1200</td>
+<td class="py-3 px-3 text-right font-mono text-outline">0.8 ms (CPU)</td>
+<td class="py-3 px-3 text-center text-metric-dim text-[10px]">N/A (Pure Tree)</td>
+</tr>
+<!-- Modality 2 -->
+<tr class="hover:bg-primary-container/[0.02] transition-none">
+<td class="py-3 px-3 font-medium text-editorial-cream flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-outline"></span>
+<span>Modality 2: Tabular + Local Degree Metrics</span>
+</td>
+<td class="py-3 px-3 text-outline font-body-sm">In/Out-Degree, PageRank snapshot (1-hop)</td>
+<td class="py-3 px-3 text-right font-mono text-outline">0.812</td>
+<td class="py-3 px-3 text-right font-mono text-outline">0.825</td>
+<td class="py-3 px-3 text-right font-mono text-outline">$0.1800</td>
+<td class="py-3 px-3 text-right font-mono text-outline">1.4 ms (CPU)</td>
+<td class="py-3 px-3 text-center text-metric-dim text-[10px]">N/A (Feature eng.)</td>
+</tr>
+<!-- Modality 3 -->
+<tr class="hover:bg-primary-container/[0.02] transition-none">
+<td class="py-3 px-3 font-medium text-editorial-cream flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-secondary"></span>
+<span>Modality 3: Full Graph Topology (cuGraph GNN)</span>
+</td>
+<td class="py-3 px-3 text-outline font-body-sm">3-Hop Neighborhood Embeddings + Multi-Head Attn</td>
+<td class="py-3 px-3 text-right font-mono text-on-surface">0.918</td>
+<td class="py-3 px-3 text-right font-mono text-on-surface">0.924</td>
+<td class="py-3 px-3 text-right font-mono text-alert-critical">$0.3400</td>
+<td class="py-3 px-3 text-right font-mono text-alert-critical">48.6 ms (Naive CUDA)</td>
+<td class="py-3 px-3 text-center text-outline text-[10px]">Baseline (FP32)</td>
+</tr>
+<!-- Modality 4 (Candidate) -->
+<tr class="bg-primary-container/[0.05] border-l-2 border-l-primary-container font-semibold hover:bg-primary-container/[0.08] transition-none">
+<td class="py-3 px-3 text-primary-container flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary-container animate-pulse"></span>
+<span>Modality 4: Graph Topology + FP8 Bitonic Iso Kernel</span>
+<span class="text-[9px] bg-primary-container text-surface-obsidian px-1 py-0.2">CANDIDATE</span>
+</td>
+<td class="py-3 px-3 text-editorial-cream font-body-sm font-normal">Isomorphic Subgraph Isomorphism + FP8 GNN TensorRT</td>
+<td class="py-3 px-3 text-right font-mono text-primary-container text-[13px]">0.963</td>
+<td class="py-3 px-3 text-right font-mono text-primary-container text-[13px]">0.978</td>
+<td class="py-3 px-3 text-right font-mono text-secondary-container font-bold">$0.0021</td>
+<td class="py-3 px-3 text-right font-mono text-secondary-container font-bold">4.6 ms (Hopper H100)</td>
+<td class="py-3 px-3 text-center text-secondary-container text-[10px] font-bold">ε &lt; 1e-7 (±0.0001 F1)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Annotation Footer Callout -->
+<div class="mt-space-md p-space-sm bg-surface-obsidian border border-border-hairline flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm text-[11px] font-label-code">
+<div class="flex items-center gap-2 text-editorial-cream">
+<span class="material-symbols-outlined text-primary-container text-[16px]" data-icon="lightbulb">lightbulb</span>
+<span>Graph structural features provide <strong class="text-primary-container font-normal">+23.9% F1 lift</strong> over Tabular XGBoost. FP8 Bitonic GPU kernel eliminates inference cost by <strong class="text-secondary-container font-normal">99.4%</strong> ($0.3400 → $0.0021) and latency by <strong class="text-secondary-container font-normal">90.5%</strong> with bit-exact statistical parity.</span>
+</div>
+<div class="shrink-0 text-metric-dim">
+            F1 Parity: <span class="text-editorial-cream">0.9625 (FP8)</span> vs <span class="text-editorial-cream">0.9626 (FP32)</span>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- SECTION 8: PARETO FRONTIER: DETECTION QUALITY VS EXECUTION COST           -->
+<!-- ========================================================================= -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<div class="lg:col-span-8 bg-surface-graphite border border-border-hairline p-space-md">
+<div class="flex items-center justify-between border-b border-border-hairline pb-space-sm mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[18px]" data-icon="bubble_chart">bubble_chart</span>
+<span class="text-label-code font-label-code text-editorial-cream uppercase tracking-wider font-semibold">Detection Quality vs Execution Cost Pareto Frontier</span>
+</div>
+<span class="text-[10px] font-label-code text-metric-dim">OPTIMAL EFFICIENCY BOUND</span>
+</div>
+<!-- Scatter/Pareto chart plotting Detection Quality (F1, 0.60 to 1.00) vs Cost/Latency Log Scale -->
+<div class="relative w-full h-64 bg-surface-obsidian border border-border-hairline p-4 overflow-hidden">
+<!-- Grid lines -->
+<div class="absolute inset-0 grid grid-rows-4 grid-cols-4 pointer-events-none opacity-20">
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-r border-border-hairline"></div>
+<div class="border-b border-border-hairline"></div>
+<div class="border-r border-border-hairline"></div>
+<div class="border-r border-border-hairline"></div>
+<div class="border-r border-border-hairline"></div>
+<div></div>
+</div>
+<!-- Pareto SVG -->
+<svg class="w-full h-full preserve-3d" preserveaspectratio="none" viewbox="0 0 600 210">
+<!-- Pareto frontier curve -->
+<!-- Connecting CPU Tabular -> FP8 Bitonic Kernel -> [Hypothetical] -->
+<path d="M 60,170 Q 140,25 450,25" fill="none" opacity="0.6" stroke="#00f2fe" stroke-dasharray="3,3" stroke-width="1.2"></path>
+<!-- Point 1: CPU Tabular (Low cost, low F1) -->
+<circle cx="80" cy="160" fill="#dedbd5" r="5"></circle>
+<text fill="#dedbd5" font-family="JetBrains Mono" font-size="9" x="88" y="163">CPU Tabular (F1: 0.724, 0.8ms)</text>
+<!-- Point 2: CPU Graph (Moderate cost, moderate latency) -->
+<circle cx="210" cy="115" fill="#849495" r="5"></circle>
+<text fill="#849495" font-family="JetBrains Mono" font-size="9" x="218" y="112">CPU Graph (F1: 0.812)</text>
+<!-- Point 3: Baseline CUDA (High F1, very high cost/latency) -->
+<circle cx="530" cy="55" fill="#FF3B30" r="6"></circle>
+<text fill="#FF3B30" font-family="JetBrains Mono" font-size="9" x="430" y="70">Naive CUDA GNN ($0.34/1k, 48.6ms)</text>
+<!-- Point 4: FraudGraph FP8 Kernel on H100 (PARETO OPTIMAL: Extremely low latency, highest F1) -->
+<circle cx="160" cy="28" fill="#00f2fe" r="8" stroke="#05070a" stroke-width="2"></circle>
+<text fill="#00f2fe" font-family="JetBrains Mono" font-size="10.5" font-weight="bold" x="175" y="26">★ FraudGraph FP8 Kernel (F1: 0.963, 4.6ms, $0.0021)</text>
+<!-- Shaded optimal quadrant indicator -->
+<rect fill="#00f2fe" fill-opacity="0.08" height="35" stroke="#00f2fe" stroke-width="0.5" width="220" x="130" y="15"></rect>
+</svg>
+<!-- Axis Labels -->
+<div class="absolute bottom-1 left-4 right-4 flex justify-between text-[9px] font-label-code text-metric-dim">
+<span>$0.001 / 1ms (Ultra Efficient →)</span>
+<span>$0.01 / 10ms</span>
+<span>$0.10 / 50ms</span>
+<span>$1.00 / 500ms (High Cost)</span>
+</div>
+<div class="absolute top-2 left-1 text-[9px] font-label-code text-metric-dim -rotate-90 origin-top-left">
+              F1 Score (0.60 → 1.00)
+            </div>
+</div>
+</div>
+<!-- Right Side: Model Risk & Regulatory Compliance Summary -->
+<div class="lg:col-span-4 bg-surface-graphite border border-border-hairline p-space-md flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between border-b border-border-hairline pb-space-sm mb-space-sm">
+<span class="text-label-code font-label-code text-editorial-cream uppercase tracking-wider font-semibold">Governance &amp; Model Risk (SR 11-7)</span>
+<span class="text-[10px] font-label-code text-secondary-container">COMPLIANT</span>
+</div>
+<div class="space-y-3 font-label-code text-label-code">
+<div class="p-2 bg-surface-obsidian border border-border-hairline">
+<div class="text-[10px] text-metric-dim uppercase">Model Invalidation Trigger</div>
+<div class="text-body-sm font-body-sm text-editorial-cream mt-0.5">F1 Degradation &gt; 1.8% or Drift &gt; 0.05</div>
+<div class="text-[10px] text-secondary-container mt-1">Current Drift: 0.0001 (PASS)</div>
+</div>
+<div class="p-2 bg-surface-obsidian border border-border-hairline">
+<div class="text-[10px] text-metric-dim uppercase">Fair Lending &amp; Disparate Impact</div>
+<div class="text-body-sm font-body-sm text-editorial-cream mt-0.5">Demographic Parity Ratio: 0.994</div>
+<div class="text-[10px] text-secondary-container mt-1">Within OCC / CFPB safe harbor (&gt;0.80)</div>
+</div>
+<div class="p-2 bg-surface-obsidian border border-border-hairline">
+<div class="text-[10px] text-metric-dim uppercase">Hardware Bit-Exact Hash</div>
+<div class="text-[11px] font-mono text-outline truncate mt-0.5">CUDA-TRT-e4m3-bitexact-8e920d5</div>
+<div class="text-[10px] text-primary-container mt-1">100.00% FP8 to FP32 Equivalence</div>
+</div>
+</div>
+</div>
+<div class="pt-3 border-t border-border-hairline">
+<button class="w-full bg-surface-raised border border-border-hairline hover:border-border-active py-2 px-space-sm text-label-code font-label-code text-primary-container text-center uppercase tracking-wider flex items-center justify-center gap-1.5 transition-none">
+<span class="material-symbols-outlined text-[16px]" data-icon="policy">policy</span>
+<span>Generate SR 11-7 Model Dossier</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- SECTION 9: EXPORT & AUDIT DOSSIER BAR                                    -->
+<!-- ========================================================================= -->
+<div class="bg-surface-graphite border border-border-hairline p-space-md flex flex-col md:flex-row items-center justify-between gap-space-md">
+<!-- Cryptographic validation signature -->
+<div class="flex items-center gap-3">
+<div class="w-2.5 h-2.5 bg-secondary-container"></div>
+<div>
+<div class="text-label-code font-label-code text-editorial-cream font-mono text-[11px]">
+              EVAL-ATTEST-sha256:7e91ca0f42b8e91845bb08a // ISO-20022 PAC.008 VALIDATED
+            </div>
+<div class="text-[10px] font-label-code text-metric-dim">
+              Timestamp: 2025-05-18T14:32:09.102Z | Node: H100-DGX-SXM5-04 | Lead Auditor: SEC/FINRA Terminal ID #8841
+            </div>
+</div>
+</div>
+<!-- Quick Download Buttons -->
+<div class="flex items-center gap-2 flex-wrap">
+<button class="bg-surface-obsidian border border-border-hairline hover:border-border-active text-on-surface hover:text-primary-container px-space-sm py-1.5 text-label-code font-label-code uppercase tracking-wider flex items-center gap-1 transition-none">
+<span class="material-symbols-outlined text-[15px]" data-icon="code">code</span>
+<span>Metrics (JSON)</span>
+</button>
+<button class="bg-surface-obsidian border border-border-hairline hover:border-border-active text-on-surface hover:text-primary-container px-space-sm py-1.5 text-label-code font-label-code uppercase tracking-wider flex items-center gap-1 transition-none">
+<span class="material-symbols-outlined text-[15px]" data-icon="description">description</span>
+<span>LaTeX Table</span>
+</button>
+<button class="bg-primary-container text-surface-obsidian px-space-md py-1.5 text-label-code font-label-code font-semibold uppercase tracking-wider flex items-center gap-1 hover:bg-secondary-container transition-none">
+<span class="material-symbols-outlined text-[16px]" data-icon="verified">verified</span>
+<span>Finalize Evaluation Seal</span>
+</button>
+</div>
+</div>
+<!-- State Switcher at Footer Strip -->
+<div class="bg-surface-obsidian border border-border-hairline p-2 flex flex-wrap items-center justify-between text-label-code font-label-code text-[11px]">
+<div class="flex items-center gap-2">
+<span class="text-metric-dim uppercase text-[10px]">Test Partition State:</span>
+<div class="flex items-center gap-1">
+<button class="px-2 py-0.5 bg-surface-raised border border-border-active text-primary-container font-semibold">
+              Measured Test Partition (1.86M)
+            </button>
+<button class="px-2 py-0.5 bg-surface-obsidian border border-border-hairline text-outline hover:text-on-surface">
+              Out-of-Distribution Stress Test
+            </button>
+<button class="px-2 py-0.5 bg-surface-obsidian border border-border-hairline text-outline hover:text-on-surface">
+              Adversarial Topology Perturbation
+            </button>
+<button class="px-2 py-0.5 bg-surface-obsidian border border-border-hairline text-outline hover:text-on-surface">
+              CPU Baseline Zero-Point
+            </button>
+</div>
+</div>
+<div class="text-metric-dim text-[10px]">
+          FraudGraph Precision Architecture v4.2 // Dual-Tone Obsidian Edition
+        </div>
+</div>
+</div>
+</main>
+<!-- Interactive Threshold Range Slider Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const slider = document.getElementById('thresholdRange');
+      const valDisplay = document.getElementById('tauValue');
+      
+      if (slider && valDisplay) {
+        slider.addEventListener('input', (e) => {
+          valDisplay.textContent = parseFloat(e.target.value).toFixed(2);
+        });
+      }
+    });
+  </script>
+</body></html>

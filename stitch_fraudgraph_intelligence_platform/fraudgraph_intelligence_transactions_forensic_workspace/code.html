@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FraudGraph Intelligence — Transactions Forensic Ledger</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration Verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#272a2f",
+            "surface-container-low": "#191c20",
+            "on-primary-fixed-variant": "#004f53",
+            "inverse-primary": "#00696f",
+            "on-error": "#690005",
+            "on-surface-variant": "#b9cacb",
+            "surface-bright": "#36393e",
+            "on-tertiary": "#31302d",
+            "alert-critical": "#FF3B30",
+            "primary-fixed-dim": "#00dce6",
+            "on-primary": "#00373a",
+            "metric-dim": "#484F58",
+            "outline": "#849495",
+            "surface-container-lowest": "#0b0e12",
+            "on-tertiary-fixed-variant": "#474743",
+            "inverse-on-surface": "#2e3135",
+            "secondary-fixed": "#41fecb",
+            "surface-container": "#1d2024",
+            "primary": "#e0fdff",
+            "inverse-surface": "#e1e2e8",
+            "on-surface": "#e1e2e8",
+            "on-error-container": "#ffdad6",
+            "editorial-cream": "#F8F7F4",
+            "outline-variant": "#3a494b",
+            "tertiary": "#faf7f1",
+            "surface": "#111418",
+            "background": "#111418",
+            "tertiary-container": "#dedbd5",
+            "on-primary-fixed": "#002022",
+            "error": "#ffb4ab",
+            "on-secondary": "#00382a",
+            "primary-fixed": "#6ff6ff",
+            "surface-container-highest": "#32353a",
+            "on-secondary-fixed-variant": "#00513e",
+            "border-hairline": "#21262D",
+            "on-tertiary-fixed": "#1c1c18",
+            "on-secondary-container": "#00624c",
+            "surface-raised": "#161B22",
+            "on-secondary-fixed": "#002117",
+            "on-background": "#e1e2e8",
+            "border-active": "#00F2FE",
+            "on-primary-container": "#006a70",
+            "on-tertiary-container": "#61605b",
+            "secondary": "#7dffd5",
+            "surface-dim": "#111418",
+            "secondary-fixed-dim": "#00e0b1",
+            "surface-obsidian": "#05070A",
+            "error-container": "#93000a",
+            "secondary-container": "#01e7b6",
+            "surface-graphite": "#0D1117",
+            "tertiary-fixed": "#e5e2dc",
+            "surface-tint": "#00dce6",
+            "surface-variant": "#32353a",
+            "primary-container": "#00f2fe",
+            "tertiary-fixed-dim": "#c9c6c1"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "gutter": "1.5rem",
+            "margin-mobile": "1rem",
+            "space-xs": "0.25rem",
+            "gutter-mobile": "0.75rem",
+            "margin": "2.5rem",
+            "space-xl": "2.5rem",
+            "space-lg": "1.5rem"
+          },
+          "fontFamily": {
+            "body-lg": ["Geist"],
+            "display-hero": ["Newsreader"],
+            "headline-md": ["Newsreader"],
+            "headline-lg": ["Newsreader"],
+            "body-md": ["Geist"],
+            "headline-sm": ["Newsreader"],
+            "display-hero-mobile": ["Newsreader"],
+            "headline-lg-mobile": ["Newsreader"],
+            "body-sm": ["Geist"],
+            "metric-display": ["Geist"],
+            "label-code": ["Geist"]
+          },
+          "fontSize": {
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "500" }],
+            "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "metric-display": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+            "label-code": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Architectural Zero-Radius & Telemetry Micro-Tokens */
+    * {
+      box-sizing: border-box;
+      border-radius: 0px !important;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+      font-size: 16px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .material-symbols-outlined.fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 400;
+    }
+    /* Monospace Tabular Numerics */
+    .mono-tabular {
+      font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
+      font-feature-settings: "tnum" 1, "zero" 1;
+    }
+    /* Micro Scrollbars for High-Density Grids */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #05070A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #21262D;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00F2FE;
+    }
+    /* Subtle Pulse for Live Wire Buffer */
+    @keyframes live-ping {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(1.4); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .animate-live {
+      animation: live-ping 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-surface-obsidian text-on-surface antialiased selection:bg-primary-container selection:text-surface-obsidian h-screen overflow-hidden flex flex-col font-body-md text-body-md">
+<!-- ========================================================================= -->
+<!-- 1. TOP APP BAR (from Shared Components JSON: TopNavBar)                  -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-0 w-full z-50 rounded-none bg-surface-graphite/85 dark:bg-surface-graphite/85 backdrop-blur-md border-b border-border-hairline dark:border-border-hairline shadow-none inset-shadow-hairline h-14 flex justify-between items-center px-space-lg md:px-margin max-w-full">
+<!-- Brand Anchor & Cluster Telemetry Indicator -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 bg-primary-container inline-block"></span>
+<span class="text-headline-sm font-headline-sm tracking-tight text-editorial-cream uppercase font-semibold">FraudGraph Intelligence</span>
+</div>
+<div class="hidden lg:flex items-center gap-space-md border-l border-border-hairline pl-space-md text-label-code font-label-code">
+<span class="text-outline uppercase">Dataset:</span>
+<span class="text-on-surface mono-tabular bg-surface-raised px-space-sm py-0.5 border border-border-hairline text-body-sm">FedWire-Synthetic-2025-Q1</span>
+<span class="text-metric-dim mono-tabular">(12.4M records)</span>
+</div>
+<div class="hidden xl:flex items-center gap-space-xs border-l border-border-hairline pl-space-md text-label-code font-label-code">
+<span class="w-1.5 h-1.5 bg-secondary-container animate-live"></span>
+<span class="text-outline uppercase">H100 SXM5:</span>
+<span class="text-secondary-container font-semibold mono-tabular">8/8 ONLINE</span>
+<span class="text-metric-dim mono-tabular pl-1">[0.12ms sync]</span>
+</div>
+</div>
+<!-- Quick Global Filter/Search Box & Trailing Tooling -->
+<div class="flex items-center gap-space-md">
+<!-- Global Quick Search -->
+<div class="hidden md:flex items-center bg-surface-obsidian border border-border-hairline px-space-sm py-1.5 w-64 hover:border-outline transition-none focus-within:border-border-active">
+<span class="material-symbols-outlined text-outline text-[15px] mr-2">search</span>
+<input class="bg-transparent text-label-code font-label-code text-on-surface placeholder:text-metric-dim focus:outline-none w-full border-none p-0" placeholder="Global Entity or Hash..." type="text"/>
+<kbd class="mono-tabular text-[9px] bg-surface-raised border border-border-hairline text-outline px-1 py-0.5 ml-1">⌘K</kbd>
+</div>
+<!-- Action Group -->
+<div class="flex items-center gap-space-sm">
+<button class="hidden sm:inline-flex items-center gap-1.5 border border-border-hairline bg-surface-graphite text-editorial-cream text-label-code font-label-code px-space-md py-1.5 uppercase tracking-wider hover:border-editorial-cream hover:bg-surface-raised active:scale-[0.99] transition-none">
+<span class="material-symbols-outlined text-[14px]">download</span>
+          Export Filtered
+        </button>
+<button class="inline-flex items-center gap-1.5 bg-primary-container text-surface-obsidian text-label-code font-label-code px-space-md py-1.5 uppercase tracking-wider font-semibold hover:bg-secondary-container active:scale-[0.99] transition-none">
+<span class="material-symbols-outlined text-[14px] font-bold">shield_lock</span>
+          Batch Intercept
+        </button>
+</div>
+<!-- Trailing Icon Trays from JSON -->
+<div class="flex items-center border-l border-border-hairline pl-space-md gap-space-xs text-outline">
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised text-outline" title="Terminal"><span class="material-symbols-outlined">terminal</span></button>
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised text-outline" title="Analytics"><span class="material-symbols-outlined">analytics</span></button>
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised text-outline relative" title="Notifications">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-1.5 h-1.5 bg-alert-critical"></span>
+</button>
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised text-outline" title="Settings"><span class="material-symbols-outlined">settings</span></button>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE VIEWPORT (SideNav + Ledger Grid + Inspector Drawer)        -->
+<!-- ========================================================================= -->
+<div class="pt-14 flex h-screen w-full overflow-hidden">
+<!-- ======================================================================= -->
+<!-- 2. PERSISTENT SIDE NAVIGATION (from Shared Components JSON: SideNavBar) -->
+<!-- ======================================================================= -->
+<aside class="w-64 flex-shrink-0 bg-surface-graphite border-r border-border-hairline flex flex-col justify-between h-[calc(100vh-3.5rem)] z-40 select-none">
+<!-- Top Section: Core Cluster Identity + Navigation Cluster -->
+<div class="flex flex-col">
+<!-- Core Cluster Header Tag -->
+<div class="p-space-md border-b border-border-hairline bg-surface-obsidian/40">
+<div class="flex items-center gap-space-sm mb-1">
+<span class="material-symbols-outlined text-primary-container text-[18px]">security</span>
+<span class="text-headline-sm font-headline-sm text-editorial-cream uppercase text-sm tracking-wide font-medium">FraudGraph Core</span>
+</div>
+<div class="flex items-center justify-between text-label-code font-label-code">
+<span class="text-metric-dim text-[10px]">H100-SXM5 Cluster</span>
+<span class="text-secondary font-mono text-[10px]">8/8 ONLINE</span>
+</div>
+</div>
+<!-- Execute Pipeline Quick Trigger CTA -->
+<div class="p-space-sm border-b border-border-hairline">
+<button class="w-full flex items-center justify-center gap-2 bg-surface-raised hover:bg-surface-container-high border border-border-hairline text-primary-container py-2 text-label-code font-label-code tracking-wider uppercase active:scale-[0.99] transition-none">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+            Execute Pipeline
+          </button>
+</div>
+<!-- Primary Nav Items: 8 Items with TRANSACTIONS set as style_active_navigation -->
+<nav class="py-space-sm flex flex-col gap-0.5">
+<!-- 1. Overview -->
+<a class="text-outline dark:text-outline hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-2.5 text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- 2. Graph Explorer -->
+<a class="text-outline dark:text-outline hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-2.5 text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">hub</span>
+<span>Graph Explorer</span>
+</a>
+<!-- 3. TRANSACTIONS [ACTIVE STATE - EXACT MATCH] -->
+<a class="bg-surface-raised dark:bg-surface-raised text-primary-container dark:text-primary-container border-l-2 border-border-active flex items-center justify-between px-space-md py-2.5 text-label-code font-label-code tracking-wider uppercase font-semibold transition-none" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[17px] text-primary-container">receipt_long</span>
+<span>Transactions</span>
+</div>
+<span class="mono-tabular text-[9px] bg-alert-critical/10 text-alert-critical border border-alert-critical/40 px-1 py-0.5 font-bold">38 FLAGGED</span>
+</a>
+<!-- 4. GPU Lab -->
+<a class="text-outline dark:text-outline hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-2.5 text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">memory</span>
+<span>GPU Lab</span>
+</a>
+<!-- 5. Experiments -->
+<a class="text-outline dark:text-outline hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-2.5 text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">science</span>
+<span>Experiments</span>
+</a>
+<!-- 6. Evaluation -->
+<a class="text-outline dark:text-outline hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-2.5 text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">rule</span>
+<span>Evaluation</span>
+</a>
+<!-- 7. Reports -->
+<a class="text-outline dark:text-outline hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-2.5 text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">assessment</span>
+<span>Reports</span>
+</a>
+<!-- 8. System Health -->
+<a class="text-outline dark:text-outline hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-2.5 text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">vital_signs</span>
+<span>System Health</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Section: Operator Credential & Footer Links -->
+<div class="border-t border-border-hairline bg-surface-obsidian/60 p-space-sm">
+<!-- Forensic Operator Identity -->
+<div class="p-2 border border-border-hairline bg-surface-raised mb-2">
+<div class="text-[9px] uppercase tracking-wider text-metric-dim font-label-code">Session Authentication</div>
+<div class="text-label-code font-label-code text-editorial-cream font-medium truncate">Lead Forensic Eng // Dr. A. Vance</div>
+<div class="flex items-center gap-1.5 mt-1 text-[10px] text-secondary">
+<span class="w-1.5 h-1.5 bg-secondary inline-block"></span>
+<span class="mono-tabular">SEC-KEY: 0x9F41...82A (VALID)</span>
+</div>
+</div>
+<div class="flex flex-col gap-0.5 text-label-code font-label-code">
+<a class="text-outline hover:text-on-surface hover:bg-surface-raised flex items-center gap-2 px-2 py-1.5 uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[15px]">menu_book</span>
+<span>Documentation</span>
+</a>
+<a class="text-outline hover:text-on-surface hover:bg-surface-raised flex items-center gap-2 px-2 py-1.5 uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[15px]">dns</span>
+<span>Cluster Status</span>
+</a>
+<a class="text-outline hover:text-on-surface hover:bg-surface-raised flex items-center gap-2 px-2 py-1.5 uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[15px]">tune</span>
+<span>Preferences</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- ======================================================================= -->
+<!-- 3. CENTRAL FORENSIC INVESTIGATION WORKSPACE CANVAS                      -->
+<!-- ======================================================================= -->
+<main class="flex-1 flex flex-col min-w-0 bg-surface-obsidian overflow-hidden">
+<!-- Top Forensic Header & Breadcrumb Ribbon -->
+<div class="bg-surface-graphite border-b border-border-hairline px-space-md py-space-sm flex-shrink-0">
+<div class="flex items-center justify-between text-label-code font-label-code text-metric-dim mb-1">
+<div class="flex items-center gap-2">
+<span>SYSTEM</span>
+<span class="text-border-hairline">/</span>
+<span>DATASET-FEDWIRE-Q1</span>
+<span class="text-border-hairline">/</span>
+<span class="text-outline">FORENSIC INVESTIGATION</span>
+<span class="text-border-hairline">/</span>
+<span class="text-primary-container font-semibold">TRANSACTIONS</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="w-2 h-2 bg-secondary animate-live"></span>
+<span class="mono-tabular text-[10px] uppercase font-bold tracking-wider">REAL-TIME WIRE BUFFER: 42,800 TX/S</span>
+</div>
+<span class="text-border-hairline">|</span>
+<span class="mono-tabular text-metric-dim text-[11px]">Showing 148 of 12,483,140 Ingested Transactions</span>
+</div>
+</div>
+<div class="flex flex-wrap items-end justify-between gap-space-md pt-1 pb-1">
+<div>
+<h1 class="text-headline-md font-headline-md text-editorial-cream leading-tight">Transaction Forensic Ledger</h1>
+<p class="text-body-sm font-body-sm text-outline mt-0.5">High-throughput synthetic wire surveillance, subgraph cycle detection, and automated execution intercept.</p>
+</div>
+<!-- Quick KPI Status Badges -->
+<div class="flex items-center gap-2">
+<!-- Flagged In Batch -->
+<div class="bg-surface-raised border border-border-hairline px-3 py-1.5 flex flex-col">
+<span class="text-[9px] uppercase tracking-wider text-metric-dim font-label-code">Flagged in Batch</span>
+<div class="flex items-center gap-2">
+<span class="mono-tabular text-alert-critical font-bold text-sm">38</span>
+<span class="text-[9px] text-alert-critical/80 uppercase font-label-code">High Risk</span>
+</div>
+</div>
+<!-- Pending Human Triage -->
+<div class="bg-surface-raised border border-border-hairline px-3 py-1.5 flex flex-col">
+<span class="text-[9px] uppercase tracking-wider text-metric-dim font-label-code">Pending Triage</span>
+<div class="flex items-center gap-2">
+<span class="mono-tabular text-amber-400 font-bold text-sm">14</span>
+<span class="text-[9px] text-amber-400/80 uppercase font-label-code">Queue Active</span>
+</div>
+</div>
+<!-- Auto-Intercepted -->
+<div class="bg-surface-raised border border-border-hairline px-3 py-1.5 flex flex-col">
+<span class="text-[9px] uppercase tracking-wider text-metric-dim font-label-code">Auto-Intercepted</span>
+<div class="flex items-center gap-2">
+<span class="mono-tabular text-primary-container font-bold text-sm">19</span>
+<span class="text-[9px] text-primary-container/80 uppercase font-label-code">Frozen H100</span>
+</div>
+</div>
+<!-- Benign Settled -->
+<div class="bg-surface-raised border border-border-hairline px-3 py-1.5 flex flex-col">
+<span class="text-[9px] uppercase tracking-wider text-metric-dim font-label-code">Benign Settled</span>
+<div class="flex items-center gap-2">
+<span class="mono-tabular text-secondary font-bold text-sm">95</span>
+<span class="text-[9px] text-secondary/80 uppercase font-label-code">Cleared</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- High-Precision Filter Control Matrix -->
+<div class="bg-surface-graphite/60 border-b border-border-hairline px-space-md py-space-sm flex-shrink-0 flex flex-col gap-2">
+<div class="grid grid-cols-12 gap-2 items-center">
+<!-- Search Input: TxID, Mule Tag, Account Hash -->
+<div class="col-span-12 xl:col-span-4 flex items-center bg-surface-obsidian border border-border-hairline px-space-sm py-1.5 focus-within:border-border-active">
+<span class="material-symbols-outlined text-outline text-[16px] mr-2">search</span>
+<input class="bg-transparent text-label-code font-label-code text-on-surface placeholder:text-metric-dim focus:outline-none w-full border-none p-0 text-xs" placeholder="Search by TxID (0x...), Account Hash, Mule Tag, or Amount..." type="text"/>
+</div>
+<!-- Score Range Cutoff Filter -->
+<div class="col-span-12 sm:col-span-6 xl:col-span-3 flex items-center gap-2 bg-surface-obsidian border border-border-hairline px-space-sm py-1">
+<span class="text-[10px] uppercase font-label-code text-metric-dim whitespace-nowrap">Risk Cutoff:</span>
+<input class="w-full accent-primary-container h-1 bg-surface-raised cursor-pointer" max="100" min="0" type="range" value="75"/>
+<span class="mono-tabular text-xs font-semibold text-primary-container bg-surface-raised px-1.5 py-0.5 border border-border-hairline">≥ 0.75</span>
+<span class="text-[9px] font-label-code text-alert-critical uppercase whitespace-nowrap">Crit: 0.85</span>
+</div>
+<!-- Date/Time Range Filter -->
+<div class="col-span-6 sm:col-span-3 xl:col-span-3 flex items-center justify-between bg-surface-obsidian border border-border-hairline px-space-sm py-1.5 text-label-code font-label-code">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-primary-container">schedule</span>
+<span class="text-on-surface text-xs">Last 60 Minutes (Live)</span>
+</div>
+<span class="text-metric-dim text-[10px] mono-tabular">UTC-00:00</span>
+</div>
+<!-- Dataset Selector -->
+<div class="col-span-6 sm:col-span-3 xl:col-span-2 flex items-center justify-between bg-surface-obsidian border border-border-hairline px-space-sm py-1.5 text-label-code font-label-code">
+<span class="text-on-surface truncate text-xs">FedWire-Synthetic</span>
+<span class="material-symbols-outlined text-[14px] text-outline">arrow_drop_down</span>
+</div>
+</div>
+<!-- Filter Pills Bar & View Actions -->
+<div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-border-hairline/60">
+<!-- Class multi-select pills -->
+<div class="flex flex-wrap items-center gap-1.5 text-label-code font-label-code text-[10px]">
+<span class="text-metric-dim uppercase mr-1">Classification:</span>
+<button class="bg-surface-raised text-primary-container border border-border-active px-2 py-0.5 uppercase font-medium">All (148)</button>
+<button class="bg-surface-obsidian hover:bg-surface-raised text-outline hover:text-on-surface border border-border-hairline px-2 py-0.5 uppercase">High-Risk Cycle (42)</button>
+<button class="bg-surface-obsidian hover:bg-surface-raised text-outline hover:text-on-surface border border-border-hairline px-2 py-0.5 uppercase">Rapid Fan-Out (26)</button>
+<button class="bg-surface-obsidian hover:bg-surface-raised text-outline hover:text-on-surface border border-border-hairline px-2 py-0.5 uppercase">Layered Structuring (18)</button>
+<button class="bg-surface-obsidian hover:bg-surface-raised text-outline hover:text-on-surface border border-border-hairline px-2 py-0.5 uppercase">Benign Clear (62)</button>
+</div>
+<!-- Status & Utility Actions -->
+<div class="flex items-center gap-2">
+<button class="text-label-code font-label-code text-metric-dim hover:text-primary-container uppercase text-[10px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">restart_alt</span>
+              Reset Filters
+            </button>
+<span class="text-border-hairline">|</span>
+<button class="text-label-code font-label-code text-metric-dim hover:text-on-surface uppercase text-[10px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">bookmark</span>
+              Save View
+            </button>
+<span class="text-border-hairline">|</span>
+<button class="text-label-code font-label-code text-primary-container hover:underline uppercase text-[10px] flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">file_download</span>
+              Export 148 Rows
+            </button>
+</div>
+</div>
+</div>
+<!-- High-Density Transaction Table Container -->
+<div class="flex-1 overflow-auto bg-surface-obsidian">
+<table class="w-full border-collapse text-left text-body-sm font-body-sm">
+<!-- Sticky Table Header -->
+<thead class="sticky top-0 z-20 bg-surface-graphite border-b border-border-hairline text-label-code font-label-code text-[11px] text-metric-dim uppercase select-none">
+<tr>
+<th class="py-2.5 px-3 w-8 text-center border-r border-border-hairline">
+<input class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+</th>
+<th class="py-2.5 px-3 border-r border-border-hairline hover:text-on-surface cursor-pointer">
+<div class="flex items-center gap-1">
+<span>TX ID</span>
+<span class="material-symbols-outlined text-[12px]">unfold_more</span>
+</div>
+</th>
+<th class="py-2.5 px-3 border-r border-border-hairline hover:text-on-surface cursor-pointer">
+<div class="flex items-center gap-1">
+<span>Timestamp (UTC)</span>
+<span class="material-symbols-outlined text-[12px]">arrow_downward</span>
+</div>
+</th>
+<th class="py-2.5 px-3 border-r border-border-hairline">Source Account &amp; Counterparty</th>
+<th class="py-2.5 px-3 border-r border-border-hairline hover:text-on-surface cursor-pointer">
+<div class="flex items-center gap-1">
+<span>Direction / Settled Amount</span>
+<span class="material-symbols-outlined text-[12px]">unfold_more</span>
+</div>
+</th>
+<th class="py-2.5 px-3 border-r border-border-hairline">cuGraph GNN Prediction</th>
+<th class="py-2.5 px-3 border-r border-border-hairline hover:text-on-surface cursor-pointer">
+<div class="flex items-center gap-1">
+<span>Risk Score</span>
+<span class="material-symbols-outlined text-[12px]">unfold_more</span>
+</div>
+</th>
+<th class="py-2.5 px-3 border-r border-border-hairline">Key Feature Attribution</th>
+<th class="py-2.5 px-3 border-r border-border-hairline">Forensic Label / Status</th>
+<th class="py-2.5 px-3 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-hairline/80">
+<!-- ROW 1 (SELECTED / CURRENT INSPECTOR TARGET) -->
+<tr class="bg-surface-raised border-l-2 border-l-primary-container hover:bg-surface-raised cursor-pointer transition-none group">
+<td class="py-2.5 px-3 text-center border-r border-border-hairline">
+<input checked="" class="w-3.5 h-3.5 bg-surface-obsidian border-border-active text-primary-container focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="mono-tabular text-primary-container font-semibold text-xs">0x7f4b8849...0192</span>
+<button class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary-container" title="Copy Hash">
+<span class="material-symbols-outlined text-[13px]">content_copy</span>
+</button>
+</div>
+<div class="text-[10px] text-metric-dim font-label-code">FedWire ISO pacs.008</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline mono-tabular text-xs">
+<span class="text-on-surface">14:22:08.412</span>
+<span class="text-metric-dim text-[10px] block">Δt: +0.04ms</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="text-on-surface font-medium text-xs">ShellCorp_33</span>
+<span class="bg-alert-critical/10 border border-alert-critical/40 text-alert-critical text-[9px] px-1 font-label-code uppercase">Mule Origin</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-metric-dim mt-0.5">
+<span>→</span>
+<span class="text-outline">Escrow_Account_#88</span>
+<span class="mono-tabular text-[9px]">[VAULT-9912]</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="mono-tabular text-xs font-semibold text-editorial-cream">
+                  → $850,000.00 <span class="text-[10px] text-metric-dim font-normal">USD</span>
+</div>
+<div class="text-[10px] font-label-code text-metric-dim uppercase">FedWire Core Gross</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="text-xs font-medium text-alert-critical">Synthetic Ring #8849</div>
+<div class="text-[10px] font-label-code text-metric-dim">cuGraph Conf: <span class="mono-tabular text-alert-critical">99.1%</span></div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-2">
+<div class="w-12 bg-surface-obsidian h-1.5 border border-border-hairline overflow-hidden">
+<div class="bg-alert-critical h-full" style="width: 89%;"></div>
+</div>
+<span class="mono-tabular text-xs font-bold text-alert-critical">0.89</span>
+</div>
+<span class="text-[9px] font-label-code text-alert-critical uppercase font-bold tracking-wider">CRITICAL RISK</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex flex-wrap gap-1">
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">Cycle: 3-hop</span>
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-alert-critical px-1">Δt: 4.2s</span>
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">Deg: 18:1</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-alert-critical/10 border border-alert-critical text-alert-critical text-[10px] font-label-code uppercase font-semibold">
+<span class="material-symbols-outlined text-[12px] font-bold">lock</span>
+                  AUTO-FROZEN (PENDING REVIEW)
+                </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1 text-outline">
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian" title="Inspect Inspector"><span class="material-symbols-outlined text-[15px]">visibility</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian" title="Focus in Graph Explorer"><span class="material-symbols-outlined text-[15px]">hub</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian" title="More"><span class="material-symbols-outlined text-[15px]">more_vert</span></button>
+</div>
+</td>
+</tr>
+<!-- ROW 2 -->
+<tr class="hover:bg-surface-raised/50 cursor-pointer transition-none group">
+<td class="py-2.5 px-3 text-center border-r border-border-hairline">
+<input class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="mono-tabular text-on-surface font-medium text-xs group-hover:text-primary-container">0x9a102c4b...77f1</span>
+<button class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary-container"><span class="material-symbols-outlined text-[13px]">content_copy</span></button>
+</div>
+<div class="text-[10px] text-metric-dim font-label-code">SWIFT MT103 Rep</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline mono-tabular text-xs">
+<span class="text-on-surface">14:22:04.189</span>
+<span class="text-metric-dim text-[10px] block">Δt: +4.26s</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="text-on-surface font-medium text-xs">Mule_Wallet_01</span>
+<span class="bg-amber-400/10 border border-amber-400/40 text-amber-400 text-[9px] px-1 font-label-code uppercase">Velocity Tag</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-metric-dim mt-0.5">
+<span>→</span>
+<span class="text-outline">Offshore_LLC_910</span>
+<span class="mono-tabular text-[9px]">[ACC-0199]</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="mono-tabular text-xs font-semibold text-editorial-cream">
+                  → $490,000.00 <span class="text-[10px] text-metric-dim font-normal">USD</span>
+</div>
+<div class="text-[10px] font-label-code text-metric-dim uppercase">Interbank Wire</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="text-xs font-medium text-amber-400">3-Hop Wash Loop</div>
+<div class="text-[10px] font-label-code text-metric-dim">cuGraph Conf: <span class="mono-tabular text-amber-400">86.4%</span></div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-2">
+<div class="w-12 bg-surface-obsidian h-1.5 border border-border-hairline overflow-hidden">
+<div class="bg-amber-400 h-full" style="width: 76%;"></div>
+</div>
+<span class="mono-tabular text-xs font-bold text-amber-400">0.76</span>
+</div>
+<span class="text-[9px] font-label-code text-amber-400 uppercase font-bold tracking-wider">ELEVATED</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex flex-wrap gap-1">
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">Cycle: 3-hop</span>
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-amber-400 px-1">Burst: 38 tx/s</span>
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-alert-critical px-1">FinCEN Hit</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-amber-400/10 border border-amber-400/60 text-amber-400 text-[10px] font-label-code uppercase">
+<span class="material-symbols-outlined text-[12px]">hourglass_top</span>
+                  UNDER TRIAGE
+                </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1 text-outline">
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">visibility</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">hub</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">more_vert</span></button>
+</div>
+</td>
+</tr>
+<!-- ROW 3 -->
+<tr class="hover:bg-surface-raised/50 cursor-pointer transition-none group">
+<td class="py-2.5 px-3 text-center border-r border-border-hairline">
+<input class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="mono-tabular text-on-surface font-medium text-xs group-hover:text-primary-container">0x33e89a01...aa40</span>
+<button class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary-container"><span class="material-symbols-outlined text-[13px]">content_copy</span></button>
+</div>
+<div class="text-[10px] text-metric-dim font-label-code">FedWire ISO pacs.008</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline mono-tabular text-xs">
+<span class="text-on-surface">14:21:58.004</span>
+<span class="text-metric-dim text-[10px] block">Δt: +6.18s</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="text-on-surface font-medium text-xs">Apex_Holdings_LLC</span>
+<span class="bg-alert-critical/10 border border-alert-critical/40 text-alert-critical text-[9px] px-1 font-label-code uppercase">OFAC Flag</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-metric-dim mt-0.5">
+<span>→</span>
+<span class="text-outline">Sink_Account_#09</span>
+<span class="mono-tabular text-[9px]">[SNK-4401]</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="mono-tabular text-xs font-semibold text-editorial-cream">
+                  → $1,420,000.00 <span class="text-[10px] text-metric-dim font-normal">USD</span>
+</div>
+<div class="text-[10px] font-label-code text-metric-dim uppercase">Large Commercial Wire</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="text-xs font-medium text-alert-critical">Rapid Fan-Out Ring</div>
+<div class="text-[10px] font-label-code text-metric-dim">cuGraph Conf: <span class="mono-tabular text-alert-critical">97.8%</span></div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-2">
+<div class="w-12 bg-surface-obsidian h-1.5 border border-border-hairline overflow-hidden">
+<div class="bg-alert-critical h-full" style="width: 94%;"></div>
+</div>
+<span class="mono-tabular text-xs font-bold text-alert-critical">0.94</span>
+</div>
+<span class="text-[9px] font-label-code text-alert-critical uppercase font-bold tracking-wider">CRITICAL RISK</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex flex-wrap gap-1">
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-alert-critical px-1">Deg Ratio: 44:2</span>
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">Dispersion: 0.91</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-alert-critical text-surface-obsidian text-[10px] font-label-code uppercase font-bold">
+<span class="material-symbols-outlined text-[12px] font-bold">verified_user</span>
+                  VERIFIED FRAUD (SIGNED)
+                </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1 text-outline">
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">visibility</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">hub</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">more_vert</span></button>
+</div>
+</td>
+</tr>
+<!-- ROW 4 -->
+<tr class="hover:bg-surface-raised/50 cursor-pointer transition-none group">
+<td class="py-2.5 px-3 text-center border-r border-border-hairline">
+<input class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="mono-tabular text-on-surface font-medium text-xs group-hover:text-primary-container">0x55c1109a...883b</span>
+<button class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary-container"><span class="material-symbols-outlined text-[13px]">content_copy</span></button>
+</div>
+<div class="text-[10px] text-metric-dim font-label-code">FedWire ISO pacs.008</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline mono-tabular text-xs">
+<span class="text-on-surface">14:21:49.882</span>
+<span class="text-metric-dim text-[10px] block">Δt: +8.12s</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="text-on-surface font-medium text-xs">JPM_Custody_Settlement</span>
+<span class="bg-secondary/10 border border-secondary/40 text-secondary text-[9px] px-1 font-label-code uppercase">Tier-1 Node</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-metric-dim mt-0.5">
+<span>→</span>
+<span class="text-outline">BNY_Mellon_Clear</span>
+<span class="mono-tabular text-[9px]">[CORP-0012]</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="mono-tabular text-xs font-semibold text-editorial-cream">
+                  → $24,800,000.00 <span class="text-[10px] text-metric-dim font-normal">USD</span>
+</div>
+<div class="text-[10px] font-label-code text-metric-dim uppercase">Institutional Liquidity</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="text-xs font-medium text-secondary">Verified Institutional</div>
+<div class="text-[10px] font-label-code text-metric-dim">cuGraph Conf: <span class="mono-tabular text-secondary">99.9%</span></div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-2">
+<div class="w-12 bg-surface-obsidian h-1.5 border border-border-hairline overflow-hidden">
+<div class="bg-secondary h-full" style="width: 12%;"></div>
+</div>
+<span class="mono-tabular text-xs font-bold text-secondary">0.12</span>
+</div>
+<span class="text-[9px] font-label-code text-secondary uppercase tracking-wider">BENIGN CLEAR</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex flex-wrap gap-1">
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">Known Bilateral</span>
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">History: &gt;5yr</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 border border-secondary/60 text-secondary text-[10px] font-label-code uppercase">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+                  CLEARED BENIGN
+                </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1 text-outline">
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">visibility</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">hub</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">more_vert</span></button>
+</div>
+</td>
+</tr>
+<!-- ROW 5 -->
+<tr class="hover:bg-surface-raised/50 cursor-pointer transition-none group">
+<td class="py-2.5 px-3 text-center border-r border-border-hairline">
+<input class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="mono-tabular text-on-surface font-medium text-xs group-hover:text-primary-container">0x12bb9940...dd19</span>
+<button class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary-container"><span class="material-symbols-outlined text-[13px]">content_copy</span></button>
+</div>
+<div class="text-[10px] text-metric-dim font-label-code">FedWire ISO pacs.008</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline mono-tabular text-xs">
+<span class="text-on-surface">14:21:32.410</span>
+<span class="text-metric-dim text-[10px] block">Δt: +17.47s</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="text-on-surface font-medium text-xs">Krypton_Vault_OTC</span>
+<span class="bg-surface-raised border border-border-hairline text-outline text-[9px] px-1 font-label-code uppercase">Crypto Gateway</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-metric-dim mt-0.5">
+<span>→</span>
+<span class="text-outline">Mule_Cluster_Alpha</span>
+<span class="mono-tabular text-[9px]">[ACC-9041]</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="mono-tabular text-xs font-semibold text-editorial-cream">
+                  → $670,000.00 <span class="text-[10px] text-metric-dim font-normal">USD</span>
+</div>
+<div class="text-[10px] font-label-code text-metric-dim uppercase">Off-Ramp Wire</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="text-xs font-medium text-alert-critical">Structuring Dispersal</div>
+<div class="text-[10px] font-label-code text-metric-dim">cuGraph Conf: <span class="mono-tabular text-alert-critical">91.2%</span></div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-2">
+<div class="w-12 bg-surface-obsidian h-1.5 border border-border-hairline overflow-hidden">
+<div class="bg-alert-critical h-full" style="width: 82%;"></div>
+</div>
+<span class="mono-tabular text-xs font-bold text-alert-critical">0.82</span>
+</div>
+<span class="text-[9px] font-label-code text-alert-critical uppercase font-bold tracking-wider">CRITICAL RISK</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex flex-wrap gap-1">
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">Structuring: 12-tx</span>
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">Threshold Evasion</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-alert-critical/10 border border-alert-critical text-alert-critical text-[10px] font-label-code uppercase font-semibold">
+<span class="material-symbols-outlined text-[12px] font-bold">lock</span>
+                  AUTO-FROZEN (PENDING REVIEW)
+                </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1 text-outline">
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">visibility</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">hub</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">more_vert</span></button>
+</div>
+</td>
+</tr>
+<!-- ROW 6 -->
+<tr class="hover:bg-surface-raised/50 cursor-pointer transition-none group">
+<td class="py-2.5 px-3 text-center border-r border-border-hairline">
+<input class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="mono-tabular text-on-surface font-medium text-xs group-hover:text-primary-container">0x77aa4199...02bb</span>
+<button class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary-container"><span class="material-symbols-outlined text-[13px]">content_copy</span></button>
+</div>
+<div class="text-[10px] text-metric-dim font-label-code">SWIFT MT103</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline mono-tabular text-xs">
+<span class="text-on-surface">14:21:18.112</span>
+<span class="text-metric-dim text-[10px] block">Δt: +14.29s</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="text-on-surface font-medium text-xs">Standard_Chartered_HK</span>
+<span class="bg-surface-raised border border-border-hairline text-outline text-[9px] px-1 font-label-code uppercase">Clearing Agent</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-metric-dim mt-0.5">
+<span>→</span>
+<span class="text-outline">Pacific_Logistics_SGP</span>
+<span class="mono-tabular text-[9px]">[SGP-8812]</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="mono-tabular text-xs font-semibold text-editorial-cream">
+                  → $1,280,000.00 <span class="text-[10px] text-metric-dim font-normal">USD</span>
+</div>
+<div class="text-[10px] font-label-code text-metric-dim uppercase">Cross-Border Commercial</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="text-xs font-medium text-metric-dim">Synthetic Benchmark Control</div>
+<div class="text-[10px] font-label-code text-metric-dim">cuGraph Conf: <span class="mono-tabular text-outline">48.2%</span></div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-2">
+<div class="w-12 bg-surface-obsidian h-1.5 border border-border-hairline overflow-hidden">
+<div class="bg-outline h-full" style="width: 44%;"></div>
+</div>
+<span class="mono-tabular text-xs font-bold text-outline">0.44</span>
+</div>
+<span class="text-[9px] font-label-code text-metric-dim uppercase tracking-wider">MODERATE</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex flex-wrap gap-1">
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">Sample Seed #44</span>
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">Baseline</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 border border-border-hairline bg-surface-raised text-outline text-[10px] font-label-code uppercase">
+<span class="material-symbols-outlined text-[12px]">science</span>
+                  SAMPLE DATA [SYNTHETIC]
+                </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1 text-outline">
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">visibility</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">hub</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">more_vert</span></button>
+</div>
+</td>
+</tr>
+<!-- ROW 7 -->
+<tr class="hover:bg-surface-raised/50 cursor-pointer transition-none group">
+<td class="py-2.5 px-3 text-center border-r border-border-hairline">
+<input class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="mono-tabular text-on-surface font-medium text-xs group-hover:text-primary-container">0x00fa812d...41ec</span>
+<button class="opacity-0 group-hover:opacity-100 text-outline hover:text-primary-container"><span class="material-symbols-outlined text-[13px]">content_copy</span></button>
+</div>
+<div class="text-[10px] text-metric-dim font-label-code">FedWire ISO pacs.008</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline mono-tabular text-xs">
+<span class="text-on-surface">14:21:02.941</span>
+<span class="text-metric-dim text-[10px] block">Δt: +15.17s</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-1.5">
+<span class="text-on-surface font-medium text-xs">Genesis_Arbitrage_Fund</span>
+<span class="bg-surface-raised border border-border-hairline text-outline text-[9px] px-1 font-label-code uppercase">HFT Prop</span>
+</div>
+<div class="flex items-center gap-1 text-[11px] text-metric-dim mt-0.5">
+<span>→</span>
+<span class="text-outline">CME_Margin_Vault</span>
+<span class="mono-tabular text-[9px]">[CME-CLEAR]</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="mono-tabular text-xs font-semibold text-editorial-cream">
+                  → $3,150,000.00 <span class="text-[10px] text-metric-dim font-normal">USD</span>
+</div>
+<div class="text-[10px] font-label-code text-metric-dim uppercase">Margin Call Wire</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="text-xs font-medium text-secondary">HFT Margin Loop</div>
+<div class="text-[10px] font-label-code text-metric-dim">cuGraph Conf: <span class="mono-tabular text-secondary">98.1%</span></div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex items-center gap-2">
+<div class="w-12 bg-surface-obsidian h-1.5 border border-border-hairline overflow-hidden">
+<div class="bg-secondary h-full" style="width: 18%;"></div>
+</div>
+<span class="mono-tabular text-xs font-bold text-secondary">0.18</span>
+</div>
+<span class="text-[9px] font-label-code text-secondary uppercase tracking-wider">BENIGN CLEAR</span>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<div class="flex flex-wrap gap-1">
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">Regulated Exchange</span>
+<span class="bg-surface-obsidian border border-border-hairline text-[9px] font-label-code text-outline px-1">LEI Verified</span>
+</div>
+</td>
+<td class="py-2.5 px-3 border-r border-border-hairline">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 border border-secondary/60 text-secondary text-[10px] font-label-code uppercase">
+<span class="material-symbols-outlined text-[12px]">check_circle</span>
+                  CLEARED BENIGN
+                </span>
+</td>
+<td class="py-2.5 px-3 text-right">
+<div class="inline-flex items-center gap-1 text-outline">
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">visibility</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">hub</span></button>
+<button class="p-1 hover:text-primary-container hover:bg-surface-obsidian"><span class="material-symbols-outlined text-[15px]">more_vert</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Virtualization & Pagination Telemetry Footer -->
+<div class="h-9 bg-surface-graphite border-t border-border-hairline px-space-md flex items-center justify-between text-label-code font-label-code text-metric-dim select-none flex-shrink-0">
+<div class="flex items-center gap-4">
+<span class="mono-tabular text-[11px] text-on-surface">Rows 1-25 of 148 filtered rows</span>
+<span class="text-border-hairline">|</span>
+<span class="mono-tabular text-[11px]">Page 1 of 6</span>
+<span class="text-border-hairline">|</span>
+<span class="text-[10px] uppercase text-outline">Telemetry Latency: <span class="text-secondary mono-tabular">1.14ms</span></span>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-2 py-0.5 border border-border-hairline text-outline hover:text-on-surface hover:bg-surface-raised disabled:opacity-40" disabled="">
+<span class="material-symbols-outlined text-[14px]">chevron_left</span>
+</button>
+<button class="px-2 py-0.5 bg-surface-raised border border-border-active text-primary-container font-semibold mono-tabular text-xs">1</button>
+<button class="px-2 py-0.5 border border-border-hairline text-outline hover:text-on-surface hover:bg-surface-raised mono-tabular text-xs">2</button>
+<button class="px-2 py-0.5 border border-border-hairline text-outline hover:text-on-surface hover:bg-surface-raised mono-tabular text-xs">3</button>
+<span class="px-1 text-metric-dim">...</span>
+<button class="px-2 py-0.5 border border-border-hairline text-outline hover:text-on-surface hover:bg-surface-raised mono-tabular text-xs">6</button>
+<button class="px-2 py-0.5 border border-border-hairline text-outline hover:text-on-surface hover:bg-surface-raised">
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</button>
+</div>
+</div>
+</main>
+<!-- ======================================================================= -->
+<!-- 4. RIGHT-SIDE TRANSACTION FORENSIC INSPECTOR DRAWER (~420px)            -->
+<!-- ======================================================================= -->
+<aside class="w-[430px] flex-shrink-0 bg-surface-graphite border-l border-border-hairline flex flex-col h-[calc(100vh-3.5rem)] z-30 select-none overflow-hidden">
+<!-- Inspector Header & Close/Collapse Triggers -->
+<div class="p-space-md border-b border-border-hairline bg-surface-obsidian flex items-center justify-between flex-shrink-0">
+<div>
+<div class="flex items-center gap-2">
+<span class="text-label-code font-label-code text-primary-container uppercase font-semibold">TRANSACTION INSPECTOR</span>
+<span class="text-metric-dim text-xs">//</span>
+<span class="mono-tabular text-editorial-cream text-xs font-semibold">TX-8849-0192</span>
+</div>
+<span class="text-[10px] text-metric-dim font-label-code block mt-0.5">cuGraph-FP8-ISO-v4.2 // Node-04 (H100)</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-1 hover:text-primary-container text-outline hover:bg-surface-raised" title="Expand Full"><span class="material-symbols-outlined text-[16px]">open_in_full</span></button>
+<button class="p-1 hover:text-primary-container text-outline hover:bg-surface-raised" title="Pin Drawer"><span class="material-symbols-outlined text-[16px]">push_pin</span></button>
+</div>
+</div>
+<!-- Critical Ground Truth vs Model Prediction Epistemic Guardrail Banner -->
+<div class="p-2.5 bg-surface-raised border-b border-border-hairline flex flex-col gap-1.5 flex-shrink-0">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 bg-alert-critical"></span>
+<span class="text-[10px] font-label-code uppercase tracking-wider text-alert-critical font-bold">MODEL PREDICTION: High-Risk Synthetics (0.89/1.00)</span>
+</div>
+<span class="text-[9px] mono-tabular text-metric-dim">cuGraph Conf: 99.1%</span>
+</div>
+<div class="p-1.5 bg-surface-obsidian border border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[13px] text-amber-400">verified</span>
+<span class="text-[10px] font-label-code uppercase text-editorial-cream font-medium">VERIFIED GROUND TRUTH:</span>
+</div>
+<span class="text-[10px] font-label-code uppercase text-amber-400 bg-amber-400/10 px-1 border border-amber-400/30">PENDING ATTESTATION</span>
+</div>
+</div>
+<!-- Scrollable Inspector Content Canvas -->
+<div class="flex-1 overflow-y-auto p-space-md flex flex-col gap-space-md">
+<!-- Core Transaction Attribute Ledger Card -->
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm flex flex-col gap-2">
+<div class="text-[10px] uppercase font-label-code tracking-wider text-metric-dim border-b border-border-hairline pb-1 flex justify-between items-center">
+<span>Settlement Execution Telemetry</span>
+<span class="text-alert-critical font-bold mono-tabular text-[9px] animate-pulse">SETTLEMENT INTERCEPT ACTIVE</span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-xs">
+<!-- Source Entity -->
+<div class="flex flex-col">
+<span class="text-[10px] font-label-code text-metric-dim uppercase">Source Entity</span>
+<span class="text-on-surface font-medium truncate">ShellCorp_33</span>
+<span class="mono-tabular text-[10px] text-alert-critical">ACC-84920-SYNTH [0.89]</span>
+</div>
+<!-- Destination Entity -->
+<div class="flex flex-col">
+<span class="text-[10px] font-label-code text-metric-dim uppercase">Destination Vault</span>
+<span class="text-on-surface font-medium truncate">Escrow_Account_#88</span>
+<span class="mono-tabular text-[10px] text-alert-critical">VAULT-9912-SYNTH [0.92]</span>
+</div>
+<!-- Settled Amount -->
+<div class="flex flex-col border-t border-border-hairline pt-1.5">
+<span class="text-[10px] font-label-code text-metric-dim uppercase">Wire Amount</span>
+<span class="mono-tabular text-sm font-bold text-editorial-cream">$850,000.00 USD</span>
+<span class="text-[9px] text-metric-dim font-label-code uppercase">FedWire ISO 20022 / pacs.008</span>
+</div>
+<!-- Settlement Buffer -->
+<div class="flex flex-col border-t border-border-hairline pt-1.5">
+<span class="text-[10px] font-label-code text-metric-dim uppercase">Window Remaining</span>
+<span class="mono-tabular text-sm font-bold text-alert-critical">14.2ms [HALTED]</span>
+<span class="text-[9px] text-metric-dim font-label-code uppercase">SXM5 GPU Intercept Lat: 0.12ms</span>
+</div>
+</div>
+</div>
+<!-- Topological Subgraph 3-Hop Visual Preview -->
+<div class="border border-border-hairline bg-surface-obsidian flex flex-col">
+<div class="p-2 border-b border-border-hairline flex items-center justify-between text-label-code font-label-code">
+<span class="text-[10px] uppercase text-outline">Topological Neighborhood (3-Hop)</span>
+<a class="text-primary-container text-[10px] uppercase hover:underline flex items-center gap-1 font-semibold" href="#">
+              Open in Full Graph Explorer
+              <span class="material-symbols-outlined text-[12px]">open_in_new</span>
+</a>
+</div>
+<!-- Micro Subgraph Visualizer Canvas -->
+<div class="h-36 bg-surface-obsidian relative p-3 flex items-center justify-between overflow-hidden">
+<!-- Background Grid Pattern -->
+<div class="absolute inset-0 bg-[radial-gradient(#21262D_1px,transparent_1px)] [background-size:12px_12px] opacity-60 pointer-events-none"></div>
+<!-- Connecting Edges / Vectors with directional animation cues -->
+<div class="absolute top-1/2 left-10 right-10 -translate-y-1/2 h-0.5 bg-gradient-to-r from-alert-critical via-primary-container to-alert-critical pointer-events-none opacity-80"></div>
+<!-- Node 1: ShellCorp_33 -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 bg-surface-raised border border-alert-critical flex items-center justify-center shadow-[0_0_8px_rgba(255,59,48,0.3)]">
+<span class="material-symbols-outlined text-alert-critical text-[16px]">domain</span>
+</div>
+<span class="text-[9px] font-label-code text-editorial-cream mt-1 font-medium">ShellCorp_33</span>
+<span class="mono-tabular text-[8px] text-alert-critical">0.89 Risk</span>
+</div>
+<!-- Edge Tag 1 -->
+<div class="relative z-10 bg-surface-graphite border border-border-hairline px-1 py-0.5 text-[8px] mono-tabular text-metric-dim">
+              $850K
+            </div>
+<!-- Node 2: Escrow_#88 -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-9 h-9 bg-surface-raised border-2 border-border-active flex items-center justify-center shadow-[0_0_12px_rgba(0,242,254,0.4)]">
+<span class="material-symbols-outlined text-primary-container text-[18px]">account_balance</span>
+</div>
+<span class="text-[9px] font-label-code text-primary-container mt-1 font-bold">Escrow_#88</span>
+<span class="mono-tabular text-[8px] text-primary-container">ACTIVE BUFFER</span>
+</div>
+<!-- Edge Tag 2 -->
+<div class="relative z-10 bg-surface-graphite border border-border-hairline px-1 py-0.5 text-[8px] mono-tabular text-metric-dim">
+              $490K
+            </div>
+<!-- Node 3: Mule_01 -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-8 h-8 bg-surface-raised border border-amber-400 flex items-center justify-center">
+<span class="material-symbols-outlined text-amber-400 text-[16px]">account_circle</span>
+</div>
+<span class="text-[9px] font-label-code text-editorial-cream mt-1 font-medium">Mule_01</span>
+<span class="mono-tabular text-[8px] text-amber-400">Fan-Out</span>
+</div>
+<!-- Node 4: Sink_09 (Offset) -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-7 h-7 bg-surface-raised border border-border-hairline flex items-center justify-center">
+<span class="material-symbols-outlined text-outline text-[14px]">move_to_inbox</span>
+</div>
+<span class="text-[9px] font-label-code text-outline mt-1 font-medium">Sink_#09</span>
+<span class="mono-tabular text-[8px] text-metric-dim">Terminus</span>
+</div>
+</div>
+<!-- Neighboring Nodes Roster Table -->
+<div class="border-t border-border-hairline divide-y divide-border-hairline/80 text-[11px] font-label-code">
+<div class="px-2.5 py-1.5 flex items-center justify-between hover:bg-surface-raised">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 bg-alert-critical"></span>
+<span class="text-editorial-cream font-medium">Node ACC-84920</span>
+<span class="text-metric-dim">(ShellCorp_33)</span>
+</div>
+<span class="mono-tabular text-outline">19 edges // High Centrality</span>
+</div>
+<div class="px-2.5 py-1.5 flex items-center justify-between hover:bg-surface-raised">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 bg-primary-container"></span>
+<span class="text-editorial-cream font-medium">Node VLT-9912</span>
+<span class="text-metric-dim">(Escrow_#88)</span>
+</div>
+<span class="mono-tabular text-outline">4 edges // Intermediate Buffer</span>
+</div>
+<div class="px-2.5 py-1.5 flex items-center justify-between hover:bg-surface-raised">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 bg-amber-400"></span>
+<span class="text-editorial-cream font-medium">Node MLE-0199</span>
+<span class="text-metric-dim">(Mule_Wallet_01)</span>
+</div>
+<span class="mono-tabular text-outline">12 edges // Fan-Out Source</span>
+</div>
+</div>
+</div>
+<!-- Feature-Level Evidence Attribution (SHAP / Kernel Weights) -->
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm flex flex-col gap-2">
+<div class="text-[10px] uppercase font-label-code tracking-wider text-metric-dim border-b border-border-hairline pb-1 flex justify-between items-center">
+<span>cuGraph SHAP Feature Attribution</span>
+<span class="text-outline mono-tabular text-[9px]">Σ(|φ|) = +0.89</span>
+</div>
+<!-- Factor 1: 3-Hop Cycle Isomorphism -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between text-xs">
+<span class="text-on-surface font-medium">3-Hop Cycle Isomorphism Match</span>
+<span class="mono-tabular text-alert-critical font-bold text-xs">+0.34</span>
+</div>
+<div class="w-full bg-surface-raised h-1 overflow-hidden">
+<div class="bg-alert-critical h-full" style="width: 78%;"></div>
+</div>
+<span class="text-[9px] text-metric-dim font-label-code">cuGraph GNN sub-kernel exact topological equivalence match</span>
+</div>
+<!-- Factor 2: Temporal Velocity Anomaly -->
+<div class="flex flex-col gap-1 pt-1 border-t border-border-hairline/60">
+<div class="flex items-center justify-between text-xs">
+<span class="text-on-surface font-medium">Temporal Velocity Anomaly</span>
+<span class="mono-tabular text-alert-critical font-bold text-xs">+0.28</span>
+</div>
+<div class="w-full bg-surface-raised h-1 overflow-hidden">
+<div class="bg-alert-critical h-full" style="width: 64%;"></div>
+</div>
+<span class="text-[9px] text-metric-dim font-label-code">38 wire transfers executed within 4.200s window</span>
+</div>
+<!-- Factor 3: Graph In/Out Ratio Skew -->
+<div class="flex flex-col gap-1 pt-1 border-t border-border-hairline/60">
+<div class="flex items-center justify-between text-xs">
+<span class="text-on-surface font-medium">Graph In/Out Ratio Skew</span>
+<span class="mono-tabular text-amber-400 font-bold text-xs">+0.19</span>
+</div>
+<div class="w-full bg-surface-raised h-1 overflow-hidden">
+<div class="bg-amber-400 h-full" style="width: 45%;"></div>
+</div>
+<span class="text-[9px] text-metric-dim font-label-code">18 inbound flows vs 1 aggregated outbound wire</span>
+</div>
+<!-- Factor 4: FinCEN Entity Hash Match -->
+<div class="flex flex-col gap-1 pt-1 border-t border-border-hairline/60">
+<div class="flex items-center justify-between text-xs">
+<span class="text-on-surface font-medium">FinCEN Advisory Hash Match</span>
+<span class="mono-tabular text-outline font-bold text-xs">+0.08</span>
+</div>
+<div class="w-full bg-surface-raised h-1 overflow-hidden">
+<div class="bg-outline h-full" style="width: 22%;"></div>
+</div>
+<span class="text-[9px] text-metric-dim font-label-code">Hit registered on FinCEN-2024-ADV-88 synthetic list</span>
+</div>
+</div>
+<!-- Wire Ingestion Raw Payload Snip -->
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm flex flex-col gap-1">
+<div class="text-[10px] uppercase font-label-code text-metric-dim flex items-center justify-between">
+<span>Raw Ingestion Frame (ISO 20022 XML)</span>
+<span class="mono-tabular text-[9px] text-outline">CRC32: 0x981C</span>
+</div>
+<pre class="bg-surface-raised p-2 text-[10px] font-mono text-outline overflow-x-auto leading-relaxed border border-border-hairline selection:bg-primary-container selection:text-surface-obsidian">&lt;Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.008.001.08"&gt;
+  &lt;FIToFICstmrCdtTrf&gt;
+    &lt;GrpHdr&gt;
+      &lt;MsgId&gt;FW-20250328-8849-0192&lt;/MsgId&gt;
+      &lt;CreDtTm&gt;2025-03-28T14:22:08.412Z&lt;/CreDtTm&gt;
+      &lt;NbOfTxs&gt;1&lt;/NbOfTxs&gt;
+      &lt;SttlmInf&gt;&lt;SttlmMtd&gt;CLRG&lt;/SttlmMtd&gt;&lt;/SttlmInf&gt;
+    &lt;/GrpHdr&gt;
+    &lt;CdtTrfTxInf&gt;
+      &lt;IntrBkSttlmAmt Ccy="USD"&gt;850000.00&lt;/IntrBkSttlmAmt&gt;
+      &lt;Dbtr&gt;&lt;Nm&gt;SHELLCORP_33_SYNTH&lt;/Nm&gt;&lt;/Dbtr&gt;
+      &lt;Cdtr&gt;&lt;Nm&gt;ESCROW_ACCOUNT_88_SYNTH&lt;/Nm&gt;&lt;/Cdtr&gt;
+    &lt;/CdtTrfTxInf&gt;
+  &lt;/FIToFICstmrCdtTrf&gt;
+&lt;/Document&gt;</pre>
+</div>
+</div>
+<!-- Persistent Forensic Action Bar Footer -->
+<div class="p-space-sm bg-surface-obsidian border-t border-border-hairline flex flex-col gap-1.5 flex-shrink-0">
+<!-- Primary Action: Settlement Freeze -->
+<button class="w-full flex items-center justify-center gap-2 bg-alert-critical hover:bg-alert-critical/90 text-editorial-cream text-label-code font-label-code py-2.5 uppercase tracking-wider font-semibold active:scale-[0.99] transition-none shadow-[0_0_12px_rgba(255,59,48,0.25)]">
+<span class="material-symbols-outlined text-[16px] font-bold">cancel</span>
+          Confirm Settlement Freeze
+        </button>
+<!-- Secondary Action: zk-SNARK Evidence Pack -->
+<div class="grid grid-cols-2 gap-1.5">
+<button class="flex items-center justify-center gap-1.5 bg-surface-raised hover:bg-surface-container-high border border-border-active text-primary-container text-label-code font-label-code py-2 uppercase tracking-wider active:scale-[0.99] transition-none">
+<span class="material-symbols-outlined text-[14px]">shield_with_heart</span>
+            Export zk-Proof
+          </button>
+<button class="flex items-center justify-center gap-1.5 bg-surface-raised hover:bg-surface-container-high border border-border-hairline text-outline hover:text-on-surface text-label-code font-label-code py-2 uppercase tracking-wider active:scale-[0.99] transition-none">
+<span class="material-symbols-outlined text-[14px]">flag</span>
+            Mark False Pos
+          </button>
+</div>
+</div>
+</aside>
+</div>
+<!-- Interactive Hotkey Hint & Toast Notification Hook (Inline Script) -->
+<script>
+    // Lightweight keyboard navigation and row selection mock interaction
+    document.addEventListener('DOMContentLoaded', () => {
+      const rows = document.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        row.addEventListener('click', () => {
+          // Reset previous active row border style
+          rows.forEach(r => {
+            r.classList.remove('bg-surface-raised', 'border-l-2', 'border-l-primary-container');
+          });
+          // Highlight target row
+          row.classList.add('bg-surface-raised', 'border-l-2', 'border-l-primary-container');
+        });
+      });
+
+      // Quick hotkey listener for CMD+K
+      window.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+          e.preventDefault();
+          const search = document.querySelector('input[type="text"]');
+          if (search) search.focus();
+        }
+      });
+    });
+  </script>
+</body></html>

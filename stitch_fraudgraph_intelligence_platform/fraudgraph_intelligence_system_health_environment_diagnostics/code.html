@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Health and Environment Diagnostics - FraudGraph Intelligence</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Editorial Serif and Monospace/Sans Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400&amp;family=Geist+Mono:wght@300;400;500;600&amp;family=Geist:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-container": "#dedbd5",
+            "surface-obsidian": "#05070A",
+            "tertiary": "#faf7f1",
+            "on-primary-fixed-variant": "#004f53",
+            "surface-container-highest": "#32353a",
+            "border-hairline": "#21262D",
+            "on-primary": "#00373a",
+            "on-background": "#e1e2e8",
+            "error-container": "#93000a",
+            "outline": "#849495",
+            "error": "#ffb4ab",
+            "secondary": "#7dffd5",
+            "on-secondary-fixed-variant": "#00513e",
+            "on-primary-container": "#006a70",
+            "background": "#111418",
+            "on-tertiary-fixed": "#1c1c18",
+            "surface-raised": "#161B22",
+            "on-surface-variant": "#b9cacb",
+            "metric-dim": "#484F58",
+            "secondary-fixed-dim": "#00e0b1",
+            "inverse-surface": "#e1e2e8",
+            "surface-container": "#1d2024",
+            "on-primary-fixed": "#002022",
+            "surface-bright": "#36393e",
+            "on-error": "#690005",
+            "on-surface": "#e1e2e8",
+            "surface-container-high": "#272a2f",
+            "surface-container-lowest": "#0b0e12",
+            "surface-tint": "#00dce6",
+            "primary-container": "#00f2fe",
+            "editorial-cream": "#F8F7F4",
+            "tertiary-fixed-dim": "#c9c6c1",
+            "surface-graphite": "#0D1117",
+            "on-secondary-fixed": "#002117",
+            "surface-dim": "#111418",
+            "on-tertiary-container": "#61605b",
+            "on-tertiary": "#31302d",
+            "primary": "#e0fdff",
+            "on-secondary-container": "#00624c",
+            "tertiary-fixed": "#e5e2dc",
+            "primary-fixed-dim": "#00dce6",
+            "primary-fixed": "#6ff6ff",
+            "surface": "#111418",
+            "border-active": "#00F2FE",
+            "secondary-fixed": "#41fecb",
+            "on-tertiary-fixed-variant": "#474743",
+            "on-error-container": "#ffdad6",
+            "inverse-primary": "#00696f",
+            "surface-variant": "#32353a",
+            "secondary-container": "#01e7b6",
+            "inverse-on-surface": "#2e3135",
+            "alert-critical": "#FF3B30",
+            "surface-container-low": "#191c20",
+            "outline-variant": "#3a494b",
+            "on-secondary": "#00382a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0px",
+            "sm": "0px",
+            "md": "0px",
+            "lg": "0px",
+            "xl": "0px",
+            "full": "0px"
+          },
+          "spacing": {
+            "space-md": "1rem",
+            "gutter-mobile": "0.75rem",
+            "margin-mobile": "1rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-xl": "2.5rem",
+            "margin": "2.5rem",
+            "space-lg": "1.5rem",
+            "gutter": "1.5rem"
+          },
+          "fontFamily": {
+            "body-sm": ["Geist", "sans-serif"],
+            "body-md": ["Geist", "sans-serif"],
+            "body-lg": ["Geist", "sans-serif"],
+            "display-hero": ["Newsreader", "serif"],
+            "metric-display": ["Geist", "monospace"],
+            "headline-sm": ["Newsreader", "serif"],
+            "headline-md": ["Newsreader", "serif"],
+            "headline-lg": ["Newsreader", "serif"],
+            "label-code": ["Geist Mono", "monospace"]
+          },
+          "fontSize": {
+            "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "metric-display": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "400" }],
+            "label-code": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #05070A;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #21262D;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #00F2FE;
+    }
+  </style>
+</head>
+<body class="bg-surface-obsidian text-on-surface font-body-md antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-surface-obsidian">
+<!-- TOP APP BAR -->
+<header class="flex justify-between items-center w-full px-6 py-3 border-b border-border-hairline bg-surface-obsidian z-50 sticky top-0">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 bg-primary-container inline-block shadow-[0_0_8px_#00f2fe]"></span>
+<span class="text-headline-sm font-headline-sm tracking-tight text-editorial-cream uppercase font-semibold">FraudGraph Intelligence</span>
+</div>
+<div class="h-4 w-px bg-border-hairline hidden md:block"></div>
+<nav class="hidden lg:flex items-center gap-5 text-label-code font-label-code">
+<div class="flex items-center gap-1.5 text-metric-dim uppercase tracking-wider">
+<span class="w-1.5 h-1.5 bg-secondary-container inline-block"></span>
+<span>Cluster Status: Operational</span>
+</div>
+<div class="flex items-center gap-1.5 text-primary-container uppercase tracking-wider border-b border-border-active pb-0.5">
+<span class="w-1.5 h-1.5 bg-primary-container inline-block animate-pulse"></span>
+<span>GPU Compute: 99.4%</span>
+</div>
+<div class="flex items-center gap-1.5 text-metric-dim uppercase tracking-wider">
+<span class="w-1.5 h-1.5 bg-secondary-container inline-block"></span>
+<span>Node Health: Optimal</span>
+</div>
+</nav>
+</div>
+<!-- Telemetry & Actions -->
+<div class="flex items-center gap-3">
+<div class="hidden sm:flex items-center gap-2 px-2.5 py-1 bg-surface-graphite border border-border-hairline text-label-code font-label-code text-metric-dim">
+<span class="text-primary-container">ADAPTER:</span> CUDA-Direct sm_90
+      </div>
+<button class="bg-primary-container text-surface-obsidian font-body-sm font-semibold px-3 py-1.5 hover:bg-secondary-container active:scale-[0.99] transition-none flex items-center gap-2" id="runValidationBtn" onclick="runValidation()">
+<span class="material-symbols-outlined text-[16px]" id="validationIcon">terminal</span>
+<span>Run Full Diagnostic</span>
+</button>
+<button class="border border-border-hairline bg-surface-graphite hover:border-border-active hover:text-primary-container text-editorial-cream text-label-code font-label-code px-3 py-1.5 hidden md:flex items-center gap-1.5 transition-none">
+<span class="material-symbols-outlined text-[16px]">receipt_long</span>
+<span>Export Telemetry</span>
+</button>
+<div class="flex items-center border-l border-border-hairline pl-3 gap-1">
+<button class="p-1.5 text-metric-dim hover:text-primary-container hover:bg-surface-raised transition-none" title="Refresh">
+<span class="material-symbols-outlined">refresh</span>
+</button>
+<button class="p-1.5 text-metric-dim hover:text-primary-container hover:bg-surface-raised transition-none relative" title="Notifications">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-1.5 h-1.5 bg-alert-critical"></span>
+</button>
+<button class="p-1.5 text-metric-dim hover:text-primary-container hover:bg-surface-raised transition-none" title="Terminal">
+<span class="material-symbols-outlined">terminal</span>
+</button>
+</div>
+<div class="h-6 w-px bg-border-hairline mx-1"></div>
+<div class="flex items-center gap-2 pl-1">
+<div class="w-7 h-7 bg-surface-raised border border-border-hairline flex items-center justify-center text-primary-container font-label-code text-body-sm">
+          IL
+        </div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 w-full overflow-hidden">
+<!-- SIDE NAVIGATION BAR -->
+<aside class="flex flex-col justify-between h-[calc(100vh-49px)] w-64 border-r border-border-hairline bg-surface-graphite py-4 px-3 flex-shrink-0 sticky top-[49px]">
+<div>
+<!-- Cluster Header Shield -->
+<div class="px-3 pb-4 mb-3 border-b border-border-hairline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">shield</span>
+<span class="text-headline-sm font-headline-sm text-editorial-cream tracking-tight font-medium text-sm">FG-CLUSTER-ALPHA</span>
+</div>
+<div class="text-label-code font-label-code text-metric-dim mt-1 text-[10px]">
+            CUDA 12.4 Runtime / Online
+          </div>
+<div class="mt-2.5">
+<button class="w-full py-1 text-center border border-border-hairline bg-surface-obsidian text-primary-container hover:border-border-active text-label-code font-label-code text-[11px] uppercase tracking-wider">
+              Initialize Node
+            </button>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="space-y-1">
+<!-- Active: System Health -->
+<a class="flex items-center gap-3 px-3 py-2 text-primary-container bg-surface-raised border-l-2 border-border-active font-label-code text-body-sm" href="#">
+<span class="material-symbols-outlined text-[18px]">memory</span>
+<span>System Health</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-metric-dim hover:bg-surface-raised hover:text-primary-container font-label-code text-body-sm transition-none" href="#">
+<span class="material-symbols-outlined text-[18px]">hub</span>
+<span>Graph Forensics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-metric-dim hover:bg-surface-raised hover:text-primary-container font-label-code text-body-sm transition-none" href="#">
+<span class="material-symbols-outlined text-[18px]">developer_board</span>
+<span>CUDA Clusters</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-metric-dim hover:bg-surface-raised hover:text-primary-container font-label-code text-body-sm transition-none" href="#">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+<span>Execution Ledger</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-metric-dim hover:bg-surface-raised hover:text-primary-container font-label-code text-body-sm transition-none" href="#">
+<span class="material-symbols-outlined text-[18px]">radar</span>
+<span>Threat Vectors</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-metric-dim hover:bg-surface-raised hover:text-primary-container font-label-code text-body-sm transition-none" href="#">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+<span>Audit Logs</span>
+</a>
+</nav>
+</div>
+<!-- Footer Side Actions -->
+<div class="pt-3 border-t border-border-hairline space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-metric-dim hover:bg-surface-raised hover:text-primary-container font-label-code text-body-sm transition-none" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-metric-dim hover:bg-surface-raised hover:text-primary-container font-label-code text-body-sm transition-none" href="#">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+<span>Documentation</span>
+</a>
+</div>
+</aside>
+<!-- MAIN SCROLLABLE CONTENT CANVAS -->
+<main class="flex-1 overflow-y-auto bg-surface-obsidian p-6 md:p-8 custom-scrollbar">
+<!-- Breadcrumbs & Meta Coordinates -->
+<div class="flex flex-wrap items-center justify-between text-label-code font-label-code text-metric-dim mb-4 border-b border-border-hairline pb-2">
+<div class="flex items-center gap-2">
+<span>ROOT</span>
+<span>/</span>
+<span>TOPOLOGY</span>
+<span>/</span>
+<span class="text-primary-container">ENVIRONMENT_DIAGNOSTICS</span>
+</div>
+<div class="flex items-center gap-4 text-[10px]">
+<span>NODE_ID: 0x9AF4_H100_SXM5</span>
+<span>POSIX_TIME: 1716042729</span>
+<span class="text-secondary-container">ATTESTATION_VALID</span>
+</div>
+</div>
+<!-- Title & Epistemic Header Block -->
+<div class="mb-6">
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-editorial-cream tracking-tight font-medium">
+              System Health &amp; Environment Diagnostics
+            </h1>
+<p class="text-body-md font-body-md text-metric-dim mt-1 max-w-3xl">
+              Continuous hardware attestation, runtime verification, and service dependency health via direct hardware registers and NVML telemetry polling.
+            </p>
+</div>
+<!-- Quick Audit Stamp Box -->
+<div class="bg-surface-graphite border border-border-hairline p-3 min-w-[320px]">
+<div class="flex items-center justify-between border-b border-border-hairline pb-1.5 mb-2">
+<span class="text-label-code font-label-code text-metric-dim uppercase">Security Attestation Stamp</span>
+<span class="w-2 h-2 bg-secondary-container inline-block"></span>
+</div>
+<div class="space-y-1 text-label-code font-label-code text-xs">
+<div class="flex justify-between">
+<span class="text-metric-dim">LAST VALIDATION:</span>
+<span class="text-editorial-cream">2025-05-18 14:32:09 UTC</span>
+</div>
+<div class="flex justify-between">
+<span class="text-metric-dim">ATTESTATION HASH:</span>
+<span class="text-primary-container font-mono">sha256:7e91ca0f42b8...</span>
+</div>
+<div class="flex justify-between">
+<span class="text-metric-dim">NEXT SCHEDULED PROBE:</span>
+<span class="text-editorial-cream">12m 45s</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Global System Triage Strip -->
+<div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-2">
+<div class="bg-surface-graphite border border-border-hairline p-2.5 flex items-center justify-between">
+<div>
+<div class="text-label-code font-label-code text-metric-dim text-[10px] uppercase">Services Probed</div>
+<div class="text-headline-sm font-headline-sm text-editorial-cream">14 Total</div>
+</div>
+<span class="material-symbols-outlined text-metric-dim text-[24px]">dns</span>
+</div>
+<div class="bg-surface-graphite border border-border-hairline p-2.5 flex items-center justify-between">
+<div>
+<div class="text-label-code font-label-code text-metric-dim text-[10px] uppercase">Available (Healthy)</div>
+<div class="text-headline-sm font-headline-sm text-secondary-container">11 Active</div>
+</div>
+<div class="w-3 h-3 bg-secondary-container"></div>
+</div>
+<div class="bg-surface-graphite border border-border-hairline p-2.5 flex items-center justify-between">
+<div>
+<div class="text-label-code font-label-code text-metric-dim text-[10px] uppercase">Degraded / Warning</div>
+<div class="text-headline-sm font-headline-sm text-[#FFB020]">1 Throttled</div>
+</div>
+<div class="w-3 h-3 bg-[#FFB020] animate-pulse"></div>
+</div>
+<div class="bg-surface-graphite border border-border-hairline p-2.5 flex items-center justify-between">
+<div>
+<div class="text-label-code font-label-code text-metric-dim text-[10px] uppercase">Unavailable / Offline</div>
+<div class="text-headline-sm font-headline-sm text-alert-critical">1 Unreachable</div>
+</div>
+<div class="w-3 h-3 bg-alert-critical"></div>
+</div>
+</div>
+<!-- Epistemic Notice Banner -->
+<div class="mt-3 bg-surface-graphite border-l-2 border-border-active border-y border-r border-border-hairline px-4 py-2.5 flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container text-[20px]">verified</span>
+<div class="text-label-code font-label-code text-body-sm text-editorial-cream leading-tight">
+<strong class="text-primary-container font-semibold">RIGOROUS ATTESTATION ENFORCED:</strong>
+            System statuses reflect direct POSIX and NVML hardware probe polling. Inactive or offline modules are explicitly marked as Unavailable or Not Checked—never masked or simulated.
+          </div>
+</div>
+</div>
+<!-- MAIN FORENSIC GRID (Bento Layout) -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+<!-- ================= SECTION 1: CORE TIER SERVICE READINESS (7 Cols) ================= -->
+<section class="xl:col-span-7 space-y-6">
+<div class="bg-surface-graphite border border-border-hairline">
+<div class="border-b border-border-hairline px-4 py-3 flex items-center justify-between bg-surface-obsidian">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-primary-container inline-block"></span>
+<h2 class="text-label-code font-label-code text-editorial-cream uppercase font-semibold text-xs tracking-wider">
+                  01. Core Tier Service Readiness &amp; Software Runtime
+                </h2>
+</div>
+<span class="text-label-code font-label-code text-secondary-container bg-surface-raised px-2 py-0.5 border border-border-hairline">
+                ALL CRITICAL DAEMONS LIVE
+              </span>
+</div>
+<div class="p-4 space-y-4">
+<!-- Tier 1 Services Strip -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<div class="bg-surface-obsidian border border-border-hairline p-3">
+<div class="flex items-center justify-between mb-1.5">
+<span class="text-label-code font-label-code text-editorial-cream font-medium">Frontend Client</span>
+<span class="text-[10px] text-secondary-container font-label-code">AVAILABLE</span>
+</div>
+<div class="space-y-1 text-label-code font-label-code text-[11px] text-metric-dim">
+<div class="flex justify-between"><span>HTTP Code:</span> <span class="text-editorial-cream">200 OK</span></div>
+<div class="flex justify-between"><span>WebGL2:</span> <span class="text-editorial-cream">Initialized</span></div>
+<div class="flex justify-between"><span>RTT Latency:</span> <span class="text-primary-container font-mono">1.2ms</span></div>
+<div class="flex justify-between"><span>Dossier Cache:</span> <span class="text-editorial-cream">Warmed</span></div>
+</div>
+</div>
+<div class="bg-surface-obsidian border border-border-hairline p-3">
+<div class="flex items-center justify-between mb-1.5">
+<span class="text-label-code font-label-code text-editorial-cream font-medium">Backend Core API</span>
+<span class="text-[10px] text-secondary-container font-label-code">AVAILABLE</span>
+</div>
+<div class="space-y-1 text-label-code font-label-code text-[11px] text-metric-dim">
+<div class="flex justify-between"><span>Protocol:</span> <span class="text-editorial-cream">gRPC / REST</span></div>
+<div class="flex justify-between"><span>mTLS Boundary:</span> <span class="text-editorial-cream">TLS 1.3:8443</span></div>
+<div class="flex justify-between"><span>Gateway Resp:</span> <span class="text-primary-container font-mono">4.8ms</span></div>
+<div class="flex justify-between"><span>Thread Pool:</span> <span class="text-editorial-cream">64 Workers</span></div>
+</div>
+</div>
+<div class="bg-surface-obsidian border border-border-hairline p-3">
+<div class="flex items-center justify-between mb-1.5">
+<span class="text-label-code font-label-code text-editorial-cream font-medium">Python Runtime</span>
+<span class="text-[10px] text-secondary-container font-label-code">AVAILABLE</span>
+</div>
+<div class="space-y-1 text-label-code font-label-code text-[11px] text-metric-dim">
+<div class="flex justify-between"><span>Interpreter:</span> <span class="text-editorial-cream">CPython 3.11.8</span></div>
+<div class="flex justify-between"><span>LibTorch:</span> <span class="text-editorial-cream">2.3.0+cu124</span></div>
+<div class="flex justify-between"><span>C Library:</span> <span class="text-editorial-cream">glibc v2.35</span></div>
+<div class="flex justify-between"><span>Arch:</span> <span class="text-editorial-cream">x86_64 avx512</span></div>
+</div>
+</div>
+</div>
+<!-- Installed Dependency Matrix Table -->
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-code font-label-code text-metric-dim text-xs uppercase tracking-wider">
+                    Forensic Graph &amp; Acceleration Dependency Matrix
+                  </span>
+<span class="text-label-code font-label-code text-[10px] text-metric-dim">
+                    DIRECT LINK VERIFICATION: PASS
+                  </span>
+</div>
+<div class="border border-border-hairline bg-surface-obsidian overflow-x-auto">
+<table class="w-full text-left border-collapse text-label-code font-label-code text-xs">
+<thead>
+<tr class="border-b border-border-hairline bg-surface-graphite text-metric-dim text-[11px]">
+<th class="py-2 px-3 font-medium">MODULE / PACKAGE</th>
+<th class="py-2 px-3 font-medium">TARGET VERSION</th>
+<th class="py-2 px-3 font-medium">KERNEL LINK STATUS</th>
+<th class="py-2 px-3 font-medium text-right">STATE</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-hairline text-editorial-cream text-[11px]">
+<tr class="hover:bg-surface-raised transition-none">
+<td class="py-2 px-3 font-medium text-primary-container">cuGraph</td>
+<td class="py-2 px-3 font-mono">v24.04.00</td>
+<td class="py-2 px-3 text-metric-dim">CSR &amp; CSC Sparse Kernels Linked</td>
+<td class="py-2 px-3 text-right"><span class="text-secondary-container">AVAILABLE</span></td>
+</tr>
+<tr class="hover:bg-surface-raised transition-none">
+<td class="py-2 px-3 font-medium text-primary-container">PyTorch</td>
+<td class="py-2 px-3 font-mono">v2.3.0+cu124</td>
+<td class="py-2 px-3 text-metric-dim">CUDA 12.4 C++ Backend Initialized</td>
+<td class="py-2 px-3 text-right"><span class="text-secondary-container">AVAILABLE</span></td>
+</tr>
+<tr class="hover:bg-surface-raised transition-none">
+<td class="py-2 px-3 font-medium text-primary-container">DGL (Deep Graph Lib)</td>
+<td class="py-2 px-3 font-mono">v2.1.0-cuda</td>
+<td class="py-2 px-3 text-metric-dim">Multi-GPU Unified Memory Hooks</td>
+<td class="py-2 px-3 text-right"><span class="text-secondary-container">AVAILABLE</span></td>
+</tr>
+<tr class="hover:bg-surface-raised transition-none">
+<td class="py-2 px-3 font-medium text-primary-container">NumPy / SciPy</td>
+<td class="py-2 px-3 font-mono">v1.26.4 / v1.13.0</td>
+<td class="py-2 px-3 text-metric-dim">OpenBLAS 64-bit Threaded</td>
+<td class="py-2 px-3 text-right"><span class="text-secondary-container">AVAILABLE</span></td>
+</tr>
+<tr class="hover:bg-surface-raised transition-none">
+<td class="py-2 px-3 font-medium text-primary-container">TensorRT-LLM / GNN</td>
+<td class="py-2 px-3 font-mono">v0.9.0</td>
+<td class="py-2 px-3 text-metric-dim">Engine Serialized sm_90a Execution</td>
+<td class="py-2 px-3 text-right"><span class="text-secondary-container">AVAILABLE</span></td>
+</tr>
+<tr class="hover:bg-surface-raised transition-none">
+<td class="py-2 px-3 font-medium text-primary-container">zk-SNARK Prover Engine</td>
+<td class="py-2 px-3 font-mono">v0.14.2</td>
+<td class="py-2 px-3 text-metric-dim">rust-bellman FIPS-Compliant Multi-Scalar</td>
+<td class="py-2 px-3 text-right"><span class="text-secondary-container">AVAILABLE</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Dataset & Storage Mounts -->
+<div>
+<span class="text-label-code font-label-code text-metric-dim text-xs uppercase tracking-wider block mb-2">
+                  Dataset Storage Mounts &amp; Fast Memory Tier
+                </span>
+<div class="space-y-2">
+<div class="bg-surface-obsidian border border-border-hairline p-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container mt-0.5">hard_drive</span>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-code font-medium text-editorial-cream text-xs">/mnt/fast-scratch</span>
+<span class="text-[10px] font-label-code text-secondary-container bg-[#0AE8B7]/10 px-1.5 py-0.2 border border-secondary-container">NVMe LOCAL</span>
+</div>
+<div class="text-[11px] font-label-code text-metric-dim mt-0.5">
+                          Capacity: 3.8 TB / 7.6 TB Used (50%) • IOPS: 840,000 • Write Latency: 0.08ms
+                        </div>
+</div>
+</div>
+<div class="text-right">
+<span class="text-secondary-container font-label-code text-xs">AVAILABLE</span>
+</div>
+</div>
+<div class="bg-surface-obsidian border border-border-hairline p-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary-container mt-0.5">lock</span>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-code font-medium text-editorial-cream text-xs">/enclave/data</span>
+<span class="text-[10px] font-label-code text-secondary-container bg-[#0AE8B7]/10 px-1.5 py-0.2 border border-secondary-container">FIPS 140-3 VAULT</span>
+</div>
+<div class="text-[11px] font-label-code text-metric-dim mt-0.5">
+                          AES-256-XTS Hardware Encryption • Free: 18.2 TB • Integrity: Bit-Sealed
+                        </div>
+</div>
+</div>
+<div class="text-right">
+<span class="text-secondary-container font-label-code text-xs">AVAILABLE</span>
+</div>
+</div>
+<div class="bg-surface-obsidian border border-border-hairline p-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-[#FFB020] mt-0.5">cloud_sync</span>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-code font-medium text-editorial-cream text-xs">Cold S3 Parquet Mirror</span>
+<span class="text-[10px] font-label-code text-[#FFB020] bg-[#FFB020]/10 px-1.5 py-0.2 border border-[#FFB020]">REMOTE ARCHIVE</span>
+</div>
+<div class="text-[11px] font-label-code text-metric-dim mt-0.5">
+                          Cross-Region Bucket • Latency Spike: 184ms • Transfer Rate Throttled (12.4 MB/s)
+                        </div>
+</div>
+</div>
+<div class="text-right">
+<span class="text-[#FFB020] font-label-code text-xs font-semibold">DEGRADED / WARNING</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ================= SECTION 3: TEST-SUITE EXECUTION & QUALITY GATES ================= -->
+<div class="bg-surface-graphite border border-border-hairline">
+<div class="border-b border-border-hairline px-4 py-3 flex items-center justify-between bg-surface-obsidian">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-secondary-container inline-block"></span>
+<h2 class="text-label-code font-label-code text-editorial-cream uppercase font-semibold text-xs tracking-wider">
+                  03. Test-Suite Execution &amp; Quality Verification Gates
+                </h2>
+</div>
+<span class="text-label-code font-label-code text-metric-dim text-xs">
+                RUN ID: #TST-9082 • 14:24:01 UTC
+              </span>
+</div>
+<div class="p-4 space-y-4">
+<!-- Pass Metrics Bar -->
+<div class="bg-surface-obsidian border border-border-hairline p-3">
+<div class="flex justify-between items-center mb-1">
+<span class="text-label-code font-label-code text-metric-dim text-xs">VERIFICATION PASS RATE</span>
+<span class="text-headline-sm font-headline-sm text-secondary-container">99.4%</span>
+</div>
+<!-- Precision Segmented Progress Bar -->
+<div class="w-full h-2 bg-surface-graphite border border-border-hairline flex">
+<div class="bg-secondary-container h-full" style="width: 99.4%"></div>
+<div class="bg-[#FFB020] h-full" style="width: 0.4%"></div>
+<div class="bg-alert-critical h-full" style="width: 0.2%"></div>
+</div>
+<div class="flex justify-between text-label-code font-label-code text-[11px] text-metric-dim mt-2">
+<span>512 Passed</span>
+<span>1 Skipped</span>
+<span class="text-editorial-cream">0 Failed</span>
+<span class="text-[#FFB020]">2 Quarantined</span>
+</div>
+</div>
+<!-- Test Suites List -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<div class="bg-surface-obsidian border border-border-hairline p-3">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-editorial-cream font-medium">Mathematical Equivalence Suite</span>
+<span class="text-secondary-container text-label-code text-[10px]">PASSED</span>
+</div>
+<p class="text-[11px] font-label-code text-metric-dim mt-1">
+                    Zero numerical drift vs IEEE FP32 standard on FedWire 10M-node benchmark matrix.
+                  </p>
+</div>
+<div class="bg-surface-obsidian border border-border-hairline p-3">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-editorial-cream font-medium">Memory Leak &amp; CUDA Valgrind</span>
+<span class="text-secondary-container text-label-code text-[10px]">PASSED</span>
+</div>
+<p class="text-[11px] font-label-code text-metric-dim mt-1">
+                    0 bytes leaked across 10,000 continuous subgraph isomorphism kernel allocations.
+                  </p>
+</div>
+<div class="bg-surface-obsidian border border-border-hairline p-3">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-editorial-cream font-medium">RPC Boundary &amp; Token Expiry</span>
+<span class="text-secondary-container text-label-code text-[10px]">PASSED</span>
+</div>
+<p class="text-[11px] font-label-code text-metric-dim mt-1">
+                    Enclave mTLS token revocation, certificate rotation, and non-replay handshake pass.
+                  </p>
+</div>
+<div class="bg-surface-obsidian border border-border-hairline p-3">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-[#FFB020] font-medium">External Cold Archival Sync</span>
+<span class="text-[#FFB020] text-label-code text-[10px]">WARNING</span>
+</div>
+<p class="text-[11px] font-label-code text-metric-dim mt-1">
+                    Network timeout on mock replica snapshot. Parquet partition retry queue non-empty.
+                  </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= SECTION 2: GPU ACCELERATION & CUDA TOOLCHAIN (5 Cols) ================= -->
+<section class="xl:col-span-5 space-y-6">
+<div class="bg-surface-graphite border border-border-hairline">
+<div class="border-b border-border-hairline px-4 py-3 flex items-center justify-between bg-surface-obsidian">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-primary-container inline-block"></span>
+<h2 class="text-label-code font-label-code text-editorial-cream uppercase font-semibold text-xs tracking-wider">
+                  02. GPU Acceleration &amp; CUDA Environment
+                </h2>
+</div>
+<span class="text-label-code font-label-code text-primary-container bg-surface-raised px-2 py-0.5 border border-border-hairline">
+                NVIDIA HOPPER sm_90
+              </span>
+</div>
+<div class="p-4 space-y-4">
+<!-- Driver & Toolchain Telemetry Block -->
+<div class="grid grid-cols-2 gap-2 bg-surface-obsidian border border-border-hairline p-3 text-label-code font-label-code text-xs">
+<div>
+<div class="text-metric-dim text-[10px]">NVIDIA DRIVER</div>
+<div class="text-editorial-cream font-mono">550.54.14</div>
+</div>
+<div>
+<div class="text-metric-dim text-[10px]">CUDA RUNTIME (NVCC)</div>
+<div class="text-primary-container font-mono">12.4 (V12.4.131)</div>
+</div>
+<div class="mt-2">
+<div class="text-metric-dim text-[10px]">cuDNN VERSION</div>
+<div class="text-editorial-cream font-mono">9.1.0 (sm_90 optimized)</div>
+</div>
+<div class="mt-2">
+<div class="text-metric-dim text-[10px]">FABRIC MANAGER</div>
+<div class="text-secondary-container font-mono">Active (v550.54)</div>
+</div>
+</div>
+<!-- Active Execution Adapter Notice -->
+<div class="bg-surface-obsidian border-l-2 border-primary-container p-3 border-y border-r border-border-hairline">
+<div class="text-label-code font-label-code text-[10px] text-metric-dim uppercase">Current Execution Adapter</div>
+<div class="text-editorial-cream font-label-code text-xs font-medium mt-0.5">
+                  CUDA-Direct sm_90 (Hopper In-Register Warp Bitonic + FP8 Tensor MMA)
+                </div>
+<div class="text-metric-dim text-[10px] font-label-code mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">replay</span>
+<span>Auto-fallback armed: OpenMP-64Th CPU Reference</span>
+</div>
+</div>
+<!-- Hardware Device Breakdown -->
+<div class="space-y-2">
+<span class="text-label-code font-label-code text-metric-dim text-xs uppercase tracking-wider block">
+                  Detected Hardware Topology &amp; PCIe Bus
+                </span>
+<!-- Device 0 Card -->
+<div class="bg-surface-obsidian border border-border-hairline p-3">
+<div class="flex items-center justify-between border-b border-border-hairline pb-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-secondary-container inline-block"></span>
+<span class="font-label-code font-medium text-editorial-cream text-xs">GPU 0: NVIDIA H100 80GB SXM5</span>
+</div>
+<span class="text-secondary-container font-label-code text-[10px]">AVAILABLE</span>
+</div>
+<div class="grid grid-cols-3 gap-2 text-label-code font-label-code text-[11px] text-metric-dim">
+<div>
+<div class="text-[9px]">PCIe BUS</div>
+<div class="text-editorial-cream">0000:0e:00.0</div>
+</div>
+<div>
+<div class="text-[9px]">VRAM ACTIVE</div>
+<div class="text-editorial-cream font-mono">81,559 MiB</div>
+</div>
+<div>
+<div class="text-[9px]">TEMPERATURE</div>
+<div class="text-secondary-container font-mono">48°C (Optimal)</div>
+</div>
+<div>
+<div class="text-[9px]">POWER DRAW</div>
+<div class="text-editorial-cream font-mono">312W / 700W</div>
+</div>
+<div>
+<div class="text-[9px]">CORE CLOCK</div>
+<div class="text-editorial-cream font-mono">1,980 MHz</div>
+</div>
+<div>
+<div class="text-[9px]">NVLINK BANDWIDTH</div>
+<div class="text-primary-container font-mono">894 GB/s</div>
+</div>
+</div>
+</div>
+<!-- Device 1 Card -->
+<div class="bg-surface-obsidian border border-border-hairline p-3">
+<div class="flex items-center justify-between border-b border-border-hairline pb-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-secondary-container inline-block"></span>
+<span class="font-label-code font-medium text-editorial-cream text-xs">GPU 1: NVIDIA H100 80GB SXM5</span>
+</div>
+<span class="text-secondary-container font-label-code text-[10px]">AVAILABLE</span>
+</div>
+<div class="grid grid-cols-3 gap-2 text-label-code font-label-code text-[11px] text-metric-dim">
+<div>
+<div class="text-[9px]">PCIe BUS</div>
+<div class="text-editorial-cream">0000:0f:00.0</div>
+</div>
+<div>
+<div class="text-[9px]">VRAM ACTIVE</div>
+<div class="text-editorial-cream font-mono">81,559 MiB</div>
+</div>
+<div>
+<div class="text-[9px]">TEMPERATURE</div>
+<div class="text-secondary-container font-mono">49°C</div>
+</div>
+</div>
+</div>
+<!-- Devices 2-7 Consolidated -->
+<div class="bg-surface-obsidian border border-border-hairline p-2.5 flex items-center justify-between text-label-code font-label-code text-xs">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-secondary-container inline-block"></span>
+<span class="text-editorial-cream">Cluster Devices 2 through 7 (6x H100 SXM5)</span>
+</div>
+<span class="text-secondary-container text-[10px]">NVLINK MESH 900 GB/s</span>
+</div>
+<!-- Auxiliary FPGA Card -->
+<div class="bg-surface-obsidian border border-border-hairline p-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-alert-critical inline-block"></span>
+<span class="font-label-code text-editorial-cream text-xs">Auxiliary FPGA Graph Compression</span>
+</div>
+<span class="text-alert-critical font-label-code text-[10px] font-semibold">UNAVAILABLE</span>
+</div>
+<div class="text-label-code font-label-code text-[10px] text-metric-dim mt-1">
+                    PCIe Device ID 0000:1a:00.0 not detected • Low-voltage power rail off • Kernel driver unseated
+                  </div>
+</div>
+<!-- Quantum Co-Processor QPU -->
+<div class="bg-surface-obsidian border border-dashed border-border-hairline p-3 flex items-center justify-between">
+<div>
+<div class="font-label-code text-metric-dim text-xs">Experimental Quantum Co-Processor QPU</div>
+<div class="text-label-code font-label-code text-[10px] text-metric-dim mt-0.5">
+                      Flag: <span class="font-mono text-editorial-cream">--enable-qpu-hybrid-sampling=false</span>
+</div>
+</div>
+<span class="text-metric-dim font-label-code text-[10px] border border-border-hairline px-1.5 py-0.5">
+                    NOT CHECKED
+                  </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= SECTION 4: RECENT APPLICATION ERRORS & KERNEL EXCEPTION TRACE (7 Cols) ================= -->
+<section class="xl:col-span-7 bg-surface-graphite border border-border-hairline">
+<div class="border-b border-border-hairline px-4 py-3 flex items-center justify-between bg-surface-obsidian">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-primary-container inline-block"></span>
+<h2 class="text-label-code font-label-code text-editorial-cream uppercase font-semibold text-xs tracking-wider">
+                04. Recent Application Errors &amp; Kernel Exception Trace
+              </h2>
+</div>
+<div class="flex items-center gap-2 text-label-code font-label-code text-xs">
+<span class="text-metric-dim">RING_BUFFER: 4,096 SLOTS</span>
+<span class="w-1.5 h-1.5 bg-primary-container inline-block animate-pulse"></span>
+</div>
+</div>
+<div class="p-4">
+<!-- Event Filter Ribbon -->
+<div class="flex items-center justify-between mb-3 border-b border-border-hairline pb-2">
+<div class="flex items-center gap-2">
+<button class="px-2 py-0.5 bg-surface-raised border border-border-hairline text-primary-container text-label-code font-label-code text-[10px]">ALL (4)</button>
+<button class="px-2 py-0.5 text-metric-dim hover:text-editorial-cream text-label-code font-label-code text-[10px]">CRITICAL (0)</button>
+<button class="px-2 py-0.5 text-metric-dim hover:text-editorial-cream text-label-code font-label-code text-[10px]">WARN (2)</button>
+<button class="px-2 py-0.5 text-metric-dim hover:text-editorial-cream text-label-code font-label-code text-[10px]">INFO (2)</button>
+</div>
+<span class="text-[10px] text-metric-dim font-label-code">LIVE STREAM ENABLED</span>
+</div>
+<!-- Terminal Exception Log -->
+<div class="space-y-2 font-mono text-[11px] leading-relaxed">
+<!-- Item 1: WARN -->
+<div class="bg-surface-obsidian border border-border-hairline p-2.5 hover:border-border-active transition-none">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="bg-[#FFB020]/20 text-[#FFB020] border border-[#FFB020] px-1 text-[9px] font-bold">WARN</span>
+<span class="text-editorial-cream font-semibold">cudaErrorMemoryAllocation in sm_90</span>
+<span class="text-metric-dim">[EXP-4109]</span>
+</div>
+<span class="text-metric-dim text-[10px]">14:18:22.104 UTC</span>
+</div>
+<div class="text-metric-dim pl-1 border-l border-border-hairline">
+                  Attempted 34,359,738,368 bytes contiguous device allocation for adjacency matrix factorization. Handled: Allocation safely revoked, host fallback triggered without daemon crash.
+                </div>
+</div>
+<!-- Item 2: INFO -->
+<div class="bg-surface-obsidian border border-border-hairline p-2.5 hover:border-border-active transition-none">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="bg-primary-container/20 text-primary-container border border-primary-container px-1 text-[9px] font-bold">INFO</span>
+<span class="text-editorial-cream">NVLink Interconnect Bandwidth Re-calibrated</span>
+</div>
+<span class="text-metric-dim text-[10px]">14:15:01.889 UTC</span>
+</div>
+<div class="text-metric-dim pl-1 border-l border-border-hairline">
+                  NVLink link rate normalized to 894 GB/s across Node 0 -&gt; Node 1. Bit-error-rate (BER) &lt; 10^-15. Fabric manager synchronization established.
+                </div>
+</div>
+<!-- Item 3: WARN -->
+<div class="bg-surface-obsidian border border-border-hairline p-2.5 hover:border-border-active transition-none">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="bg-[#FFB020]/20 text-[#FFB020] border border-[#FFB020] px-1 text-[9px] font-bold">WARN</span>
+<span class="text-editorial-cream">Cold Storage S3 Multipart Handshake Timeout</span>
+</div>
+<span class="text-metric-dim text-[10px]">13:58:44.450 UTC</span>
+</div>
+<div class="text-metric-dim pl-1 border-l border-border-hairline">
+                  S3 multipart handshake latency &gt; 150ms (peak 184ms) on bucket 'fg-parquet-audit-archive'. Retrying chunk 814 with exponential backoff factor 2.0.
+                </div>
+</div>
+<!-- Item 4: INFO -->
+<div class="bg-surface-obsidian border border-border-hairline p-2.5 hover:border-border-active transition-none">
+<div class="flex items-center justify-between mb-1">
+<div class="flex items-center gap-2">
+<span class="bg-primary-container/20 text-primary-container border border-primary-container px-1 text-[9px] font-bold">INFO</span>
+<span class="text-editorial-cream">Kernel Module Reloaded</span>
+</div>
+<span class="text-metric-dim text-[10px]">13:40:12.012 UTC</span>
+</div>
+<div class="text-metric-dim pl-1 border-l border-border-hairline">
+                  Kernel module 'fg_warp_iso_v4.2.ptx' reloaded into persistent instruction cache. In-register warp shuffles validated with JIT compiler.
+                </div>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= SECTION 5: PLAYBOOKS & SANDBOX CONTROLS (5 Cols) ================= -->
+<section class="xl:col-span-5 space-y-6">
+<div class="bg-surface-graphite border border-border-hairline">
+<div class="border-b border-border-hairline px-4 py-3 flex items-center justify-between bg-surface-obsidian">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-primary-container inline-block"></span>
+<h2 class="text-label-code font-label-code text-editorial-cream uppercase font-semibold text-xs tracking-wider">
+                  05. Remediation Playbooks &amp; Sandbox
+                </h2>
+</div>
+<span class="material-symbols-outlined text-metric-dim text-[18px]">build</span>
+</div>
+<div class="p-4 space-y-4">
+<!-- Live Sandbox Buttons -->
+<div>
+<span class="text-label-code font-label-code text-metric-dim text-xs uppercase tracking-wider block mb-2">
+                  Diagnostic Sandbox Execution Controls
+                </span>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+<button class="border border-border-hairline bg-surface-obsidian hover:border-border-active hover:text-primary-container text-editorial-cream text-label-code font-label-code text-xs p-2.5 text-left transition-none flex flex-col justify-between" onclick="triggerSandbox(this, 'Running Fast Ping &amp; NVML...')">
+<span class="font-medium">Run Fast Ping &amp; NVML Check</span>
+<span class="text-metric-dim text-[10px] mt-2">Est Duration: ~5 seconds</span>
+</button>
+<button class="border border-border-hairline bg-surface-obsidian hover:border-border-active hover:text-primary-container text-editorial-cream text-label-code font-label-code text-xs p-2.5 text-left transition-none flex flex-col justify-between" onclick="triggerSandbox(this, 'Validating Bit-Exact Matrix...')">
+<span class="font-medium">Verify CUDA Bit-Exactness Matrix</span>
+<span class="text-metric-dim text-[10px] mt-2">Est Duration: ~15 seconds</span>
+</button>
+<button class="border border-border-hairline bg-surface-obsidian hover:border-border-active hover:text-primary-container text-editorial-cream text-label-code font-label-code text-xs p-2.5 text-left transition-none flex flex-col justify-between" onclick="triggerSandbox(this, 'Flushing Staged NVMe Cache...')">
+<span class="font-medium">Flush Staged NVMe Cache</span>
+<span class="text-metric-dim text-[10px] mt-2">Safe Purge: Zero In-Flight IO</span>
+</button>
+<button class="border border-border-hairline bg-surface-obsidian hover:border-border-active hover:text-primary-container text-editorial-cream text-label-code font-label-code text-xs p-2.5 text-left transition-none flex flex-col justify-between" onclick="triggerSandbox(this, 'Archiving SOS Bundle (.tar.gz)...')">
+<span class="font-medium">Download SOS Telemetry Bundle</span>
+<span class="text-primary-container text-[10px] mt-2">Format: .tar.gz (Signed)</span>
+</button>
+</div>
+</div>
+<!-- Troubleshooting Playbooks Links -->
+<div>
+<span class="text-label-code font-label-code text-metric-dim text-xs uppercase tracking-wider block mb-2">
+                  Standard Operating Procedures &amp; Resolution Guides
+                </span>
+<div class="space-y-1.5 font-label-code text-xs">
+<a class="flex items-center justify-between p-2 bg-surface-obsidian border border-border-hairline hover:border-border-active text-editorial-cream hover:text-primary-container transition-none" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-metric-dim">description</span>
+<span>Resolving CUDA OOM in Dense Adjacency Allocations</span>
+</div>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+<a class="flex items-center justify-between p-2 bg-surface-obsidian border border-border-hairline hover:border-border-active text-editorial-cream hover:text-primary-container transition-none" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-metric-dim">description</span>
+<span>NVLink Re-enumeration &amp; Fabric Manager Troubleshooting</span>
+</div>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+<a class="flex items-center justify-between p-2 bg-surface-obsidian border border-border-hairline hover:border-border-active text-editorial-cream hover:text-primary-container transition-none" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-metric-dim">description</span>
+<span>FIPS Enclave Key Rotation Protocol</span>
+</div>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+<a class="flex items-center justify-between p-2 bg-surface-obsidian border border-border-hairline hover:border-border-active text-editorial-cream hover:text-primary-container transition-none" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-metric-dim">description</span>
+<span>Switching Active Adapter from CUDA-Direct to CPU Fallback</span>
+</div>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- FOOTER AUDIT SEAL -->
+<footer class="mt-8 pt-4 border-t border-border-hairline flex flex-col sm:flex-row items-center justify-between text-label-code font-label-code text-metric-dim text-xs">
+<div>
+<span>FRAUDGRAPH SECURE ENCLAVE PLATFORM // KERNEL 6.8.0-45-GENERIC</span>
+</div>
+<div class="flex items-center gap-4 mt-2 sm:mt-0">
+<span>ATTESTATION SIGNATURE: VERIFIED</span>
+<span>AIR-GAPPED TELEMETRY PORT: 8443</span>
+</div>
+</footer>
+</main>
+</div>
+<!-- Interactive Logic for Demonstration -->
+<script>
+    function runValidation() {
+      const btn = document.getElementById('runValidationBtn');
+      const icon = document.getElementById('validationIcon');
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = `
+        <span class="material-symbols-outlined text-[16px] animate-spin">refresh</span>
+        <span>Validating POSIX & NVML...</span>
+      `;
+      btn.classList.add('opacity-75');
+
+      setTimeout(() => {
+        btn.innerHTML = `
+          <span class="material-symbols-outlined text-[16px]">check_circle</span>
+          <span>Environment Attested (0.42s)</span>
+        `;
+        btn.classList.remove('opacity-75');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+        }, 3000);
+      }, 1500);
+    }
+
+    function triggerSandbox(el, label) {
+      const original = el.innerHTML;
+      el.innerHTML = `<span class="text-primary-container font-mono animate-pulse">&gt; ${label}</span>`;
+      setTimeout(() => {
+        el.innerHTML = original;
+      }, 2000);
+    }
+  </script>
+</body></html>

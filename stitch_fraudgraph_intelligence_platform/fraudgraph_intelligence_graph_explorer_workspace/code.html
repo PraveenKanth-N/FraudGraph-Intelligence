@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FraudGraph Intelligence // Topological Graph Explorer</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Newsreader serif and Geist fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#004f53",
+            "on-tertiary-fixed": "#1c1c18",
+            "on-background": "#e1e2e8",
+            "on-surface-variant": "#b9cacb",
+            "on-surface": "#e1e2e8",
+            "secondary-fixed-dim": "#00e0b1",
+            "primary-fixed-dim": "#00dce6",
+            "surface": "#111418",
+            "tertiary-fixed-dim": "#c9c6c1",
+            "on-error-container": "#ffdad6",
+            "inverse-primary": "#00696f",
+            "on-primary": "#00373a",
+            "outline-variant": "#3a494b",
+            "surface-container-highest": "#32353a",
+            "on-primary-container": "#006a70",
+            "secondary-container": "#01e7b6",
+            "surface-container-low": "#191c20",
+            "tertiary-container": "#dedbd5",
+            "on-secondary-fixed": "#002117",
+            "surface-tint": "#00dce6",
+            "on-error": "#690005",
+            "on-tertiary": "#31302d",
+            "editorial-cream": "#F8F7F4",
+            "secondary-fixed": "#41fecb",
+            "on-primary-fixed": "#002022",
+            "surface-bright": "#36393e",
+            "surface-raised": "#161B22",
+            "surface-obsidian": "#05070A",
+            "inverse-on-surface": "#2e3135",
+            "primary-container": "#00f2fe",
+            "inverse-surface": "#e1e2e8",
+            "on-secondary": "#00382a",
+            "background": "#111418",
+            "surface-container": "#1d2024",
+            "alert-critical": "#FF3B30",
+            "error-container": "#93000a",
+            "surface-variant": "#32353a",
+            "on-secondary-container": "#00624c",
+            "on-secondary-fixed-variant": "#00513e",
+            "surface-graphite": "#0D1117",
+            "surface-container-lowest": "#0b0e12",
+            "surface-container-high": "#272a2f",
+            "metric-dim": "#484F58",
+            "on-tertiary-fixed-variant": "#474743",
+            "error": "#ffb4ab",
+            "border-hairline": "#21262D",
+            "secondary": "#7dffd5",
+            "tertiary": "#faf7f1",
+            "primary": "#e0fdff",
+            "surface-dim": "#111418",
+            "outline": "#849495",
+            "border-active": "#00F2FE",
+            "on-tertiary-container": "#61605b",
+            "tertiary-fixed": "#e5e2dc",
+            "primary-fixed": "#6ff6ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2.5rem",
+            "gutter-mobile": "0.75rem",
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin": "2.5rem",
+            "space-xs": "0.25rem",
+            "margin-mobile": "1rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "display-hero": ["Newsreader", "serif"],
+            "body-md": ["Geist", "sans-serif"],
+            "headline-lg-mobile": ["Newsreader", "serif"],
+            "body-sm": ["Geist", "sans-serif"],
+            "headline-md": ["Newsreader", "serif"],
+            "body-lg": ["Geist", "sans-serif"],
+            "headline-sm": ["Newsreader", "serif"],
+            "metric-display": ["Geist", "monospace"],
+            "headline-lg": ["Newsreader", "serif"],
+            "display-hero-mobile": ["Newsreader", "serif"],
+            "label-code": ["Geist", "monospace"]
+          },
+          "fontSize": {
+            "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "500" }],
+            "metric-display": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "400" }],
+            "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "label-code": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Architectural Hairlines & Zero Radius Enforcements */
+    * {
+      border-radius: 0px !important;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+    }
+    
+    /* Animation Keyframes */
+    @keyframes pulse-cyan {
+      0%, 100% { opacity: 0.25; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.08); }
+    }
+    @keyframes pulse-critical {
+      0%, 100% { stroke-opacity: 0.3; transform: scale(1); }
+      50% { stroke-opacity: 1; transform: scale(1.12); }
+    }
+    @keyframes flow-dash {
+      to { stroke-dashoffset: -40; }
+    }
+
+    .flow-vector {
+      stroke-dasharray: 6 4;
+      animation: flow-dash 1.6s linear infinite;
+    }
+    .flow-critical {
+      stroke-dasharray: 8 4;
+      animation: flow-dash 0.9s linear infinite;
+    }
+    .pulse-target {
+      animation: pulse-cyan 2.8s ease-in-out infinite;
+      transform-origin: center;
+    }
+    .pulse-alert {
+      animation: pulse-critical 1.8s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    /* Accessibility reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      .flow-vector, .flow-critical, .pulse-target, .pulse-alert {
+        animation: none !important;
+      }
+    }
+
+    /* Custom range sliders styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: #21262D;
+      height: 3px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 12px;
+      width: 6px;
+      background: #00F2FE;
+      cursor: ew-resize;
+      border: none;
+    }
+  </style>
+</head>
+<body class="bg-surface-obsidian text-on-surface font-body-md antialiased overflow-hidden select-none min-h-screen flex flex-col">
+<!-- ========================================================================= -->
+<!-- TOP COMMAND / NAVIGATION BAR (Derived from Shared Components JSON)        -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-0 w-full z-50 rounded-none bg-surface-graphite/85 dark:bg-surface-graphite/85 backdrop-blur-md border-b border-border-hairline dark:border-border-hairline h-14 flex items-center justify-between px-space-md">
+<!-- Brand + Operational Dataset Cluster HUD -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 bg-primary-container shadow-[0_0_8px_#00F2FE]"></span>
+<span class="text-headline-sm font-headline-sm tracking-tight text-editorial-cream uppercase font-semibold">
+          FraudGraph Intelligence
+        </span>
+</div>
+<!-- Vertical divider -->
+<div class="h-5 w-px bg-border-hairline"></div>
+<!-- Telemetry Subsystem Capsule -->
+<div class="hidden xl:flex items-center gap-space-sm font-label-code text-label-code text-metric-dim">
+<span class="px-space-xs py-0.5 bg-surface-raised border border-border-hairline text-on-surface">
+          FedWire-Synthetic-2025-Q1
+        </span>
+<span class="text-on-surface-variant font-medium">// 1.84M NODES, 4.92M EDGES</span>
+<span class="text-border-hairline">|</span>
+<span class="flex items-center gap-1.5 text-secondary-fixed-dim">
+<span class="w-1.5 h-1.5 bg-secondary-fixed-dim animate-ping"></span>
+          H100 CLUSTER: 8/8 ONLINE [FP8 v4.2]
+        </span>
+</div>
+</div>
+<!-- Center Search & Query Field -->
+<div class="hidden lg:flex items-center w-96 relative">
+<span class="absolute left-2.5 text-metric-dim flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-base">search</span>
+</span>
+<input class="w-full bg-surface-obsidian border border-border-hairline pl-8 pr-16 py-1.5 font-label-code text-label-code text-primary-container focus:outline-none focus:border-border-active placeholder-metric-dim" placeholder="Query TX ID / Node Hash / Ring #" type="text" value="0x7f4b8849... // Ring #8849"/>
+<div class="absolute right-2 flex items-center gap-1 text-[9px] font-label-code text-metric-dim border border-border-hairline px-1 py-0.5">
+<span>⌘</span><span>K</span>
+</div>
+</div>
+<!-- Trailing Actions & Cluster Tools -->
+<div class="flex items-center gap-space-sm">
+<button class="hidden md:flex items-center gap-1.5 px-space-sm py-1.5 border border-border-hairline text-editorial-cream hover:border-editorial-cream hover:bg-surface-raised text-label-code font-label-code tracking-wider uppercase transition-none">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Export GEXF/JSON</span>
+</button>
+<button class="hidden md:flex items-center gap-1.5 px-space-sm py-1.5 border border-border-hairline text-editorial-cream hover:border-border-active text-label-code font-label-code tracking-wider uppercase transition-none">
+<span class="material-symbols-outlined text-sm text-primary-container">polyline</span>
+<span>Run Isomorphism</span>
+</button>
+<button class="flex items-center gap-1.5 px-space-md py-1.5 bg-alert-critical text-surface-obsidian font-bold text-label-code tracking-wider uppercase hover:bg-error transition-none shadow-[0_0_12px_rgba(255,59,48,0.3)]">
+<span class="material-symbols-outlined text-sm font-bold">shield_lock</span>
+<span>Forensic Freeze</span>
+</button>
+<div class="h-5 w-px bg-border-hairline mx-1"></div>
+<!-- Icon micro-actions -->
+<div class="flex items-center gap-0.5 text-outline">
+<button class="p-1.5 hover:text-primary-container transition-none" title="Terminal">
+<span class="material-symbols-outlined text-lg">terminal</span>
+</button>
+<button class="p-1.5 hover:text-primary-container transition-none" title="Analytics">
+<span class="material-symbols-outlined text-lg">analytics</span>
+</button>
+<button class="p-1.5 hover:text-primary-container transition-none relative" title="Notifications">
+<span class="material-symbols-outlined text-lg">notifications</span>
+<span class="absolute top-1 right-1 w-1.5 h-1.5 bg-alert-critical"></span>
+</button>
+<button class="p-1.5 hover:text-primary-container transition-none" title="Settings">
+<span class="material-symbols-outlined text-lg">settings</span>
+</button>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE LAYOUT (SideNav + Graph Canvas + Filter Dock + Inspector) -->
+<!-- ========================================================================= -->
+<div class="flex-1 pt-14 flex overflow-hidden relative">
+<!-- 1. PERSISTENT LEFT SIDEBAR (From Shared Components JSON) -->
+<aside class="fixed top-14 left-0 h-[calc(100vh-3.5rem)] w-60 rounded-none z-40 bg-surface-graphite dark:bg-surface-graphite border-r border-border-hairline dark:border-border-hairline flex flex-col justify-between p-space-sm">
+<!-- Upper Section: Cluster Status Header + Primary Navigation -->
+<div class="space-y-space-md">
+<!-- Cluster Header Block -->
+<div class="px-space-md py-space-sm border-b border-border-hairline bg-surface-obsidian/40">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-on-surface font-semibold uppercase tracking-wider">FraudGraph Core</span>
+<span class="w-2 h-2 bg-secondary-fixed shadow-[0_0_6px_#00E0B1]"></span>
+</div>
+<p class="text-[10px] font-label-code text-metric-dim mt-0.5">H100-SXM5: 8/8 ONLINE</p>
+</div>
+<!-- Navigation Tab List -->
+<nav aria-label="Main Navigation" class="space-y-0.5">
+<!-- Overview -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase hover:bg-surface-raised transition-none" href="#">
+<span class="material-symbols-outlined text-base">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Graph Explorer [ACTIVE INTENT MAP LOCK] -->
+<a class="bg-surface-raised dark:bg-surface-raised text-primary-container dark:text-primary-container border-l-2 border-border-active flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase shadow-[inset_1px_0_0_0_#00F2FE]" href="#">
+<span class="material-symbols-outlined text-base">hub</span>
+<span>Graph Explorer</span>
+</a>
+<!-- Transactions -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase hover:bg-surface-raised transition-none" href="#">
+<span class="material-symbols-outlined text-base">receipt_long</span>
+<span>Transactions</span>
+</a>
+<!-- GPU Lab -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase hover:bg-surface-raised transition-none" href="#">
+<span class="material-symbols-outlined text-base">memory</span>
+<span>GPU Lab</span>
+</a>
+<!-- Experiments -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase hover:bg-surface-raised transition-none" href="#">
+<span class="material-symbols-outlined text-base">science</span>
+<span>Experiments</span>
+</a>
+<!-- Evaluation -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase hover:bg-surface-raised transition-none" href="#">
+<span class="material-symbols-outlined text-base">rule</span>
+<span>Evaluation</span>
+</a>
+<!-- Reports -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase hover:bg-surface-raised transition-none" href="#">
+<span class="material-symbols-outlined text-base">assessment</span>
+<span>Reports</span>
+</a>
+<!-- System Health -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase hover:bg-surface-raised transition-none" href="#">
+<span class="material-symbols-outlined text-base">vital_signs</span>
+<span>System Health</span>
+</a>
+</nav>
+<!-- CTA Action in SideNav -->
+<div class="px-space-sm pt-2">
+<button class="w-full py-2 bg-surface-raised border border-border-hairline text-primary-container hover:border-border-active flex items-center justify-center gap-2 text-label-code font-label-code tracking-wider uppercase transition-none">
+<span class="material-symbols-outlined text-sm">bolt</span>
+<span>Execute Pipeline</span>
+</button>
+</div>
+</div>
+<!-- Footer Section: Secondary utilities -->
+<div class="border-t border-border-hairline pt-space-sm space-y-0.5">
+<a class="text-outline hover:text-on-surface flex items-center gap-space-sm px-space-md py-1.5 text-label-code font-label-code tracking-wider uppercase" href="#">
+<span class="material-symbols-outlined text-sm">menu_book</span>
+<span>Documentation</span>
+</a>
+<a class="text-outline hover:text-on-surface flex items-center gap-space-sm px-space-md py-1.5 text-label-code font-label-code tracking-wider uppercase" href="#">
+<span class="material-symbols-outlined text-sm">dns</span>
+<span>Cluster Status</span>
+</a>
+<a class="text-outline hover:text-on-surface flex items-center gap-space-sm px-space-md py-1.5 text-label-code font-label-code tracking-wider uppercase" href="#">
+<span class="material-symbols-outlined text-sm">tune</span>
+<span>Preferences</span>
+</a>
+</div>
+</aside>
+<!-- 2. GRAPH CANVAS WORKSPACE & HUD (Center Section) -->
+<main class="ml-60 flex-1 relative flex flex-col bg-surface-obsidian overflow-hidden" id="canvas-wrapper">
+<!-- TOP HUD TELEMETRY STRIP (Palantir/Gephi grade metrics) -->
+<div class="absolute top-3 left-4 z-20 flex items-center gap-space-md bg-surface-graphite/90 backdrop-blur-md border border-border-hairline px-3 py-1.5 font-label-code text-label-code">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2 h-2 bg-primary-container"></span>
+<span class="text-on-surface font-semibold tracking-wider">SUB-GRAPH: 142 NODES // 318 EDGES IN MEMORY</span>
+</div>
+<span class="text-border-hairline">|</span>
+<div class="text-metric-dim">
+          LAYOUT: <span class="text-on-surface">FORCEATLAS2 GPU</span>
+</div>
+<span class="text-border-hairline">|</span>
+<div class="text-metric-dim">
+          LATENCY: <span class="text-secondary-fixed font-bold">0.18ms</span>
+</div>
+<span class="text-border-hairline">|</span>
+<div class="text-metric-dim">
+          SPARSITY: <span class="text-on-surface">0.0012</span>
+</div>
+</div>
+<!-- FLOATING CANVAS VIEWPORT TOOLS (Top Right) -->
+<div class="absolute top-3 right-4 z-20 flex items-center bg-surface-graphite/90 backdrop-blur-md border border-border-hairline divide-x divide-border-hairline">
+<button class="p-2 text-outline hover:text-primary-container hover:bg-surface-raised transition-none" title="Zoom In">
+<span class="material-symbols-outlined text-base">add</span>
+</button>
+<button class="p-2 text-outline hover:text-primary-container hover:bg-surface-raised transition-none" title="Zoom Out">
+<span class="material-symbols-outlined text-base">remove</span>
+</button>
+<button class="p-2 text-outline hover:text-primary-container hover:bg-surface-raised transition-none" title="Fit to Screen">
+<span class="material-symbols-outlined text-base">fit_screen</span>
+</button>
+<button class="p-2 text-outline hover:text-primary-container hover:bg-surface-raised transition-none" title="100% Reset">
+<span class="font-label-code text-[11px] px-1 font-bold">1:1</span>
+</button>
+<button class="p-2 text-primary-container hover:bg-surface-raised transition-none flex items-center gap-1 font-label-code text-[10px]" title="Toggle 2D/3D Mode">
+<span class="material-symbols-outlined text-base">view_in_ar</span>
+<span class="hidden sm:inline">3D</span>
+</button>
+<button class="p-2 text-secondary-fixed hover:bg-surface-raised transition-none flex items-center gap-1 font-label-code text-[10px]" title="Physics Simulation">
+<span class="material-symbols-outlined text-base">motion_photos_on</span>
+<span class="hidden sm:inline">PHYSICS: RUN</span>
+</button>
+<button class="p-2 text-outline hover:text-primary-container hover:bg-surface-raised transition-none" title="Lasso Selection">
+<span class="material-symbols-outlined text-base">gesture</span>
+</button>
+<button class="p-2 text-outline hover:text-primary-container hover:bg-surface-raised transition-none" title="Capture Forensic Snapshot">
+<span class="material-symbols-outlined text-base">photo_camera</span>
+</button>
+</div>
+<!-- FLOATING QUERY & FILTER DOCK (Left Overlay inside Canvas) -->
+<div class="absolute top-16 left-4 z-20 w-72 bg-surface-graphite/95 backdrop-blur-md border border-border-hairline p-space-sm space-y-space-sm shadow-2xl">
+<div class="flex items-center justify-between border-b border-border-hairline pb-2">
+<span class="font-label-code text-label-code text-editorial-cream uppercase tracking-wider font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm text-primary-container">filter_alt</span>
+            Topological Filters
+          </span>
+<button class="text-metric-dim hover:text-primary-container text-label-code uppercase text-[10px]">Reset</button>
+</div>
+<!-- Node Type Selector Chips (Architectural Rectangles) -->
+<div>
+<label class="block font-label-code text-[10px] text-metric-dim uppercase mb-1.5">Entity Classification</label>
+<div class="flex flex-wrap gap-1">
+<button class="px-2 py-1 bg-surface-raised border border-border-active text-primary-container font-label-code text-[10px] uppercase">
+              ■ Mule (4)
+            </button>
+<button class="px-2 py-1 bg-surface-raised border border-border-hairline text-on-surface hover:border-border-active font-label-code text-[10px] uppercase">
+              ◇ Shell Corp (7)
+            </button>
+<button class="px-2 py-1 bg-surface-raised border border-border-hairline text-on-surface hover:border-border-active font-label-code text-[10px] uppercase">
+              ⬡ Escrow (2)
+            </button>
+<button class="px-2 py-1 bg-surface-raised border border-border-hairline text-on-surface hover:border-border-active font-label-code text-[10px] uppercase">
+              ▣ Merchant (18)
+            </button>
+<button class="px-2 py-1 bg-surface-obsidian border border-border-hairline text-metric-dim hover:text-on-surface font-label-code text-[10px] uppercase">
+              ● Benign (111)
+            </button>
+</div>
+</div>
+<!-- Edge Relationship Multi-select -->
+<div>
+<label class="block font-label-code text-[10px] text-metric-dim uppercase mb-1.5">Edge Modality</label>
+<div class="grid grid-cols-2 gap-1 text-[10px] font-label-code">
+<label class="flex items-center gap-1.5 bg-surface-obsidian px-2 py-1 border border-border-hairline cursor-pointer">
+<input checked="" class="w-3.5 h-3.5 bg-surface-graphite border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+<span class="text-on-surface">Wire Transfer</span>
+</label>
+<label class="flex items-center gap-1.5 bg-surface-obsidian px-2 py-1 border border-border-hairline cursor-pointer">
+<input checked="" class="w-3.5 h-3.5 bg-surface-graphite border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+<span class="text-on-surface">SWIFT MT103</span>
+</label>
+<label class="flex items-center gap-1.5 bg-surface-obsidian px-2 py-1 border border-border-hairline cursor-pointer">
+<input checked="" class="w-3.5 h-3.5 bg-surface-graphite border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+<span class="text-on-surface">ACH Batch</span>
+</label>
+<label class="flex items-center gap-1.5 bg-surface-obsidian px-2 py-1 border border-border-hairline cursor-pointer">
+<input class="w-3.5 h-3.5 bg-surface-graphite border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+<span class="text-metric-dim">Card Clearing</span>
+</label>
+</div>
+</div>
+<!-- Risk Score Filter Slider -->
+<div>
+<div class="flex items-center justify-between font-label-code text-[10px] mb-1">
+<span class="text-metric-dim uppercase">Risk Threshold</span>
+<span class="text-alert-critical font-bold">≥ 0.85 [CRITICAL]</span>
+</div>
+<input class="w-full cursor-ew-resize" max="100" min="0" type="range" value="85"/>
+<div class="flex justify-between text-[9px] font-label-code text-metric-dim mt-0.5">
+<span>0.00 Safe</span>
+<span>0.50 Elevated</span>
+<span class="text-alert-critical">1.00 Malicious</span>
+</div>
+</div>
+<!-- Degree Range Slider -->
+<div>
+<div class="flex items-center justify-between font-label-code text-[10px] mb-1">
+<span class="text-metric-dim uppercase">In/Out Degree Cutoff</span>
+<span class="text-primary-container font-mono">1 — 250+</span>
+</div>
+<div class="flex items-center gap-2">
+<input class="w-full" max="250" min="1" type="range" value="18"/>
+<span class="font-label-code text-[10px] text-on-surface border border-border-hairline px-1.5 py-0.5 bg-surface-obsidian">18</span>
+</div>
+</div>
+<!-- Time Window Live Wire Scrub -->
+<div class="pt-1 border-t border-border-hairline">
+<div class="flex items-center justify-between font-label-code text-[10px] text-metric-dim uppercase">
+<span class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-primary-container animate-pulse"></span>
+              Time Ingest Horizon
+            </span>
+<span class="text-on-surface">T-60m → NOW</span>
+</div>
+</div>
+</div>
+<!-- NODE & EDGE VISUAL LEGEND (Bottom Left Overlay) -->
+<div class="absolute bottom-12 left-4 z-20 bg-surface-graphite/90 backdrop-blur-md border border-border-hairline px-3 py-2 flex items-center gap-4 text-[10px] font-label-code">
+<div class="text-metric-dim uppercase font-semibold tracking-wider">Topology Legend:</div>
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="inline-block w-3 h-3 border-2 border-primary-container"></span>
+<span>Escrow Vault</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="inline-block w-3 h-3 rotate-45 border border-dashed border-alert-critical"></span>
+<span>Shell Entity</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="inline-block w-3 h-3 rounded-full border border-alert-critical bg-alert-critical/30"></span>
+<span>Mule Account</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface">
+<span class="inline-block w-3 h-3 border border-dotted border-secondary-fixed"></span>
+<span>Relay Merchant</span>
+</div>
+<div class="flex items-center gap-1.5 text-metric-dim">
+<span class="inline-block w-3 h-2 border border-border-hairline"></span>
+<span>Benign Cluster</span>
+</div>
+<div class="h-3 w-px bg-border-hairline"></div>
+<div class="flex items-center gap-1.5 text-alert-critical">
+<span class="w-4 h-0.5 bg-alert-critical"></span>
+<span>Rapid Fan-Out ($1.2M)</span>
+</div>
+</div>
+<!-- ===================================================================== -->
+<!-- TOPOLOGICAL GRAPH CANVAS (SVG Vector Simulation System)               -->
+<!-- ===================================================================== -->
+<div class="relative w-full h-full flex items-center justify-center overflow-hidden cursor-crosshair">
+<!-- Coordinate Grid Background -->
+<div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: linear-gradient(to right, #21262D 1px, transparent 1px), linear-gradient(to bottom, #21262D 1px, transparent 1px); background-size: 40px 40px;"></div>
+<!-- SVG Interactive Network Graph Scene -->
+<svg class="w-full h-full absolute inset-0 select-none" preserveaspectratio="xMidYMid meet" viewbox="0 0 1200 800">
+<defs>
+<!-- Glowing cyan drop shadow -->
+<filter height="140%" id="cyan-glow" width="140%" x="-20%" y="-20%">
+<fedropshadow dx="0" dy="0" flood-color="#00F2FE" flood-opacity="0.8" stddeviation="4"></fedropshadow>
+</filter>
+<!-- Critical red alert glow -->
+<filter height="160%" id="alert-glow" width="160%" x="-30%" y="-30%">
+<fedropshadow dx="0" dy="0" flood-color="#FF3B30" flood-opacity="0.9" stddeviation="6"></fedropshadow>
+</filter>
+<!-- Arrow markers for directed financial vectors -->
+<marker id="arrow-cyan" markerheight="6" markerwidth="6" orient="auto-start-reverse" refx="22" refy="5" viewbox="0 0 10 10">
+<path d="M 0 1 L 10 5 L 0 9 z" fill="#00F2FE"></path>
+</marker>
+<marker id="arrow-red" markerheight="7" markerwidth="7" orient="auto-start-reverse" refx="24" refy="5" viewbox="0 0 10 10">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#FF3B30"></path>
+</marker>
+<marker id="arrow-muted" markerheight="4" markerwidth="4" orient="auto-start-reverse" refx="16" refy="5" viewbox="0 0 10 10">
+<path d="M 0 1 L 8 5 L 0 9 z" fill="#32353a"></path>
+</marker>
+</defs>
+<!-- ----------------------------------------------------------------- -->
+<!-- 1. BACKGROUND BENIGN TOPOLOGY (Subtle ambient network depth)      -->
+<!-- ----------------------------------------------------------------- -->
+<g class="muted-topology opacity-30">
+<!-- Distant connections -->
+<line stroke="#21262D" stroke-width="1" x1="120" x2="240" y1="180" y2="140"></line>
+<line stroke="#21262D" stroke-width="1" x1="240" x2="310" y1="140" y2="230"></line>
+<line stroke="#21262D" stroke-width="1" x1="150" x2="280" y1="360" y2="420"></line>
+<line stroke="#21262D" stroke-width="1" x1="280" x2="190" y1="420" y2="520"></line>
+<line stroke="#21262D" stroke-width="1" x1="940" x2="1080" y1="150" y2="190"></line>
+<line stroke="#21262D" stroke-width="1" x1="1080" x2="1020" y1="190" y2="340"></line>
+<line stroke="#21262D" stroke-width="1" x1="880" x2="1010" y1="560" y2="620"></line>
+<line stroke="#21262D" stroke-width="1" x1="1010" x2="1140" y1="620" y2="550"></line>
+<!-- Benign Nodes (dim squares/circles) -->
+<circle cx="120" cy="180" fill="#161B22" r="5" stroke="#21262D" stroke-width="1"></circle>
+<circle cx="240" cy="140" fill="#161B22" r="6" stroke="#21262D" stroke-width="1"></circle>
+<circle cx="310" cy="230" fill="#161B22" r="4" stroke="#21262D" stroke-width="1"></circle>
+<circle cx="150" cy="360" fill="#161B22" r="5" stroke="#21262D" stroke-width="1"></circle>
+<circle cx="280" cy="420" fill="#161B22" r="6" stroke="#21262D" stroke-width="1"></circle>
+<circle cx="190" cy="520" fill="#161B22" r="4" stroke="#21262D" stroke-width="1"></circle>
+<circle cx="940" cy="150" fill="#161B22" r="6" stroke="#21262D" stroke-width="1"></circle>
+<circle cx="1080" cy="190" fill="#161B22" r="5" stroke="#21262D" stroke-width="1"></circle>
+<circle cx="1020" cy="340" fill="#161B22" r="7" stroke="#21262D" stroke-width="1"></circle>
+<circle cx="880" cy="560" fill="#161B22" r="4" stroke="#21262D" stroke-width="1"></circle>
+<circle cx="1010" cy="620" fill="#161B22" r="6" stroke="#21262D" stroke-width="1"></circle>
+<circle cx="1140" cy="550" fill="#161B22" r="5" stroke="#21262D" stroke-width="1"></circle>
+</g>
+<!-- ----------------------------------------------------------------- -->
+<!-- 2. SYNTHETIC RING #8849 [Multi-Hop Escrow Wash] - FEATURED CLUSTER -->
+<!-- ----------------------------------------------------------------- -->
+<g id="synthetic-ring-cluster">
+<!-- Ring Cluster Bounding Perimeter (Forensic Convex Hull) -->
+<polygon fill="rgba(0, 242, 254, 0.02)" points="400,160 840,140 920,490 680,680 340,540" stroke="#21262D" stroke-dasharray="4 6" stroke-width="1"></polygon>
+<!-- Ring Cluster Label -->
+<rect fill="#0D1117" height="20" stroke="#00F2FE" stroke-width="1" width="310" x="420" y="145"></rect>
+<text fill="#00F2FE" font-family="Geist, monospace" font-size="10" letter-spacing="1" x="430" y="159">
+              SYNTHETIC RING #8849 [MULTI-HOP ESCROW WASH]
+            </text>
+<!-- Vector 1: Mule_Wallet_01 -> ShellCorp_33 ($420,000 ACH / 0.14ms) -->
+<g class="edge-group">
+<line class="flow-vector" marker-end="url(#arrow-cyan)" stroke="#00F2FE" stroke-width="2" x1="430" x2="620" y1="260" y2="240"></line>
+<rect fill="#05070A" height="15" stroke="#21262D" width="70" x="500" y="235"></rect>
+<text fill="#00F2FE" font-family="Geist, monospace" font-size="9" x="506" y="246">$420,000</text>
+</g>
+<!-- Vector 2: ShellCorp_33 -> Escrow_Account_#88 ($850,000 Layered Wire) -->
+<g class="edge-group">
+<line class="flow-critical" marker-end="url(#arrow-red)" stroke="#FF3B30" stroke-width="2.5" x1="640" x2="780" y1="265" y2="390"></line>
+<rect fill="#05070A" height="16" stroke="#FF3B30" width="75" x="715" y="305"></rect>
+<text fill="#FF3B30" font-family="Geist, monospace" font-size="9" font-weight="bold" x="721" y="316">$850,000 [!EXP]</text>
+</g>
+<!-- Vector 3: Relay_Merchant_B41 -> ShellCorp_33 ($195,000 Rapid Sweep) -->
+<g class="edge-group">
+<line marker-end="url(#arrow-cyan)" stroke="#00F2FE" stroke-dasharray="3 3" stroke-width="1.5" x1="480" x2="615" y1="440" y2="265"></line>
+<rect fill="#05070A" height="14" stroke="#21262D" width="62" x="525" y="355"></rect>
+<text fill="#e1e2e8" font-family="Geist, monospace" font-size="8" x="530" y="365">$195,000</text>
+</g>
+<!-- Vector 4: Escrow_Account_#88 -> Sink_Account_#09 ($1.2M Offshore Fan-Out) -->
+<g class="edge-group">
+<line class="flow-critical" marker-end="url(#arrow-red)" stroke="#FF3B30" stroke-width="3.5" x1="770" x2="570" y1="420" y2="570"></line>
+<rect fill="#05070A" height="18" stroke="#FF3B30" width="85" x="655" y="495"></rect>
+<text fill="#FF3B30" font-family="Geist, monospace" font-size="10" font-weight="bold" x="662" y="508">$1,240,000 ⚡</text>
+</g>
+<!-- Vector 5: Sink_Account_#09 -> Mule_Wallet_01 (3-Hop Cycle Isomorphism Loop) -->
+<g class="edge-group">
+<path class="flow-vector" d="M 540 570 Q 360 440 420 280" fill="none" marker-end="url(#arrow-cyan)" stroke="#00F2FE" stroke-dasharray="4 2" stroke-width="1.8"></path>
+<rect fill="#05070A" height="14" stroke="#00F2FE" width="60" x="360" y="415"></rect>
+<text fill="#00F2FE" font-family="Geist, monospace" font-size="8" x="365" y="425">CYCLE MATCH</text>
+</g>
+<!-- ------------------------------------------------------------- -->
+<!-- NODE 1: Mule_Wallet_01 (Critical - Red Circle + Pulse Ring)   -->
+<!-- ------------------------------------------------------------- -->
+<g class="cursor-pointer" id="node-mule" transform="translate(420, 260)">
+<!-- Animated outer target circle -->
+<circle class="pulse-alert" cx="0" cy="0" fill="none" r="26" stroke="#FF3B30" stroke-dasharray="3 3" stroke-width="1.5"></circle>
+<circle cx="0" cy="0" fill="#161B22" r="16" stroke="#FF3B30" stroke-width="2"></circle>
+<circle cx="0" cy="0" fill="#FF3B30" r="6"></circle>
+<text fill="#FFdad6" font-family="Geist, monospace" font-size="11" font-weight="600" x="24" y="-5">Mule_Wallet_01</text>
+<text fill="#FF3B30" font-family="Geist, monospace" font-size="9" x="24" y="9">RISK: 0.94 // CRITICAL</text>
+</g>
+<!-- ------------------------------------------------------------- -->
+<!-- NODE 2: ShellCorp_33 [CURRENTLY SELECTED INSPECTOR TARGET]   -->
+<!-- ------------------------------------------------------------- -->
+<g class="cursor-pointer" id="node-shellcorp" transform="translate(630, 250)">
+<!-- Glowing Target Reticle for Active Inspection -->
+<circle class="pulse-target" cx="0" cy="0" fill="rgba(0, 242, 254, 0.08)" r="38" stroke="#00F2FE" stroke-dasharray="2 4" stroke-width="1"></circle>
+<!-- Octagon Geometric Shape (8-sided polygon) -->
+<polygon fill="#0D1117" points="-16,-6 -6,-16 6,-16 16,-6 16,6 6,16 -6,16 -16,6" stroke="#00F2FE" stroke-width="2.5"></polygon>
+<polygon fill="#00F2FE" fill-opacity="0.3" points="-10,-4 -4,-10 4,-10 10,-4 10,4 4,10 -4,10 -10,4" stroke="#00F2FE" stroke-width="1"></polygon>
+<!-- Reticle Corner Ticks -->
+<path d="M -24 -24 L -18 -24 M -24 -24 L -24 -18" stroke="#00F2FE" stroke-width="1.5"></path>
+<path d="M 24 -24 L 18 -24 M 24 -24 L 24 -18" stroke="#00F2FE" stroke-width="1.5"></path>
+<path d="M -24 24 L -18 24 M -24 24 L -24 18" stroke="#00F2FE" stroke-width="1.5"></path>
+<path d="M 24 24 L 18 24 M 24 24 L 24 18" stroke="#00F2FE" stroke-width="1.5"></path>
+<!-- Node Label & Badges -->
+<rect fill="#05070A" height="28" stroke="#00F2FE" stroke-width="1" width="130" x="-65" y="26"></rect>
+<text fill="#FFFFFF" font-family="Geist, monospace" font-size="11" font-weight="700" text-anchor="middle" x="0" y="39">ShellCorp_33 [SEL]</text>
+<text fill="#00F2FE" font-family="Geist, monospace" font-size="8" text-anchor="middle" x="0" y="50">SCORE: 0.89 | FINCEN 4C</text>
+</g>
+<!-- ------------------------------------------------------------- -->
+<!-- NODE 3: Escrow_Account_#88 (Hexagon, Double Stroke)          -->
+<!-- ------------------------------------------------------------- -->
+<g class="cursor-pointer" id="node-escrow" transform="translate(800, 400)">
+<!-- Outer hexagon -->
+<polygon fill="#0D1117" points="0,-22 19,-11 19,11 0,22 -19,11 -19,-11" stroke="#00F2FE" stroke-width="2"></polygon>
+<!-- Inner hexagon -->
+<polygon fill="#161B22" points="0,-15 13,-7 13,7 0,15 -13,7 -13,-7" stroke="#secondary-fixed" stroke-width="1"></polygon>
+<text fill="#e1e2e8" font-family="Geist, monospace" font-size="11" font-weight="600" x="26" y="-3">Escrow_Account_#88</text>
+<text fill="#00F2FE" font-family="Geist, monospace" font-size="9" x="26" y="11">VAULT LOCK // RISK: 0.92</text>
+</g>
+<!-- ------------------------------------------------------------- -->
+<!-- NODE 4: Relay_Merchant_B41 (Square, Dotted Stroke)            -->
+<!-- ------------------------------------------------------------- -->
+<g class="cursor-pointer" id="node-merchant" transform="translate(470, 450)">
+<rect fill="#0D1117" height="32" stroke="#41fecb" stroke-dasharray="2 2" stroke-width="1.5" width="32" x="-16" y="-16"></rect>
+<rect fill="#161B22" height="16" stroke="#21262D" stroke-width="1" width="16" x="-8" y="-8"></rect>
+<text fill="#e1e2e8" font-family="Geist, monospace" font-size="10" x="-16" y="26">Relay_Merchant_B41</text>
+<text fill="#secondary-fixed-dim" font-family="Geist, monospace" font-size="8" x="-16" y="38">ELEVATED: 0.78</text>
+</g>
+<!-- ------------------------------------------------------------- -->
+<!-- NODE 5: Sink_Account_#09 (Intercept Target Diamond)          -->
+<!-- ------------------------------------------------------------- -->
+<g class="cursor-pointer" id="node-sink" transform="translate(560, 580)">
+<polygon fill="#690005" points="0,-20 20,0 0,20 -20,0" stroke="#FF3B30" stroke-width="2"></polygon>
+<polygon fill="#FF3B30" points="0,-10 10,0 0,10 -10,0"></polygon>
+<text fill="#FFdad6" font-family="Geist, monospace" font-size="11" font-weight="bold" x="26" y="2">Sink_Account_#09</text>
+<text fill="#FF3B30" font-family="Geist, monospace" font-size="9" x="26" y="16">INTERCEPT TARGET // 0.96</text>
+</g>
+</g>
+</svg>
+</div>
+<!-- ------------------------------------------------------------------- -->
+<!-- CANVAS BOTTOM DIAGNOSTIC / STATE EXPERIMENTATION BAR                -->
+<!-- ------------------------------------------------------------------- -->
+<div class="h-9 bg-surface-graphite border-t border-border-hairline z-30 px-space-md flex items-center justify-between font-label-code text-[11px]">
+<div class="flex items-center gap-space-sm">
+<span class="text-metric-dim uppercase">Interactive Simulation Modes:</span>
+<button class="px-2 py-0.5 bg-surface-raised border border-border-active text-primary-container font-semibold">
+            [1] Active Investigation
+          </button>
+<button class="px-2 py-0.5 bg-surface-obsidian border border-border-hairline text-outline hover:text-on-surface">
+            [2] Filtered Empty State
+          </button>
+<button class="px-2 py-0.5 bg-surface-obsidian border border-border-hairline text-outline hover:text-on-surface">
+            [3] GPU Kernel Dispatching
+          </button>
+<button class="px-2 py-0.5 bg-surface-obsidian border border-border-hairline text-outline hover:text-alert-critical">
+            [4] OOM Fallback / Error
+          </button>
+</div>
+<div class="flex items-center gap-space-sm text-metric-dim">
+<span>GRAPH ACCELERATOR: cuGraph-24.12</span>
+<span class="text-border-hairline">|</span>
+<span class="text-primary-container">VRAM: 42.8 GB / 80.0 GB</span>
+<span class="text-border-hairline">|</span>
+<span>CUDA CORES: 14,592</span>
+</div>
+</div>
+</main>
+<!-- ===================================================================== -->
+<!-- 3. RIGHT FORENSIC INSPECTOR DRAWER (Collapsible, High Density)        -->
+<!-- ===================================================================== -->
+<aside class="w-96 bg-surface-graphite border-l border-border-hairline flex flex-col z-30 overflow-y-auto">
+<!-- Drawer Header Bar -->
+<div class="p-space-md border-b border-border-hairline bg-surface-raised/40">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-code text-[10px] text-primary-container tracking-widest uppercase">
+            TARGET NODE INSPECTOR
+          </span>
+<span class="px-2 py-0.5 bg-alert-critical/10 border border-alert-critical text-alert-critical text-[10px] font-label-code font-bold uppercase">
+            Elevated Suspicion
+          </span>
+</div>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream font-semibold">
+          ShellCorp_33
+        </h2>
+<div class="flex items-center gap-2 mt-1 font-label-code text-[11px] text-metric-dim">
+<span>HASH: ACC-84920-SYNTH</span>
+<span>•</span>
+<span class="text-secondary-fixed">EVIDENCE ATTACHED</span>
+</div>
+</div>
+<!-- Content Scrollable Body -->
+<div class="p-space-md space-y-space-md flex-1 text-body-sm font-body-sm">
+<!-- RISK SCORE EXPLANATION CARD (Mathematical & Feature breakdown) -->
+<div class="bg-surface-obsidian border border-border-hairline p-space-sm space-y-space-sm">
+<div class="flex items-center justify-between border-b border-border-hairline pb-2">
+<div>
+<div class="text-[10px] font-label-code text-metric-dim uppercase">Computed Risk Metric</div>
+<div class="text-metric-display font-metric-display text-alert-critical tracking-tight">
+                0.89 <span class="text-sm font-label-code text-metric-dim font-normal">/ 1.00</span>
+</div>
+</div>
+<div class="text-right">
+<span class="px-2 py-0.5 bg-error-container text-on-error-container font-label-code text-[10px] uppercase font-bold">
+                CRITICAL THRESHOLD
+              </span>
+<p class="text-[9px] font-label-code text-metric-dim mt-1">Algorithm: cuGraph GNN v4</p>
+</div>
+</div>
+<!-- Computed Risk Factors / Explanations -->
+<div class="space-y-2 pt-1 font-label-code text-[11px]">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-alert-critical text-sm mt-0.5">warning</span>
+<div class="flex-1">
+<div class="text-on-surface font-semibold">3-Hop Cycle Isomorphism Match</div>
+<div class="text-metric-dim text-[10px]">cuGraph kernel sub-graph confidence: <span class="text-primary-container font-bold">99.1%</span></div>
+</div>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-alert-critical text-sm mt-0.5">speed</span>
+<div class="flex-1">
+<div class="text-on-surface font-semibold">Sudden Velocity Burst</div>
+<div class="text-metric-dim text-[10px]">38 transactions executed within <span class="text-secondary-fixed font-bold">4.2 seconds</span></div>
+</div>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-alert-critical text-sm mt-0.5">swap_vert</span>
+<div class="flex-1">
+<div class="text-on-surface font-semibold">In/Out Degree Asymmetry</div>
+<div class="text-metric-dim text-[10px]">In: 18 txs ($1.45M) | Out: 1 tx ($850k) [Retention 98.4%]</div>
+</div>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary-container text-sm mt-0.5">fingerprint</span>
+<div class="flex-1">
+<div class="text-on-surface font-semibold">FinCEN Advisory Collision</div>
+<div class="text-metric-dim text-[10px]">Entity hash match against FinCEN-2024-ADV-88</div>
+</div>
+</div>
+</div>
+</div>
+<!-- LOCAL TOPOLOGY & DEGREE DISTRIBUTION -->
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm space-y-2">
+<div class="text-label-code font-label-code text-on-surface uppercase font-semibold flex items-center justify-between border-b border-border-hairline pb-1.5">
+<span>Centrality &amp; Degree Metrics</span>
+<span class="text-primary-container text-[10px]">LOCAL KERNEL</span>
+</div>
+<div class="grid grid-cols-3 gap-2 text-center py-1">
+<div class="bg-surface-raised p-1.5 border border-border-hairline">
+<div class="text-metric-dim text-[10px] font-label-code uppercase">Degree</div>
+<div class="text-on-surface font-label-code text-base font-bold">19</div>
+<div class="text-[9px] text-metric-dim">In:18 / Out:1</div>
+</div>
+<div class="bg-surface-raised p-1.5 border border-border-hairline">
+<div class="text-metric-dim text-[10px] font-label-code uppercase">Clustering</div>
+<div class="text-secondary-fixed font-label-code text-base font-bold">0.742</div>
+<div class="text-[9px] text-metric-dim">Coefficient</div>
+</div>
+<div class="bg-surface-raised p-1.5 border border-border-hairline">
+<div class="text-metric-dim text-[10px] font-label-code uppercase">Betweenness</div>
+<div class="text-primary-container font-label-code text-base font-bold">0.084</div>
+<div class="text-[9px] text-metric-dim">Rank #3 in ring</div>
+</div>
+</div>
+<!-- Micro Bar Chart: Hop Degree Distribution -->
+<div class="pt-2">
+<div class="text-[10px] font-label-code text-metric-dim uppercase mb-1">Neighbor Distribution by Hop Depth:</div>
+<div class="space-y-1 font-label-code text-[10px]">
+<div class="flex items-center gap-2">
+<span class="w-10 text-metric-dim">1-Hop</span>
+<div class="flex-1 bg-surface-graphite h-2">
+<div class="bg-primary-container h-full" style="width: 25%"></div>
+</div>
+<span class="w-6 text-right text-on-surface">4</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-10 text-metric-dim">2-Hop</span>
+<div class="flex-1 bg-surface-graphite h-2">
+<div class="bg-alert-critical h-full" style="width: 85%"></div>
+</div>
+<span class="w-6 text-right text-on-surface">19</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-10 text-metric-dim">3-Hop</span>
+<div class="flex-1 bg-surface-graphite h-2">
+<div class="bg-border-active h-full" style="width: 60%"></div>
+</div>
+<span class="w-6 text-right text-on-surface">12</span>
+</div>
+</div>
+</div>
+</div>
+<!-- CONNECTED IMMEDIATE NEIGHBORS TABLE -->
+<div class="border border-border-hairline bg-surface-obsidian">
+<div class="px-space-sm py-2 border-b border-border-hairline flex items-center justify-between">
+<span class="font-label-code text-[11px] text-on-surface font-semibold uppercase">
+              Immediate Neighbors (4)
+            </span>
+<span class="text-label-code text-[10px] text-metric-dim">Sub-graph Order: 1</span>
+</div>
+<div class="divide-y divide-border-hairline font-label-code text-[11px]">
+<!-- Neighbor 1 -->
+<div class="p-2 hover:bg-surface-raised flex items-center justify-between">
+<div>
+<div class="text-on-surface font-semibold">Escrow_Account_#88</div>
+<div class="text-metric-dim text-[10px]">Layered Wire • $850,000</div>
+</div>
+<button class="px-1.5 py-0.5 bg-surface-graphite border border-border-hairline hover:border-primary-container text-primary-container text-[10px]">
+                Focus
+              </button>
+</div>
+<!-- Neighbor 2 -->
+<div class="p-2 hover:bg-surface-raised flex items-center justify-between">
+<div>
+<div class="text-on-surface font-semibold">Mule_Wallet_01</div>
+<div class="text-metric-dim text-[10px]">Direct ACH • $420,000</div>
+</div>
+<button class="px-1.5 py-0.5 bg-surface-graphite border border-border-hairline hover:border-primary-container text-primary-container text-[10px]">
+                Focus
+              </button>
+</div>
+<!-- Neighbor 3 -->
+<div class="p-2 hover:bg-surface-raised flex items-center justify-between">
+<div>
+<div class="text-on-surface font-semibold">Relay_Merchant_B41</div>
+<div class="text-metric-dim text-[10px]">Card Inflow • $195,000</div>
+</div>
+<button class="px-1.5 py-0.5 bg-surface-graphite border border-border-hairline hover:border-primary-container text-primary-container text-[10px]">
+                Focus
+              </button>
+</div>
+<!-- Neighbor 4 -->
+<div class="p-2 hover:bg-surface-raised flex items-center justify-between">
+<div>
+<div class="text-on-surface font-semibold">Sink_Account_#09</div>
+<div class="text-metric-dim text-[10px]">Cycle Return • $1.24M</div>
+</div>
+<button class="px-1.5 py-0.5 bg-surface-graphite border border-border-hairline hover:border-primary-container text-primary-container text-[10px]">
+                Focus
+              </button>
+</div>
+</div>
+</div>
+<!-- FORENSIC DISPATCH & RESPONSE ACTION SUITE -->
+<div class="space-y-2 pt-2">
+<div class="text-[10px] font-label-code text-metric-dim uppercase">Enforcement &amp; Intercept Actions:</div>
+<button class="w-full py-2 bg-alert-critical text-surface-obsidian font-label-code font-bold text-[11px] uppercase tracking-wider hover:bg-error flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">pause_circle</span>
+<span>Isolate Ring in Clearing Queue</span>
+</button>
+<button class="w-full py-2 bg-surface-raised border border-border-hairline hover:border-border-active text-editorial-cream font-label-code text-[11px] uppercase tracking-wider flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm text-primary-container">verified</span>
+<span>Export zk-SNARK Forensic Proof</span>
+</button>
+<button class="w-full py-2 bg-surface-raised border border-border-hairline hover:border-border-active text-editorial-cream font-label-code text-[11px] uppercase tracking-wider flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm text-secondary-fixed">assignment_ind</span>
+<span>Dispatch to Human Compliance</span>
+</button>
+<button class="w-full py-2 bg-surface-raised border border-border-hairline hover:border-border-active text-metric-dim hover:text-on-surface font-label-code text-[11px] uppercase tracking-wider flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">troubleshoot</span>
+<span>Trace Upstream Inflows (Recursive)</span>
+</button>
+</div>
+</div>
+<!-- Drawer Persistent Footer Metadata -->
+<div class="p-space-sm border-t border-border-hairline bg-surface-obsidian font-label-code text-[10px] text-metric-dim flex items-center justify-between">
+<span>SESSION: #774-FORENSIC-SEC</span>
+<span class="text-primary-container">SIGNATURE: VALID</span>
+</div>
+</aside>
+</div>
+<!-- Inline Vanilla Micro-Interactions Script -->
+<script>
+    // Lightweight canvas mouse hover interactions
+    document.addEventListener('DOMContentLoaded', () => {
+      const nodes = document.querySelectorAll('#synthetic-ring-cluster g[id^="node-"]');
+      nodes.forEach(node => {
+        node.addEventListener('mouseenter', () => {
+          node.style.filter = 'drop-shadow(0 0 8px #00F2FE)';
+        });
+        node.addEventListener('mouseleave', () => {
+          node.style.filter = 'none';
+        });
+      });
+    });
+  </script>
+</body></html>

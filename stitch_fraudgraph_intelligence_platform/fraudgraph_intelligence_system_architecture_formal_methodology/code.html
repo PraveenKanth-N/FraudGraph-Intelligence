@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FraudGraph Intelligence — System Architecture &amp; Formal Methodology</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Newsreader (Editorial Serif) & Geist (Dense Monospace / Sans System) -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;family=Geist:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Shared Design System Tailwind Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface": "#e1e2e8",
+            "background": "#111418",
+            "surface-container-low": "#191c20",
+            "surface-container-high": "#272a2f",
+            "tertiary": "#faf7f1",
+            "error-container": "#93000a",
+            "surface-tint": "#00dce6",
+            "on-background": "#e1e2e8",
+            "on-tertiary": "#31302d",
+            "on-secondary-fixed": "#002117",
+            "on-primary-container": "#006a70",
+            "on-tertiary-fixed": "#1c1c18",
+            "metric-dim": "#484F58",
+            "inverse-on-surface": "#2e3135",
+            "primary-container": "#00f2fe",
+            "on-secondary-fixed-variant": "#00513e",
+            "surface-variant": "#32353a",
+            "on-error-container": "#ffdad6",
+            "surface-container-highest": "#32353a",
+            "inverse-primary": "#00696f",
+            "primary": "#e0fdff",
+            "on-primary-fixed-variant": "#004f53",
+            "tertiary-fixed": "#e5e2dc",
+            "on-secondary": "#00382a",
+            "outline-variant": "#3a494b",
+            "surface": "#111418",
+            "secondary-fixed-dim": "#00e0b1",
+            "surface-raised": "#161B22",
+            "border-hairline": "#21262D",
+            "surface-graphite": "#0D1117",
+            "error": "#ffb4ab",
+            "on-surface-variant": "#b9cacb",
+            "secondary": "#7dffd5",
+            "alert-critical": "#FF3B30",
+            "surface-obsidian": "#05070A",
+            "surface-container": "#1d2024",
+            "surface-container-lowest": "#0b0e12",
+            "on-tertiary-fixed-variant": "#474743",
+            "secondary-fixed": "#41fecb",
+            "on-secondary-container": "#00624c",
+            "tertiary-fixed-dim": "#c9c6c1",
+            "on-error": "#690005",
+            "surface-dim": "#111418",
+            "tertiary-container": "#dedbd5",
+            "editorial-cream": "#F8F7F4",
+            "border-active": "#00F2FE",
+            "inverse-surface": "#e1e2e8",
+            "on-tertiary-container": "#61605b",
+            "on-primary": "#00373a",
+            "primary-fixed-dim": "#00dce6",
+            "outline": "#849495",
+            "primary-fixed": "#6ff6ff",
+            "surface-bright": "#36393e",
+            "on-primary-fixed": "#002022",
+            "secondary-container": "#01e7b6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin": "2.5rem",
+            "space-xl": "2.5rem",
+            "gutter": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "margin-mobile": "1rem",
+            "gutter-mobile": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Newsreader", "serif"],
+            "headline-lg-mobile": ["Newsreader", "serif"],
+            "body-md": ["Geist", "sans-serif"],
+            "headline-sm": ["Newsreader", "serif"],
+            "display-hero-mobile": ["Newsreader", "serif"],
+            "metric-display": ["Geist", "monospace"],
+            "body-sm": ["Geist", "sans-serif"],
+            "body-lg": ["Geist", "sans-serif"],
+            "headline-lg": ["Newsreader", "serif"],
+            "display-hero": ["Newsreader", "serif"],
+            "label-code": ["Geist Mono", "monospace"]
+          },
+          "fontSize": {
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "500" }],
+            "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "metric-display": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "400" }],
+            "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "label-code": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Architectural 0-radius and hairline overrides */
+    * {
+      border-radius: 0 !important;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+      font-size: 1.15rem;
+      vertical-align: middle;
+      display: inline-block;
+    }
+    /* Custom scrollbar matching dark obsidian aesthetics */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #05070A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #21262D;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00F2FE;
+    }
+    /* Syntax highlighting token simulation */
+    .c-kw { color: #00F2FE; font-weight: 500; }
+    .c-fn { color: #7dffd5; }
+    .c-tp { color: #00dce6; }
+    .c-cm { color: #484F58; font-style: italic; }
+    .c-num { color: #F8F7F4; }
+  </style>
+</head>
+<body class="bg-surface-obsidian text-on-surface antialiased selection:bg-primary-container selection:text-surface-obsidian min-h-screen">
+<!-- ========================================================================= -->
+<!-- 1. TopNavBar (Shared Component from JSON)                                -->
+<!-- ========================================================================= -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-space-xl border-b border-border-hairline dark:border-border-hairline bg-surface-graphite dark:bg-surface-graphite backdrop-blur-md h-16">
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 bg-primary-container inline-block shadow-[0_0_8px_#00F2FE]"></span>
+<span class="font-headline-sm text-headline-sm text-editorial-cream dark:text-editorial-cream tracking-tight uppercase">FraudGraph Intelligence</span>
+</div>
+<div class="h-4 w-[1px] bg-border-hairline hidden md:block"></div>
+<span class="font-label-code text-label-code text-metric-dim hidden lg:inline-block">MONOGRAPH v2.4.9 // SR 11-7 RIG</span>
+</div>
+<!-- Center Navigation Links -->
+<nav class="hidden md:flex items-center gap-space-lg">
+<!-- "Abstract" active as destination root monograph screen -->
+<a class="text-border-active dark:text-border-active border-b-2 border-border-active dark:border-border-active pb-1 font-body-md text-body-md" href="#sec-1">Abstract</a>
+<a class="text-metric-dim dark:text-metric-dim hover:text-editorial-cream dark:hover:text-editorial-cream pb-1 font-body-md text-body-md transition-colors" href="#sec-2">Pipeline</a>
+<a class="text-metric-dim dark:text-metric-dim hover:text-editorial-cream dark:hover:text-editorial-cream pb-1 font-body-md text-body-md transition-colors" href="#sec-4">CSR Graph</a>
+<a class="text-metric-dim dark:text-metric-dim hover:text-editorial-cream dark:hover:text-editorial-cream pb-1 font-body-md text-body-md transition-colors" href="#sec-6">CUDA Kernels</a>
+<a class="text-metric-dim dark:text-metric-dim hover:text-editorial-cream dark:hover:text-editorial-cream pb-1 font-body-md text-body-md transition-colors" href="#sec-8">Benchmarks</a>
+<a class="text-metric-dim dark:text-metric-dim hover:text-editorial-cream dark:hover:text-editorial-cream pb-1 font-body-md text-body-md transition-colors" href="#sec-10">Reproducibility</a>
+</nav>
+<!-- Trailing Actions & Search -->
+<div class="flex items-center gap-space-md">
+<!-- Search -->
+<div class="relative hidden xl:flex items-center">
+<span class="material-symbols-outlined absolute left-2 text-metric-dim text-sm" data-icon="search">search</span>
+<input class="bg-surface-obsidian text-editorial-cream border border-border-hairline pl-8 pr-3 py-1 font-body-sm text-body-sm w-56 focus:outline-none focus:border-border-active placeholder:text-metric-dim" placeholder="Grep equations, symbols, or ops..." type="text"/>
+</div>
+<!-- Icon Actions -->
+<button class="text-metric-dim hover:text-primary-container p-1.5 transition-colors border border-transparent hover:border-border-hairline" title="Terminal CLI">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</button>
+<button class="text-metric-dim hover:text-primary-container p-1.5 transition-colors border border-transparent hover:border-border-hairline" title="Source Tree">
+<span class="material-symbols-outlined" data-icon="code">code</span>
+</button>
+<!-- Trailing Secondary -->
+<a class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 border border-border-hairline text-editorial-cream font-body-sm text-body-sm hover:border-editorial-cream hover:bg-white/5 active:scale-[0.99] transition-all" href="https://github.com" target="_blank">
+<span class="font-label-code text-label-code text-metric-dim">GIT</span>
+<span>GitHub Repo</span>
+</a>
+<!-- Trailing Primary Action -->
+<a class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary-container text-surface-obsidian font-body-sm text-body-sm font-medium hover:bg-secondary-fixed active:scale-[0.99] transition-all" href="#download">
+<span class="material-symbols-outlined text-sm font-bold" data-icon="download">download</span>
+<span>Download Monograph PDF</span>
+</a>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE LAYOUT: SideNav + Rich Academic Scrollable Document Pane   -->
+<!-- ========================================================================= -->
+<div class="pt-16 flex min-h-screen">
+<!-- ======================================================================= -->
+<!-- 2. SideNavBar (Shared Component from JSON - Sticky Table of Contents)   -->
+<!-- ======================================================================= -->
+<aside class="w-80 shrink-0 border-r border-border-hairline dark:border-border-hairline p-space-md flex flex-col justify-between overflow-y-auto fixed top-16 left-0 h-[calc(100vh-4rem)] bg-surface-obsidian dark:bg-surface-obsidian z-40 hidden lg:flex">
+<!-- Nav Header & Institutional Badge -->
+<div>
+<div class="pb-space-md border-b border-border-hairline">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-border-active dark:text-border-active uppercase tracking-widest">METHODOLOGY v2.4</span>
+<span class="text-[10px] font-label-code px-1.5 py-0.5 bg-surface-raised border border-border-hairline text-secondary-fixed">LIVE REPL</span>
+</div>
+<p class="font-headline-sm text-headline-sm text-editorial-cream mt-1 text-sm tracking-tight">SR 11-7 Validated Rig</p>
+<div class="mt-2 flex items-center gap-2 text-metric-dim font-label-code text-[10px]">
+<span>DOI: 10.1145/369824.2025</span>
+<span>•</span>
+<span>34 MIN READ</span>
+</div>
+</div>
+<!-- Section Navigation List (10 Tab Labels from JSON) -->
+<nav class="mt-space-md flex flex-col gap-0.5">
+<a class="bg-surface-raised dark:bg-surface-raised border-l-2 border-border-active dark:border-border-active text-editorial-cream dark:text-editorial-cream font-body-sm text-body-sm pl-space-md py-space-sm flex items-center gap-2.5" href="#sec-1">
+<span class="material-symbols-outlined text-primary-container text-sm" data-icon="article">article</span>
+<span class="truncate">1. Research Questions &amp; Abstract</span>
+</a>
+<a class="text-metric-dim dark:text-metric-dim border-l-2 border-transparent pl-space-md py-space-sm font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream hover:bg-surface-raised transition-colors flex items-center gap-2.5" href="#sec-2">
+<span class="material-symbols-outlined text-sm" data-icon="schema">schema</span>
+<span class="truncate">2. Transaction Preprocessing Pipeline</span>
+</a>
+<a class="text-metric-dim dark:text-metric-dim border-l-2 border-transparent pl-space-md py-space-sm font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream hover:bg-surface-raised transition-colors flex items-center gap-2.5" href="#sec-3">
+<span class="material-symbols-outlined text-sm" data-icon="hub">hub</span>
+<span class="truncate">3. Graph Construction Rules</span>
+</a>
+<a class="text-metric-dim dark:text-metric-dim border-l-2 border-transparent pl-space-md py-space-sm font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream hover:bg-surface-raised transition-colors flex items-center gap-2.5" href="#sec-4">
+<span class="material-symbols-outlined text-sm" data-icon="memory">memory</span>
+<span class="truncate">4. CSR/CSC In-Memory Representation</span>
+</a>
+<a class="text-metric-dim dark:text-metric-dim border-l-2 border-transparent pl-space-md py-space-sm font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream hover:bg-surface-raised transition-colors flex items-center gap-2.5" href="#sec-5">
+<span class="material-symbols-outlined text-sm" data-icon="developer_board">developer_board</span>
+<span class="truncate">5. Dual-Execution Reference Architectures</span>
+</a>
+<a class="text-metric-dim dark:text-metric-dim border-l-2 border-transparent pl-space-md py-space-sm font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream hover:bg-surface-raised transition-colors flex items-center gap-2.5" href="#sec-6">
+<span class="material-symbols-outlined text-sm" data-icon="speed">speed</span>
+<span class="truncate">6. Micro-Architectural Optimizations</span>
+</a>
+<a class="text-metric-dim dark:text-metric-dim border-l-2 border-transparent pl-space-md py-space-sm font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream hover:bg-surface-raised transition-colors flex items-center gap-2.5" href="#sec-7">
+<span class="material-symbols-outlined text-sm" data-icon="verified">verified</span>
+<span class="truncate">7. Correctness &amp; Zero-Drift Proofs</span>
+</a>
+<a class="text-metric-dim dark:text-metric-dim border-l-2 border-transparent pl-space-md py-space-sm font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream hover:bg-surface-raised transition-colors flex items-center gap-2.5" href="#sec-8">
+<span class="material-symbols-outlined text-sm" data-icon="analytics">analytics</span>
+<span class="truncate">8. Benchmarking Rig &amp; Micro-Ablation</span>
+</a>
+<a class="text-metric-dim dark:text-metric-dim border-l-2 border-transparent pl-space-md py-space-sm font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream hover:bg-surface-raised transition-colors flex items-center gap-2.5" href="#sec-9">
+<span class="material-symbols-outlined text-sm" data-icon="query_stats">query_stats</span>
+<span class="truncate">9. Detection Quality &amp; Epistemic Separation</span>
+</a>
+<a class="text-metric-dim dark:text-metric-dim border-l-2 border-transparent pl-space-md py-space-sm font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream hover:bg-surface-raised transition-colors flex items-center gap-2.5" href="#sec-10">
+<span class="material-symbols-outlined text-sm" data-icon="terminal">terminal</span>
+<span class="truncate">10. Boundary Conditions &amp; Reproducibility</span>
+</a>
+</nav>
+</div>
+<!-- SideNav Footer Utilities & CTA -->
+<div class="pt-space-md border-t border-border-hairline space-y-space-sm">
+<button class="w-full flex items-center justify-between px-3 py-2 bg-surface-graphite border border-border-hairline text-editorial-cream font-label-code text-label-code hover:border-border-active active:scale-[0.99] transition-all">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="terminal">terminal</span>
+<span>Clone Docker Image</span>
+</span>
+<span class="text-metric-dim">4.2GB</span>
+</button>
+<div class="flex items-center justify-between text-metric-dim font-body-sm text-body-sm pt-1 px-1">
+<a class="hover:text-border-active flex items-center gap-1 transition-colors" href="#bibtex">
+<span class="material-symbols-outlined text-xs" data-icon="format_quote">format_quote</span>
+<span>Citation BibTeX</span>
+</a>
+<a class="hover:text-border-active flex items-center gap-1 transition-colors" href="#errata">
+<span class="material-symbols-outlined text-xs" data-icon="history_edu">history_edu</span>
+<span>Errata Dossier</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- ======================================================================= -->
+<!-- 3. SCROLLABLE DOCUMENT CANVAS (Main Narrative Content Pane)             -->
+<!-- ======================================================================= -->
+<main class="flex-1 lg:ml-80 bg-surface-obsidian min-w-0 pb-24">
+<div class="max-w-5xl mx-auto px-6 sm:px-12 py-10 space-y-20">
+<!-- SECTION 1: Publication Header & Abstract -->
+<section class="border-b border-border-hairline pb-16" id="sec-1">
+<!-- Institutional Meta Badge Bar -->
+<div class="flex flex-wrap items-center gap-3 pb-6 border-b border-border-hairline/60 font-label-code text-label-code text-metric-dim">
+<span class="px-2 py-0.5 bg-surface-raised border border-border-active/40 text-primary-container font-semibold">ARXIV:2505.09824 [CS.DC]</span>
+<span>•</span>
+<span class="text-secondary-fixed">IEEE/ACM SEC-FIN COMPLIANCE VERIFIED</span>
+<span>•</span>
+<span>SR 11-7 AUDIT PASSED</span>
+<span>•</span>
+<span class="text-editorial-cream">DOI: 10.1145/369824.2025.0489</span>
+</div>
+<!-- Monograph Title -->
+<h1 class="mt-8 font-headline-lg text-headline-lg text-editorial-cream tracking-tight max-w-4xl">
+            Sub-Millisecond Graph Isomorphism &amp; Neighbor Aggregation on 10M-Node Financial Clearing Graphs: A Memory-Aware Hopper Tensor Architecture
+          </h1>
+<!-- Author Byline & Institutional Affiliations -->
+<div class="mt-6 flex flex-wrap items-center gap-y-2 gap-x-6 text-sm">
+<div class="flex items-center gap-2">
+<span class="font-medium text-editorial-cream">Dr. A. Vance, Ph.D.</span>
+<span class="font-label-code text-label-code text-metric-dim">⟨vance@fraudgraph.org⟩</span>
+</div>
+<span class="text-border-hairline">•</span>
+<div class="flex items-center gap-2">
+<span class="font-medium text-editorial-cream">K. Valenti</span>
+<span class="font-label-code text-label-code text-metric-dim">⟨valenti@quant-forensics.io⟩</span>
+</div>
+<span class="text-border-hairline">•</span>
+<span class="text-metric-dim italic font-headline-sm text-sm">Quantitative Forensic Intelligence Group &amp; Applied HPC Research Lab</span>
+</div>
+<!-- Abstract Callout Box -->
+<div class="mt-8 p-6 bg-surface-graphite border border-border-hairline relative">
+<div class="absolute -top-3 left-4 px-2 bg-surface-obsidian border border-border-hairline font-label-code text-label-code text-primary-container uppercase">
+              Formal Abstract
+            </div>
+<p class="font-body-lg text-body-lg text-on-surface leading-relaxed text-justify">
+              Real-time settlement surveillance across tier-one interbank clearing systems demands sub-5ms graph isomorphism detection over ultra-dense multi-directed edge sequences. Traditional SIMD and OpenMP-based message passing pipelines succumb to extreme memory stall ratios (&gt;82%) during 3-hop neighbor expansions due to the scale-free power-law degree skew characteristic of financial networks. In this monograph, we formalize the mathematical and micro-architectural foundation of <em>FraudGraph-Hopper</em>, an in-register sub-graph traversal engine optimized for NVIDIA Hopper <code class="font-label-code text-xs text-primary-container">sm_90</code> architectures. By pairing dual Compressed Sparse Row/Column layouts with warp-level cooperative register bitonic sorting (<code class="font-label-code text-xs text-primary-container">__shfl_xor_sync</code>) and dense FP8 Tensor Core matrix multiply-accumulate (<code class="font-label-code text-xs text-primary-container">wgmma.mma_async</code>) representations, our system reduces end-to-end traversal latency on 12.4M-node settlement graphs from 868.50 ms to 11.84 ms—a 73.3× wall-clock improvement—while preserving exact zero-drift mathematical equivalence to IEEE FP32 standard baselines (drift bound ε &lt; 10⁻⁷).
+            </p>
+</div>
+<!-- Core Research Questions Bento Grid -->
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="p-4 bg-surface-graphite/50 border border-border-hairline hover:border-border-active transition-colors">
+<div class="font-label-code text-label-code text-primary-container flex items-center gap-1.5 mb-2">
+<span class="material-symbols-outlined text-xs" data-icon="help">help</span>
+<span>RESEARCH QUESTION 1</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream text-base mb-2">SIMT Register Latency</h3>
+<p class="font-body-sm text-body-sm text-metric-dim">
+                Can in-register bitonic shuffle instructions eliminate warp divergence and L2 cache thrashing during neighbor aggregation over power-law vertices with in-degree &gt; 10⁴?
+              </p>
+</div>
+<div class="p-4 bg-surface-graphite/50 border border-border-hairline hover:border-border-active transition-colors">
+<div class="font-label-code text-label-code text-secondary-fixed flex items-center gap-1.5 mb-2">
+<span class="material-symbols-outlined text-xs" data-icon="help">help</span>
+<span>RESEARCH QUESTION 2</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream text-base mb-2">FP8 Tensor Precision Drift</h3>
+<p class="font-body-sm text-body-sm text-metric-dim">
+                Does casting adjacency sub-tensors into E4M3/E5M2 8-bit floating point representations introduce non-negligible topological drift in spectral fraud scoring embeddings?
+              </p>
+</div>
+<div class="p-4 bg-surface-graphite/50 border border-border-hairline hover:border-border-active transition-colors">
+<div class="font-label-code text-label-code text-editorial-cream flex items-center gap-1.5 mb-2">
+<span class="material-symbols-outlined text-xs" data-icon="help">help</span>
+<span>RESEARCH QUESTION 3</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream text-base mb-2">Statistical Lift vs Speed</h3>
+<p class="font-body-sm text-body-sm text-metric-dim">
+                To what epistemic degree do structural 3-hop cyclic isomorphism metrics decouple fraud detection F1-score from inference execution budget under real-time FedWire constraints?
+              </p>
+</div>
+</div>
+</section>
+<!-- SECTION 2: End-to-End System Architecture Flow Diagram -->
+<section class="space-y-6" id="sec-2">
+<div class="flex items-center justify-between border-b border-border-hairline pb-3">
+<div>
+<span class="font-label-code text-label-code text-primary-container">SECTION 02 // ARCHITECTURE</span>
+<h2 class="font-headline-md text-headline-md text-editorial-cream">End-to-End System Architecture Flow</h2>
+</div>
+<span class="font-label-code text-label-code text-metric-dim">ISO 20022 ➔ HOST-TO-DEVICE ➔ SM_90</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">
+            The telemetry pipeline processes raw financial telegrams strictly within secure enclave boundaries before converting unstructured transaction streams into partitioned binary CSR representations. Figure 1 delineates the synchronous data plane orchestration.
+          </p>
+<!-- High-Fidelity Architectural Schematic Diagram (Custom Vector Styled Matrix) -->
+<div class="p-6 bg-surface-graphite border border-border-hairline overflow-x-auto">
+<div class="min-w-[760px] flex flex-col gap-4">
+<!-- Header Bar of the diagram -->
+<div class="flex items-center justify-between border-b border-border-hairline pb-2 font-label-code text-[11px] text-metric-dim">
+<span>STAGE 1: INGEST &amp; COMPRESSION</span>
+<span>STAGE 2: MEMORY DUAL-BUS</span>
+<span>STAGE 3: HARDWARE ACCELERATION</span>
+<span>STAGE 4: ATTESTATION</span>
+</div>
+<!-- Pipeline Blocks -->
+<div class="grid grid-cols-4 gap-3 relative">
+<!-- Node 1 -->
+<div class="p-3 bg-surface-obsidian border border-border-hairline flex flex-col justify-between h-36">
+<div>
+<div class="flex items-center justify-between text-metric-dim text-xs font-label-code">
+<span>INGEST</span>
+<span class="material-symbols-outlined text-xs" data-icon="input">input</span>
+</div>
+<div class="font-headline-sm text-sm text-editorial-cream mt-1 font-semibold">ISO 20022 Feeds</div>
+<div class="text-[11px] text-metric-dim font-label-code mt-1">pacs.008 / pacs.009 XML Wire Packets</div>
+</div>
+<div class="text-[10px] font-label-code text-secondary-fixed bg-secondary-fixed/10 px-1 py-0.5 border border-secondary-fixed/20">
+                    Throughput: 140k msg/s
+                  </div>
+</div>
+<!-- Node 2 -->
+<div class="p-3 bg-surface-obsidian border border-border-hairline flex flex-col justify-between h-36">
+<div>
+<div class="flex items-center justify-between text-metric-dim text-xs font-label-code">
+<span>DUAL ARRAYS</span>
+<span class="material-symbols-outlined text-xs" data-icon="memory">memory</span>
+</div>
+<div class="font-headline-sm text-sm text-editorial-cream mt-1 font-semibold">CSR / CSC Builder</div>
+<div class="text-[11px] text-metric-dim font-label-code mt-1">row_ptr (64b), col_ind (32b), FP8 Attr</div>
+</div>
+<div class="text-[10px] font-label-code text-primary-container bg-primary-container/10 px-1 py-0.5 border border-primary-container/20">
+                    64-Byte Cache Aligned
+                  </div>
+</div>
+<!-- Node 3 -->
+<div class="p-3 bg-surface-raised border border-border-active flex flex-col justify-between h-36 relative">
+<div class="absolute -top-2 right-2 px-1 bg-surface-obsidian text-border-active font-label-code text-[9px] border border-border-active">
+                    ACCELERATOR
+                  </div>
+<div>
+<div class="flex items-center justify-between text-primary-container text-xs font-label-code">
+<span>SM_90 ENGINE</span>
+<span class="material-symbols-outlined text-xs" data-icon="speed">speed</span>
+</div>
+<div class="font-headline-sm text-sm text-editorial-cream mt-1 font-semibold">Hopper Bitonic Core</div>
+<div class="text-[11px] text-metric-dim font-label-code mt-1">__shfl_xor_sync + FP8 WGMMA</div>
+</div>
+<div class="text-[10px] font-label-code text-primary-container font-semibold">
+                    Latency: 4.62 ms / Graph
+                  </div>
+</div>
+<!-- Node 4 -->
+<div class="p-3 bg-surface-obsidian border border-border-hairline flex flex-col justify-between h-36">
+<div>
+<div class="flex items-center justify-between text-metric-dim text-xs font-label-code">
+<span>VERIFICATION</span>
+<span class="material-symbols-outlined text-xs" data-icon="verified_user">verified_user</span>
+</div>
+<div class="font-headline-sm text-sm text-editorial-cream mt-1 font-semibold">zk-SNARK Engine</div>
+<div class="text-[11px] text-metric-dim font-label-code mt-1">Groth16 Proof of Traversal Drift</div>
+</div>
+<div class="text-[10px] font-label-code text-secondary-fixed bg-secondary-fixed/10 px-1 py-0.5 border border-secondary-fixed/20">
+                    Proof Size: 128 Bytes
+                  </div>
+</div>
+</div>
+<!-- Connecting Bus Flow Indicator -->
+<div class="p-2.5 bg-surface-obsidian border border-border-hairline flex items-center justify-between font-label-code text-xs text-metric-dim">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-primary-container" data-icon="swap_horiz">swap_horiz</span>
+<span>GPU-Direct RDMA (ConnectX-7 400Gb/s InfiniBand) bypasses OS Kernel Host Memory</span>
+</div>
+<span class="text-primary-container font-mono text-[11px]">DMA LATENCY: 0.84 µs</span>
+</div>
+</div>
+<div class="mt-3 text-center font-label-code text-label-code text-metric-dim">
+              Fig 1. Physical execution topology from ISO 20022 raw ingestion to zk-attested fraud likelihood inference.
+            </div>
+</div>
+</section>
+<!-- SECTION 3: Transaction Dataset & Preprocessing Pipeline -->
+<section class="space-y-6" id="sec-3">
+<div class="flex items-center justify-between border-b border-border-hairline pb-3">
+<div>
+<span class="font-label-code text-label-code text-primary-container">SECTION 03 // DATASET</span>
+<h2 class="font-headline-md text-headline-md text-editorial-cream">Dataset Specification &amp; Invariant Verification</h2>
+</div>
+<span class="font-label-code text-label-code text-secondary-fixed">FEDWIRE-SYNTHETIC-2025-Q1</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">
+            Experiments utilize the NIST-certified <code class="font-label-code text-xs text-editorial-cream bg-surface-raised px-1 py-0.5 border border-border-hairline">FedWire-Synthetic-2025-Q1</code> benchmark corpus, modeling 90 calendar days of high-value interbank Fedwire settlements among commercial institutions, correspondent banks, and clearing hubs.
+          </p>
+<!-- Telemetry Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim">TOTAL VERTICES |V|</span>
+<div class="font-metric-display text-metric-display text-editorial-cream mt-1">12,483,140</div>
+<span class="font-body-sm text-body-sm text-metric-dim text-xs">Clearing &amp; Escrow nodes</span>
+</div>
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim">DIRECTED EDGES |E|</span>
+<div class="font-metric-display text-metric-display text-primary-container mt-1">48,219,804</div>
+<span class="font-body-sm text-body-sm text-metric-dim text-xs">Wire transaction vectors</span>
+</div>
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim">AVG CLUSTERING COEFF</span>
+<div class="font-metric-display text-metric-display text-editorial-cream mt-1">0.0421</div>
+<span class="font-body-sm text-body-sm text-metric-dim text-xs">Heavy hub clustering</span>
+</div>
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim">POWER-LAW EXPONENT (α)</span>
+<div class="font-metric-display text-metric-display text-secondary-fixed mt-1">2.14</div>
+<span class="font-body-sm text-body-sm text-metric-dim text-xs">High degree skewness</span>
+</div>
+</div>
+<!-- Formal Invariants Table -->
+<div class="border border-border-hairline bg-surface-graphite overflow-hidden">
+<div class="px-4 py-2.5 bg-surface-raised border-b border-border-hairline flex items-center justify-between">
+<span class="font-label-code text-label-code text-editorial-cream">PREPROCESSING INVARIANTS (ASSERTION GATES)</span>
+<span class="font-label-code text-[10px] text-secondary-fixed">ENFORCED PRE-CSR PACKING</span>
+</div>
+<div class="divide-y divide-border-hairline/60 font-body-sm text-body-sm">
+<div class="px-4 py-3 flex items-start justify-between gap-4">
+<div class="flex-1">
+<span class="font-semibold text-editorial-cream">1. Monotonic Temporal Sequence</span>
+<p class="text-metric-dim text-xs mt-0.5">Every transaction edge e=(u,v) appended to CSR adjacency lists must satisfy Δt = t_{k+1} - t_k ≥ 0. Zero retrograde transactions tolerated.</p>
+</div>
+<code class="font-label-code text-xs text-primary-container bg-surface-obsidian px-2 py-1 border border-border-hairline">assert(e[k].ts &lt;= e[k+1].ts)</code>
+</div>
+<div class="px-4 py-3 flex items-start justify-between gap-4">
+<div class="flex-1">
+<span class="font-semibold text-editorial-cream">2. Zero-Orphan Primary Key Integrity</span>
+<p class="text-metric-dim text-xs mt-0.5">Clearing accounts not registered in the institution entity dictionary are mapped to reserved quarantine sink vertex V_0.</p>
+</div>
+<code class="font-label-code text-xs text-primary-container bg-surface-obsidian px-2 py-1 border border-border-hairline">u, v ∈ [0, |V|-1]</code>
+</div>
+<div class="px-4 py-3 flex items-start justify-between gap-4">
+<div class="flex-1">
+<span class="font-semibold text-editorial-cream">3. ISO 4217 Currency Normalization &amp; Log Quantization</span>
+<p class="text-metric-dim text-xs mt-0.5">FX multi-currency wires normalized against real-time central bank fixing rates and packed into FP8 E4M3 representations.</p>
+</div>
+<code class="font-label-code text-xs text-primary-container bg-surface-obsidian px-2 py-1 border border-border-hairline">w = quantize_fp8(log1p(USD_val))</code>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: Formal Graph Construction & Relationship Rules -->
+<section class="space-y-6" id="sec-4">
+<div class="flex items-center justify-between border-b border-border-hairline pb-3">
+<div>
+<span class="font-label-code text-label-code text-primary-container">SECTION 04 // MATHEMATICAL SPECIFICATION</span>
+<h2 class="font-headline-md text-headline-md text-editorial-cream">Graph Construction &amp; Cyclic Isomorphism</h2>
+</div>
+<span class="font-label-code text-label-code text-metric-dim">TOPOLOGY FORMALISM</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">
+            We model interbank wire flows as a directed temporal multigraph <span class="font-headline-sm italic text-editorial-cream">G = (V, E)</span>. Each vertex represents an autonomous banking institution or client settlement escrow, while edges embody validated transfers.
+          </p>
+<!-- Mathematical Formulation Callout -->
+<div class="p-6 bg-surface-graphite border border-border-hairline space-y-4">
+<div class="text-xs font-label-code text-metric-dim flex items-center justify-between">
+<span>DEFINITION 4.1: TEMPORAL MULTI-DIRECTED EDGE TUPLE</span>
+<span class="text-primary-container">E ⊆ V × V × ℝ⁺ × ℕ₀ × ℳ</span>
+</div>
+<div class="p-4 bg-surface-obsidian border border-border-hairline font-label-code text-sm text-editorial-cream overflow-x-auto">
+              e_i = ⟨u, v, w(u,v), t(u,v), m(u,v)⟩
+            </div>
+<p class="font-body-sm text-body-sm text-metric-dim">
+              Where <span class="text-editorial-cream">w ∈ ℝ⁺</span> designates the normalized currency volume, <span class="text-editorial-cream">t ∈ ℕ₀</span> the POSIX millisecond timestamp, and <span class="text-editorial-cream">m ∈ ℳ</span> the settlement modality (Fedwire Funds, CHIPS, SWIFT MT103).
+            </p>
+</div>
+<!-- Formal Definition of Suspicious 3-Hop Cycle Isomorphism -->
+<div class="p-6 bg-surface-graphite border border-border-hairline space-y-4">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-border-active">DEFINITION 4.2: SUSPICIOUS 3-HOP CIRCULAR DISPERSION (SMURFING / LAYERING)</span>
+<span class="text-[10px] font-label-code text-alert-critical border border-alert-critical/40 bg-alert-critical/10 px-2 py-0.5">MALICIOUS TOPOLOGY</span>
+</div>
+<!-- Mathematical Equation Display -->
+<div class="p-5 bg-surface-obsidian border border-border-hairline font-label-code text-sm text-editorial-cream overflow-x-auto leading-loose">
+<div class="text-secondary-fixed">C₃ = { (u, v, w) ∈ V³ :</div>
+<div class="pl-6 text-editorial-cream">(u, v) ∈ E ∧ (v, w) ∈ E ∧ (w, u) ∈ E</div>
+<div class="pl-6 text-primary-container">∧ t(u, v) &lt; t(v, w) &lt; t(w, u)</div>
+<div class="pl-6 text-metric-dim">∧ [ t(w, u) - t(u, v) ] ≤ ΔT_max (72 hours)</div>
+<div class="pl-6 text-secondary-fixed">∧ \frac{|w(u, v) - w(w, u)|}{w(u, v)} &lt; θ_tol (0.05) }</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+              A candidate triangle is classified as a layering cycle <span class="font-headline-sm italic text-editorial-cream">C₃</span> if funds traverse nodes <span class="font-mono text-xs text-primary-container">u ➔ v ➔ w ➔ u</span> strictly forwards in time within a 72-hour sliding window, preserving total settlement volume within a 5% slippage threshold <span class="font-mono text-xs text-primary-container">θ_tol</span> (accounting for synthetic laundering intermediary fee haircuts).
+            </p>
+</div>
+</section>
+<!-- SECTION 5: Compressed Sparse Row (CSR / CSC) In-Memory Representation -->
+<section class="space-y-6" id="sec-5">
+<div class="flex items-center justify-between border-b border-border-hairline pb-3">
+<div>
+<span class="font-label-code text-label-code text-primary-container">SECTION 05 // MEMORY LAYOUT</span>
+<h2 class="font-headline-md text-headline-md text-editorial-cream">Compressed Sparse Row (CSR / CSC) Memory Mapping</h2>
+</div>
+<span class="font-label-code text-label-code text-metric-dim">L2 CACHE OPTIMIZATION</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">
+            To prevent PCIe transfer stalls and ensure zero pointer chasing during warp traversal, the entire graph is linearized into three 64-bit aligned contiguous arrays within GPU High Bandwidth Memory (HBM3e).
+          </p>
+<!-- Array Layout Visualization -->
+<div class="p-6 bg-surface-graphite border border-border-hairline space-y-6">
+<div class="flex items-center justify-between border-b border-border-hairline pb-2">
+<span class="font-headline-sm text-sm text-editorial-cream font-medium">Contiguous Physical Array Topology</span>
+<span class="font-label-code text-xs text-secondary-fixed">64-BYTE ALIGNED FOR L2 BURST READS</span>
+</div>
+<div class="space-y-3 font-label-code text-xs">
+<!-- row_ptr Array -->
+<div>
+<div class="flex items-center justify-between text-metric-dim mb-1">
+<span>row_ptr : uint64_t [ |V| + 1 ]</span>
+<span>SIZE: 99.8 MB (CONTIGUOUS)</span>
+</div>
+<div class="grid grid-cols-8 sm:grid-cols-12 gap-1 text-center">
+<div class="bg-surface-raised border border-border-hairline py-2 text-editorial-cream">0</div>
+<div class="bg-surface-raised border border-border-hairline py-2 text-editorial-cream">4</div>
+<div class="bg-surface-raised border border-border-hairline py-2 text-editorial-cream">7</div>
+<div class="bg-surface-raised border border-border-hairline py-2 text-editorial-cream">12</div>
+<div class="bg-surface-raised border border-border-hairline py-2 text-metric-dim">...</div>
+<div class="bg-surface-raised border border-border-hairline py-2 text-primary-container font-semibold">48,219,804</div>
+</div>
+<div class="text-[10px] text-metric-dim mt-1">Offset pointers defining the slice index bounds for the outgoing neighborhood of vertex i.</div>
+</div>
+<!-- col_ind Array -->
+<div>
+<div class="flex items-center justify-between text-metric-dim mb-1">
+<span>col_ind : uint32_t [ |E| ]</span>
+<span>SIZE: 192.8 MB (CONTIGUOUS)</span>
+</div>
+<div class="grid grid-cols-8 sm:grid-cols-12 gap-1 text-center">
+<div class="bg-surface-obsidian border border-primary-container/40 py-2 text-primary-container">142</div>
+<div class="bg-surface-obsidian border border-primary-container/40 py-2 text-primary-container">891</div>
+<div class="bg-surface-obsidian border border-primary-container/40 py-2 text-primary-container">3041</div>
+<div class="bg-surface-obsidian border border-primary-container/40 py-2 text-primary-container">9821</div>
+<div class="bg-surface-obsidian border border-border-hairline py-2 text-metric-dim">...</div>
+<div class="bg-surface-obsidian border border-primary-container/40 py-2 text-primary-container">402</div>
+</div>
+<div class="text-[10px] text-metric-dim mt-1">Direct destination neighbor indices corresponding to outgoing transfers.</div>
+</div>
+<!-- edge_attr Array -->
+<div>
+<div class="flex items-center justify-between text-metric-dim mb-1">
+<span>edge_attr : packed_fp8_t [ |E| * 8 bytes ]</span>
+<span>SIZE: 385.7 MB (CONTIGUOUS)</span>
+</div>
+<div class="grid grid-cols-4 sm:grid-cols-6 gap-1 text-center">
+<div class="bg-surface-raised border border-secondary-fixed/40 py-2 text-secondary-fixed">amt:0x7E | ts:0x3A</div>
+<div class="bg-surface-raised border border-secondary-fixed/40 py-2 text-secondary-fixed">amt:0x41 | ts:0x3C</div>
+<div class="bg-surface-raised border border-secondary-fixed/40 py-2 text-secondary-fixed">amt:0x6B | ts:0x41</div>
+<div class="bg-surface-raised border border-border-hairline py-2 text-metric-dim">...</div>
+</div>
+<div class="text-[10px] text-metric-dim mt-1">Interleaved FP8 E4M3 scalar amount and FP16 relative timestamp quantization payload.</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 6: Dual-Execution Reference Architectures -->
+<section class="space-y-6" id="sec-6">
+<div class="flex items-center justify-between border-b border-border-hairline pb-3">
+<div>
+<span class="font-label-code text-label-code text-primary-container">SECTION 06 // ENGINE TAXONOMY</span>
+<h2 class="font-headline-md text-headline-md text-editorial-cream">Dual-Execution Reference Architectures</h2>
+</div>
+<span class="font-label-code text-label-code text-metric-dim">MICRO-BENCHMARK STACK</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">
+            To isolate algorithmic gains from micro-architectural acceleration, we contrast our Hopper sm_90 engine against two validated production reference architectures deployed in institutional clearing.
+          </p>
+<!-- 3-Column Comparative Architecture Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Ref 1: CPU -->
+<div class="p-5 bg-surface-graphite border border-border-hairline flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between text-metric-dim font-label-code text-xs mb-2">
+<span>REFERENCE 1</span>
+<span>CPU-BOUND</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream mb-2">OpenMP-64Th Baseline</h3>
+<p class="font-body-sm text-body-sm text-metric-dim mb-4">
+                  Dual Intel Xeon Platinum 8480+ (112 physical cores, 350W TDP). Thread-pool parallelized BFS/DFS over CSR. Memory bandwidth bound at DDR5 bus saturation (307 GB/s).
+                </p>
+</div>
+<div class="border-t border-border-hairline pt-3 font-label-code text-xs space-y-1">
+<div class="flex justify-between">
+<span class="text-metric-dim">Traversal Latency:</span>
+<span class="text-alert-critical font-semibold">842.10 ms</span>
+</div>
+<div class="flex justify-between">
+<span class="text-metric-dim">Energy / Query:</span>
+<span class="text-metric-dim">142.60 Joules</span>
+</div>
+</div>
+</div>
+<!-- Ref 2: Standard CUDA -->
+<div class="p-5 bg-surface-graphite border border-border-hairline flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between text-metric-dim font-label-code text-xs mb-2">
+<span>REFERENCE 2</span>
+<span>GPU GLOBAL MEM</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream mb-2">Baseline CUDA (cuGraph / PyG)</h3>
+<p class="font-body-sm text-body-sm text-metric-dim mb-4">
+                  Standard naive CUDA kernel executing global memory atomics (<code class="font-label-code text-xs text-primary-container">atomicAdd</code>). Severe warp divergence when expanding high-degree hub nodes.
+                </p>
+</div>
+<div class="border-t border-border-hairline pt-3 font-label-code text-xs space-y-1">
+<div class="flex justify-between">
+<span class="text-metric-dim">Traversal Latency:</span>
+<span class="text-on-surface font-semibold">48.60 ms</span>
+</div>
+<div class="flex justify-between">
+<span class="text-metric-dim">Energy / Query:</span>
+<span class="text-metric-dim">18.40 Joules</span>
+</div>
+</div>
+</div>
+<!-- Candidate: FraudGraph Hopper sm_90 -->
+<div class="p-5 bg-surface-raised border border-border-active flex flex-col justify-between relative shadow-[0_0_15px_rgba(0,242,254,0.08)]">
+<div class="absolute -top-2.5 right-3 px-2 bg-surface-obsidian text-border-active border border-border-active font-label-code text-[10px]">
+                PROPOSED CANDIDATE
+              </div>
+<div>
+<div class="flex items-center justify-between text-primary-container font-label-code text-xs mb-2">
+<span>PROPOSED RIG</span>
+<span>SM_90 REGISTER</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream mb-2">FraudGraph Hopper sm_90</h3>
+<p class="font-body-sm text-body-sm text-on-surface mb-4">
+                  NVIDIA H100 SXM5 80GB. Dynamic warp partitioning, in-register bitonic neighbor sorting via <code class="font-label-code text-xs text-primary-container">__shfl_xor_sync</code>, asynchronous tensor core FP8 MMA contractions.
+                </p>
+</div>
+<div class="border-t border-border-hairline pt-3 font-label-code text-xs space-y-1">
+<div class="flex justify-between">
+<span class="text-primary-container">Traversal Latency:</span>
+<span class="text-primary-container font-bold">4.62 ms (182×)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-secondary-fixed">Energy / Query:</span>
+<span class="text-secondary-fixed font-bold">0.82 Joules</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 7: Micro-Architectural Memory-Aware Optimization Strategies -->
+<section class="space-y-6" id="sec-7">
+<div class="flex items-center justify-between border-b border-border-hairline pb-3">
+<div>
+<span class="font-label-code text-label-code text-primary-container">SECTION 07 // LOW-LEVEL INSTRUCTIONS</span>
+<h2 class="font-headline-md text-headline-md text-editorial-cream">Micro-Architectural CUDA sm_90 Kernels</h2>
+</div>
+<span class="font-label-code text-label-code text-secondary-fixed">PTX / C++ INLINE EMISSION</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">
+            We bypass conventional CUDA abstraction boundaries to directly access Hopper's Tensor Memory Accelerator (TMA) and warp-synchronous register exchange registers. Below is the active production kernel for 3-hop cyclic intersection.
+          </p>
+<!-- Code Snippet Container with Editorial Header -->
+<div class="border border-border-hairline bg-surface-graphite">
+<div class="px-4 py-2.5 bg-surface-raised border-b border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2 font-label-code text-xs">
+<span class="w-2 h-2 bg-primary-container inline-block"></span>
+<span class="text-editorial-cream">fraudgraph_sm90_bitonic_cycle.cu</span>
+</div>
+<button class="font-label-code text-[11px] text-metric-dim hover:text-primary-container flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-xs" data-icon="content_copy">content_copy</span>
+<span>Copy PTX</span>
+</button>
+</div>
+<pre class="p-4 font-label-code text-xs text-on-surface overflow-x-auto leading-relaxed"><span class="c-kw">__global__ void</span> <span class="c-fn">hopper_sm90_cyclic_isomorphism_kernel</span>(
+    <span class="c-tp">const uint64_t* __restrict__</span> row_ptr,
+    <span class="c-tp">const uint32_t* __restrict__</span> col_ind,
+    <span class="c-tp">const uint8_t*  __restrict__</span> edge_fp8_attr,
+    <span class="c-tp">uint32_t*       __restrict__</span> cycle_match_buffer,
+    <span class="c-tp">const float</span>                  theta_tolerance
+) {
+    <span class="c-cm">// Allocate 228 KB Shared Memory per SM on Hopper sm_90</span>
+    <span class="c-kw">extern __shared__ uint32_t</span> smem_hub_cache[];
+    <span class="c-kw">const uint32_t</span> warp_id = threadIdx.x &gt;&gt; <span class="c-num">5</span>;
+    <span class="c-kw">const uint32_t</span> lane_id = threadIdx.x &amp; <span class="c-num">31</span>;
+    <span class="c-kw">const uint32_t</span> root_v  = blockIdx.x * blockDim.y + threadIdx.y;
+
+    <span class="c-cm">// 1. Load outgoing neighborhood offsets into registers</span>
+    <span class="c-kw">const uint64_t</span> start_edge = row_ptr[root_v];
+    <span class="c-kw">const uint64_t</span> end_edge   = row_ptr[root_v + <span class="c-num">1</span>];
+    <span class="c-kw">const uint32_t</span> deg        = <span class="c-kw">static_cast</span>&lt;<span class="c-tp">uint32_t</span>&gt;(end_edge - start_edge);
+
+    <span class="c-kw">uint32_t</span> active_neighbor = (lane_id &lt; deg) ? col_ind[start_edge + lane_id] : <span class="c-num">0xFFFFFFFF</span>;
+
+    <span class="c-cm">// 2. In-Register Bitonic Sort via __shfl_xor_sync (O(log² 32) warp cooperative)</span>
+    #pragma unroll
+    <span class="c-kw">for</span> (<span class="c-tp">int</span> size = <span class="c-num">2</span>; size &lt;= <span class="c-num">32</span>; size &lt;&lt;= <span class="c-num">1</span>) {
+        #pragma unroll
+        <span class="c-kw">for</span> (<span class="c-tp">int</span> stride = size / <span class="c-num">2</span>; stride &gt; <span class="c-num">0</span>; stride &gt;&gt;= <span class="c-num">1</span>) {
+            <span class="c-tp">uint32_t</span> partner = <span class="c-fn">__shfl_xor_sync</span>(<span class="c-num">0xFFFFFFFF</span>, active_neighbor, stride);
+            <span class="c-kw">bool</span> ascending = ((lane_id &amp; size) == <span class="c-num">0</span>);
+            <span class="c-kw">if</span> ((active_neighbor &gt; partner) == ascending &amp;&amp; partner != <span class="c-num">0xFFFFFFFF</span>) {
+                active_neighbor = partner;
+            }
+        }
+    }
+
+    <span class="c-cm">// 3. FP8 Asynchronous Tensor Contraction (WGMMA) for 3-hop path verification</span>
+    <span class="c-fn">__pipeline_memcpy_async</span>(&amp;smem_hub_cache[lane_id * <span class="c-num">16</span>], &amp;edge_fp8_attr[start_edge + lane_id], <span class="c-num">16</span>);
+    <span class="c-fn">__pipeline_commit</span>();
+    <span class="c-fn">__pipeline_wait_prior</span>(<span class="c-num">0</span>);
+}</pre>
+</div>
+<!-- Micro-Optimization Pillars Bento Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<div class="flex items-center gap-2 text-primary-container font-label-code text-xs mb-1">
+<span class="material-symbols-outlined text-sm" data-icon="storage">storage</span>
+<span>OPTIMIZATION 1: SMEM TILING</span>
+</div>
+<h4 class="font-headline-sm text-sm text-editorial-cream font-medium">228 KB Shared Memory L1/L2 Bypass</h4>
+<p class="font-body-sm text-body-sm text-metric-dim mt-1">
+                Replaces L2 cache line evictions with asynchronous prefetching via Hopper TMA hardware descriptors, eliminating 94% of uncoalesced memory stalls.
+              </p>
+</div>
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<div class="flex items-center gap-2 text-secondary-fixed font-label-code text-xs mb-1">
+<span class="material-symbols-outlined text-sm" data-icon="shuffle">shuffle</span>
+<span>OPTIMIZATION 2: REGISTER SHUFFLE</span>
+</div>
+<h4 class="font-headline-sm text-sm text-editorial-cream font-medium">In-Register Warp Bitonic Sorting</h4>
+<p class="font-body-sm text-body-sm text-metric-dim mt-1">
+                Performs cyclic intersection in zero clock-cycle local memory overhead, sorting 32-element neighborhood batches completely inside register files.
+              </p>
+</div>
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<div class="flex items-center gap-2 text-primary-container font-label-code text-xs mb-1">
+<span class="material-symbols-outlined text-sm" data-icon="grid_4x4">grid_4x4</span>
+<span>OPTIMIZATION 3: FP8 WGMMA</span>
+</div>
+<h4 class="font-headline-sm text-sm text-editorial-cream font-medium">E4M3 Tensor-Core Contractions</h4>
+<p class="font-body-sm text-body-sm text-metric-dim mt-1">
+                Linearized adjacency matrix segments are cast into FP8 matrices and multiplied via asynchronous 64×64×32 MMA instructions to detect closed walks in 0.8 µs.
+              </p>
+</div>
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<div class="flex items-center gap-2 text-editorial-cream font-label-code text-xs mb-1">
+<span class="material-symbols-outlined text-sm" data-icon="cable">cable</span>
+<span>OPTIMIZATION 4: GPU-DIRECT RDMA</span>
+</div>
+<h4 class="font-headline-sm text-sm text-editorial-cream font-medium">Direct NIC-to-HBM3e DMA</h4>
+<p class="font-body-sm text-body-sm text-metric-dim mt-1">
+                ConnectX-7 NIC writes ISO 20022 wire buffers directly into GPU HBM3e over PCIe Gen5 / NVLink, completely isolating host OS interrupts.
+              </p>
+</div>
+</div>
+</section>
+<!-- SECTION 8: Correctness Validation & Zero-Drift Equivalence Proofs -->
+<section class="space-y-6" id="sec-8">
+<div class="flex items-center justify-between border-b border-border-hairline pb-3">
+<div>
+<span class="font-label-code text-label-code text-primary-container">SECTION 08 // FORMAL VERIFICATION</span>
+<h2 class="font-headline-md text-headline-md text-editorial-cream">Correctness &amp; Zero-Drift Equivalence Proofs</h2>
+</div>
+<span class="font-label-code text-label-code text-secondary-fixed">THEOREM 1 (EQUIVALENCE)</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">
+            Financial model risk governance (under Federal Reserve SR 11-7 and OCC 2011-12 guidelines) requires formal mathematical proof that low-precision accelerator optimizations do not diverge from standard IEEE 754 double/single precision reference models.
+          </p>
+<!-- Theorem & Proof Card -->
+<div class="p-6 bg-surface-graphite border border-border-hairline space-y-4">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-base text-editorial-cream font-semibold">Theorem 1 (Deterministic Sub-Graph Invariance)</span>
+<span class="font-label-code text-[11px] text-secondary-fixed border border-secondary-fixed/40 bg-secondary-fixed/10 px-2 py-0.5">FORMALLY VERIFIED</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface italic">
+              Let <span class="text-editorial-cream">S_CPU(G)</span> denote the canonical set of 3-hop suspicious cycles emitted by an IEEE-754 double-precision BFS engine over graph <span class="text-editorial-cream">G</span>, and let <span class="text-editorial-cream">S_FP8(G)</span> denote the candidate cycles isolated by the Hopper Tensor Core engine. If the edge amount quantization operator satisfies <span class="font-label-code text-xs text-primary-container">|Q(w) - w| / w ≤ 2⁻⁴</span>, then:
+            </p>
+<div class="p-4 bg-surface-obsidian border border-border-hairline font-label-code text-center text-primary-container text-sm">
+              S_FP8(G) ≡ S_CPU(G)  ∀ G ∈ FedWire-2025,  with False Positive Drift ε = 0.0000000%
+            </div>
+<p class="font-body-sm text-body-sm text-metric-dim">
+<strong>Proof Sketch:</strong> Because the 3-hop cycle existence condition is fundamentally topological (topological connectivity is discrete in {0, 1}), quantization error only manifests on the continuous volume slippage filter <span class="font-mono text-xs">|w(u,v) - w(w,u)| / w(u,v) &lt; θ</span>. With FP8 E4M3 mantissa precision offering 0.0625 relative resolution, and <span class="font-mono text-xs">θ_tol = 0.05</span> evaluated under bounded guard bits, no false edge inclusions occur. Complete Coq proof scripts accompany Monograph Artifacts.
+            </p>
+<!-- zk-SNARK Attestation Fingerprint -->
+<div class="p-3 bg-surface-obsidian border border-border-hairline flex flex-wrap items-center justify-between gap-2 font-label-code text-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-fixed text-sm" data-icon="lock">lock</span>
+<span class="text-metric-dim">zk-SNARK SHA-256 Digest:</span>
+<span class="text-editorial-cream">0x8f2a99d42c3...711c09b</span>
+</div>
+<span class="text-secondary-fixed">GROTH16 PROOF VALIDATED</span>
+</div>
+</div>
+</section>
+<!-- SECTION 9: Empirical Performance Benchmarking & Ablation -->
+<section class="space-y-6" id="sec-9">
+<div class="flex items-center justify-between border-b border-border-hairline pb-3">
+<div>
+<span class="font-label-code text-label-code text-primary-container">SECTION 09 // BENCHMARKS</span>
+<h2 class="font-headline-md text-headline-md text-editorial-cream">Empirical Performance Benchmarking &amp; Micro-Ablation</h2>
+</div>
+<span class="font-label-code text-label-code text-primary-container">182.4× KERNEL SPEEDUP</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">
+            Rigorous micro-benchmarks were recorded across 1,000 independent runs on an isolated Dell PowerEdge XE9680 rig with 8× NVIDIA H100 SXM5 GPUs and dual Intel Xeon Platinum 8480+ processors.
+          </p>
+<!-- Formal Academic Performance Table -->
+<div class="border border-border-hairline bg-surface-graphite overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm border-collapse">
+<thead>
+<tr class="bg-surface-raised border-b border-border-hairline font-label-code text-xs text-metric-dim">
+<th class="py-3 px-4">EXECUTION METRIC</th>
+<th class="py-3 px-4">CPU OPENMP-64TH</th>
+<th class="py-3 px-4">CUDA BASELINE (PYG)</th>
+<th class="py-3 px-4 text-editorial-cream">FRAUDGRAPH SM_90 (OURS)</th>
+<th class="py-3 px-4 text-primary-container">NET ADVANTAGE</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-hairline font-label-code text-xs">
+<tr class="hover:bg-primary-container/5 transition-colors">
+<td class="py-3 px-4 font-semibold text-editorial-cream font-body-sm">Kernel Execution Latency</td>
+<td class="py-3 px-4 text-metric-dim">842.10 ms</td>
+<td class="py-3 px-4 text-on-surface">48.60 ms</td>
+<td class="py-3 px-4 text-primary-container font-bold">4.62 ms</td>
+<td class="py-3 px-4 text-primary-container font-bold">182.4× faster</td>
+</tr>
+<tr class="hover:bg-primary-container/5 transition-colors">
+<td class="py-3 px-4 font-semibold text-editorial-cream font-body-sm">End-to-End Latency (PCIe Gen5)</td>
+<td class="py-3 px-4 text-metric-dim">868.50 ms</td>
+<td class="py-3 px-4 text-on-surface">62.40 ms</td>
+<td class="py-3 px-4 text-primary-container font-bold">11.84 ms</td>
+<td class="py-3 px-4 text-primary-container font-bold">73.3× faster</td>
+</tr>
+<tr class="hover:bg-primary-container/5 transition-colors">
+<td class="py-3 px-4 font-semibold text-editorial-cream font-body-sm">Edge Traversal Throughput</td>
+<td class="py-3 px-4 text-metric-dim">57.2 M edges/s</td>
+<td class="py-3 px-4 text-on-surface">991.7 M edges/s</td>
+<td class="py-3 px-4 text-secondary-fixed font-bold">2,160.0 M edges/s</td>
+<td class="py-3 px-4 text-secondary-fixed font-bold">+3,676%</td>
+</tr>
+<tr class="hover:bg-primary-container/5 transition-colors">
+<td class="py-3 px-4 font-semibold text-editorial-cream font-body-sm">Energy Consumption / Query</td>
+<td class="py-3 px-4 text-metric-dim">142.60 Joules</td>
+<td class="py-3 px-4 text-on-surface">18.40 Joules</td>
+<td class="py-3 px-4 text-secondary-fixed font-bold">0.82 Joules</td>
+<td class="py-3 px-4 text-secondary-fixed font-bold">173.9× reduction</td>
+</tr>
+<tr class="hover:bg-primary-container/5 transition-colors">
+<td class="py-3 px-4 font-semibold text-editorial-cream font-body-sm">L2 Cache Hit Rate</td>
+<td class="py-3 px-4 text-metric-dim">38.4% (L3)</td>
+<td class="py-3 px-4 text-on-surface">54.1%</td>
+<td class="py-3 px-4 text-editorial-cream font-bold">96.8%</td>
+<td class="py-3 px-4 text-editorial-cream">+42.7 pts</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Step-Wise Micro-Ablation Bar Visualizer -->
+<div class="p-6 bg-surface-graphite border border-border-hairline space-y-4">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-sm text-editorial-cream font-semibold">Step-Wise Micro-Ablation Speedup Breakdown</span>
+<span class="font-label-code text-xs text-metric-dim">BASE: NAIVE CUDA KERNEL (1.0×)</span>
+</div>
+<div class="space-y-3 font-label-code text-xs">
+<div>
+<div class="flex justify-between text-metric-dim mb-1">
+<span>+ Shared Memory Tiling (TMA Asynchronous 228KB)</span>
+<span class="text-primary-container font-semibold">+14.8× Cumulative</span>
+</div>
+<div class="w-full bg-surface-obsidian h-3 border border-border-hairline">
+<div class="bg-primary-container h-full" style="width: 45%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-metric-dim mb-1">
+<span>+ In-Register Warp Bitonic Sorting (__shfl_xor_sync)</span>
+<span class="text-secondary-fixed font-semibold">+6.1× Marginal (+20.9× Total)</span>
+</div>
+<div class="w-full bg-surface-obsidian h-3 border border-border-hairline">
+<div class="bg-secondary-fixed h-full" style="width: 70%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-metric-dim mb-1">
+<span>+ FP8 Tensor Core MMA Contractions (sm_90 wgmma)</span>
+<span class="text-editorial-cream font-semibold">+14.7× Marginal (+35.6× Total)</span>
+</div>
+<div class="w-full bg-surface-obsidian h-3 border border-border-hairline">
+<div class="bg-editorial-cream h-full" style="width: 100%;"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 10: Fraud-Scoring Evaluation & Epistemic Separation -->
+<section class="space-y-6" id="sec-10">
+<div class="flex items-center justify-between border-b border-border-hairline pb-3">
+<div>
+<span class="font-label-code text-label-code text-primary-container">SECTION 10 // METHODOLOGICAL PURITY</span>
+<h2 class="font-headline-md text-headline-md text-editorial-cream">Detection Quality &amp; Epistemic Separation</h2>
+</div>
+<span class="font-label-code text-label-code text-alert-critical">SR 11-7 MANDATE</span>
+</div>
+<!-- Critical Epistemic Separation Callout Box -->
+<div class="p-6 bg-surface-raised border-l-4 border-l-primary-container border-y border-r border-border-hairline space-y-3">
+<div class="flex items-center gap-2 font-label-code text-xs text-primary-container font-semibold">
+<span class="material-symbols-outlined text-sm" data-icon="policy">policy</span>
+<span>METHODOLOGICAL EPISTEMIC SEPARATION CALLOUT</span>
+</div>
+<p class="font-body-md text-body-md text-editorial-cream leading-relaxed">
+<strong>Crucial Analytical Clarity:</strong> The 182.4× speedup demonstrated above is purely a <em>computational systems engineering achievement</em> (sub-millisecond hardware latency); it does NOT inherently make the underlying fraud model statistically smarter. Rather, it makes the computation of deep <strong>graph-topological features</strong> viable within strict real-time clearing latency SLAs (sub-15ms), which in turn delivers the statistical performance lift documented below.
+            </p>
+</div>
+<!-- Statistical Lift Metrics Bento -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim">MODEL PRECISION</span>
+<div class="font-metric-display text-metric-display text-editorial-cream mt-1">98.42%</div>
+<span class="font-body-sm text-body-sm text-secondary-fixed text-xs">+14.2% over XGBoost</span>
+</div>
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim">MODEL RECALL</span>
+<div class="font-metric-display text-metric-display text-editorial-cream mt-1">94.18%</div>
+<span class="font-body-sm text-body-sm text-secondary-fixed text-xs">+28.5% over Tabular</span>
+</div>
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim">F1-SCORE</span>
+<div class="font-metric-display text-metric-display text-primary-container mt-1">0.9625</div>
+<span class="font-body-sm text-body-sm text-primary-container text-xs">+23.9% net statistical lift</span>
+</div>
+<div class="p-4 bg-surface-graphite border border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim">FALSE POSITIVE RATE</span>
+<div class="font-metric-display text-metric-display text-secondary-fixed mt-1">0.0031%</div>
+<span class="font-body-sm text-body-sm text-metric-dim text-xs">Clearing SLA &lt; 0.01%</span>
+</div>
+</div>
+</section>
+<!-- SECTION 11: Boundary Conditions, Limitations & Open Reproducibility -->
+<section class="space-y-6" id="sec-11">
+<div class="flex items-center justify-between border-b border-border-hairline pb-3">
+<div>
+<span class="font-label-code text-label-code text-primary-container">SECTION 11 // REPRODUCIBILITY</span>
+<h2 class="font-headline-md text-headline-md text-editorial-cream">Boundary Conditions &amp; Open Reproducibility</h2>
+</div>
+<span class="font-label-code text-label-code text-metric-dim">APACHE 2.0 ARTIFACTS</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">
+            In compliance with academic rigor, we delineate all physical boundary conditions under which the Hopper kernel maintains its formal latency guarantees:
+          </p>
+<!-- Limitations List -->
+<div class="p-5 bg-surface-graphite border border-border-hairline font-body-sm text-body-sm space-y-3">
+<div class="flex items-start gap-3">
+<span class="font-label-code text-primary-container font-bold text-xs">LIMIT 1:</span>
+<p class="text-metric-dim">
+<strong class="text-editorial-cream">Maximum Node In-Degree Limit:</strong> Warps allocate up to 65,536 contiguous edges. Nodes exceeding this in-degree threshold (e.g., mega-clearing master vaults) trigger dynamic block-level cooperative splitting, introducing an observed 1.4× tail latency penalty.
+              </p>
+</div>
+<div class="flex items-start gap-3">
+<span class="font-label-code text-primary-container font-bold text-xs">LIMIT 2:</span>
+<p class="text-metric-dim">
+<strong class="text-editorial-cream">Power-Law Alpha Threshold:</strong> Optimal register occupancy requires graph degree skew <span class="text-editorial-cream">α ≥ 1.8</span>. On uniform random graphs (Erdős–Rényi), register bitonic sorting underutilizes SIMT lanes.
+              </p>
+</div>
+</div>
+<!-- Docker Hub Run Command -->
+<div class="border border-border-hairline bg-surface-graphite" id="docker">
+<div class="px-4 py-2.5 bg-surface-raised border-b border-border-hairline flex items-center justify-between">
+<span class="font-label-code text-xs text-editorial-cream">FULL REPRODUCIBILITY CLI HARNESS</span>
+<span class="font-label-code text-[11px] text-secondary-fixed">DOCKER HUB CERTIFIED</span>
+</div>
+<div class="p-4 font-label-code text-xs text-primary-container bg-surface-obsidian overflow-x-auto">
+              docker run --gpus all --ipc=host --ulimit memlock=-1 --rm \<br/>
+                -v ./fedwire_data:/workspace/data \<br/>
+                fraudgraph/monograph-sm90:v2.4-reproduce \<br/>
+                --seed=42 --devices=0,1,2,3 --verify-proofs=true --benchmark=all
+            </div>
+</div>
+<!-- BibTeX Citation Block -->
+<div class="border border-border-hairline bg-surface-graphite" id="bibtex">
+<div class="px-4 py-2.5 bg-surface-raised border-b border-border-hairline flex items-center justify-between">
+<span class="font-label-code text-xs text-editorial-cream">BIBTEX CITATION CITATION DOSSIER</span>
+<button class="font-label-code text-[11px] text-metric-dim hover:text-border-active transition-colors flex items-center gap-1" onclick="navigator.clipboard.writeText(document.getElementById('bibtex-code').innerText)">
+<span class="material-symbols-outlined text-xs" data-icon="content_copy">content_copy</span>
+<span>Copy to Clipboard</span>
+</button>
+</div>
+<pre class="p-4 font-label-code text-xs text-metric-dim overflow-x-auto leading-relaxed" id="bibtex-code">@article{vance2025fraudgraph,
+  title     = {Sub-Millisecond Graph Isomorphism on 10M-Node Financial Clearing Graphs: A Memory-Aware Hopper Tensor Architecture},
+  author    = {Vance, Alexander and Valenti, K.},
+  journal   = {Monographs in Applied Quantitative Computing &amp; Security},
+  volume    = {14},
+  number    = {2},
+  pages     = {104--139},
+  year      = {2025},
+  publisher = {FraudGraph Intelligence Consortium},
+  doi       = {10.1145/369824.2025.0489}
+}</pre>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- ========================================================================= -->
+<!-- 4. Footer (Shared Component from JSON - Technical Dossier Footer)         -->
+<!-- ========================================================================= -->
+<footer class="w-full py-space-xl px-space-xl border-t border-border-hairline dark:border-border-hairline flex flex-col md:flex-row justify-between items-center gap-space-lg bg-surface-obsidian dark:bg-surface-obsidian">
+<div class="flex flex-col gap-2 max-w-xl">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-primary-container inline-block"></span>
+<span class="font-headline-sm text-headline-sm text-editorial-cream dark:text-editorial-cream tracking-tight">FraudGraph Intelligence Consortium</span>
+</div>
+<p class="font-body-sm text-body-sm text-metric-dim">
+        © 2025 FraudGraph Intelligence Consortium. Hopper sm_90 Bitonic Kernels released under Apache 2.0 with SR 11-7 Compliance Seal.
+      </p>
+</div>
+<!-- Technical Links -->
+<div class="flex flex-wrap items-center gap-x-6 gap-y-2 font-body-sm text-body-sm">
+<a class="text-metric-dim dark:text-metric-dim font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream transition-colors" href="#peer-review">Peer Review Dossier</a>
+<a class="text-metric-dim dark:text-metric-dim font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream transition-colors" href="#zk-snark">zk-SNARK Attestation Proofs</a>
+<a class="text-metric-dim dark:text-metric-dim font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream transition-colors" href="#cuda-artifacts">CUDA sm_90 Artifacts</a>
+<a class="text-metric-dim dark:text-metric-dim font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream transition-colors" href="#docker">Docker Hub Mirror</a>
+<a class="text-metric-dim dark:text-metric-dim font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream transition-colors" href="#fedwire">FedWire Synthetics</a>
+<a class="text-border-active dark:text-border-active font-body-sm text-body-sm hover:underline" href="#contact">Contact Editorial Board</a>
+</div>
+</footer>
+<!-- Micro-Interactions Script for Interactive ToC and Smooth Scroll -->
+<script>
+    // Smooth scrolling & active navigation highlight logic
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const targetId = this.getAttribute('href');
+        if (targetId.startsWith('#sec-') || targetId === '#bibtex' || targetId === '#docker') {
+          const target = document.querySelector(targetId);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+    });
+
+    // Observer to highlight active TOC tab on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          document.querySelectorAll('aside nav a').forEach(link => {
+            if (link.getAttribute('href') === `#${id}`) {
+              link.className = "bg-surface-raised dark:bg-surface-raised border-l-2 border-border-active dark:border-border-active text-editorial-cream dark:text-editorial-cream font-body-sm text-body-sm pl-space-md py-space-sm flex items-center gap-2.5";
+            } else {
+              link.className = "text-metric-dim dark:text-metric-dim border-l-2 border-transparent pl-space-md py-space-sm font-body-sm text-body-sm hover:text-editorial-cream dark:hover:text-editorial-cream hover:bg-surface-raised transition-colors flex items-center gap-2.5";
+            }
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    document.querySelectorAll('section[id]').forEach(section => {
+      observer.observe(section);
+    });
+  </script>
+</body></html>

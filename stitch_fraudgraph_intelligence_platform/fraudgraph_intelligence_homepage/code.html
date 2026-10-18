@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FraudGraph Intelligence — Sub-Millisecond Graph Neural Compute</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Editorial Serif (Newsreader) and Monospace/Technical Sans (Geist via CDN) -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;family=Geist:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration Verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface": "#e1e2e8",
+            "on-primary-container": "#006a70",
+            "primary-container": "#00f2fe",
+            "on-primary-fixed": "#002022",
+            "metric-dim": "#484F58",
+            "on-secondary-fixed-variant": "#00513e",
+            "surface-container-high": "#272a2f",
+            "inverse-surface": "#e1e2e8",
+            "surface-dim": "#111418",
+            "on-secondary": "#00382a",
+            "inverse-primary": "#00696f",
+            "surface-graphite": "#0D1117",
+            "on-primary-fixed-variant": "#004f53",
+            "surface-raised": "#161B22",
+            "error-container": "#93000a",
+            "surface": "#111418",
+            "on-tertiary-fixed-variant": "#474743",
+            "secondary": "#7dffd5",
+            "surface-bright": "#36393e",
+            "secondary-container": "#01e7b6",
+            "on-tertiary-fixed": "#1c1c18",
+            "on-error-container": "#ffdad6",
+            "on-secondary-container": "#00624c",
+            "surface-container-lowest": "#0b0e12",
+            "alert-critical": "#FF3B30",
+            "tertiary": "#faf7f1",
+            "surface-container": "#1d2024",
+            "on-tertiary": "#31302d",
+            "border-hairline": "#21262D",
+            "on-background": "#e1e2e8",
+            "primary-fixed": "#6ff6ff",
+            "secondary-fixed": "#41fecb",
+            "on-tertiary-container": "#61605b",
+            "outline-variant": "#3a494b",
+            "border-active": "#00F2FE",
+            "secondary-fixed-dim": "#00e0b1",
+            "on-surface-variant": "#b9cacb",
+            "on-primary": "#00373a",
+            "tertiary-container": "#dedbd5",
+            "tertiary-fixed-dim": "#c9c6c1",
+            "background": "#111418",
+            "on-secondary-fixed": "#002117",
+            "inverse-on-surface": "#2e3135",
+            "outline": "#849495",
+            "editorial-cream": "#F8F7F4",
+            "surface-variant": "#32353a",
+            "primary-fixed-dim": "#00dce6",
+            "surface-container-highest": "#32353a",
+            "surface-obsidian": "#05070A",
+            "surface-container-low": "#191c20",
+            "error": "#ffb4ab",
+            "tertiary-fixed": "#e5e2dc",
+            "surface-tint": "#00dce6",
+            "on-error": "#690005",
+            "primary": "#e0fdff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2.5rem",
+            "margin": "2.5rem",
+            "space-xs": "0.25rem",
+            "gutter-mobile": "0.75rem",
+            "space-sm": "0.5rem",
+            "gutter": "1.5rem",
+            "space-lg": "1.5rem",
+            "margin-mobile": "1rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "headline-lg-mobile": ["Newsreader", "serif"],
+            "body-md": ["Geist", "sans-serif"],
+            "metric-display": ["Geist", "sans-serif"],
+            "body-lg": ["Geist", "sans-serif"],
+            "display-hero": ["Newsreader", "serif"],
+            "headline-sm": ["Newsreader", "serif"],
+            "headline-md": ["Newsreader", "serif"],
+            "display-hero-mobile": ["Newsreader", "serif"],
+            "body-sm": ["Geist", "sans-serif"],
+            "headline-lg": ["Newsreader", "serif"],
+            "label-code": ["Geist Mono", "monospace"]
+          },
+          "fontSize": {
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "metric-display": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "400" }],
+            "label-code": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Custom subtle pulsing keyframes for financial graph vectors */
+    @keyframes pulse-flow {
+      0%, 100% { opacity: 0.25; stroke-dashoffset: 0; }
+      50% { opacity: 0.95; stroke-dashoffset: -20; }
+    }
+    @keyframes node-breathe {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px #00F2FE); }
+      50% { transform: scale(1.15); filter: drop-shadow(0 0 10px #00F2FE); }
+    }
+    @keyframes radar-scan {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(1000%); }
+    }
+    .flow-line {
+      stroke-dasharray: 6, 8;
+      animation: pulse-flow 3.5s linear infinite;
+    }
+    .live-node {
+      animation: node-breathe 4s ease-in-out infinite;
+    }
+    /* Grid background styling */
+    .telemetry-grid {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(33, 38, 45, 0.45) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(33, 38, 45, 0.45) 1px, transparent 1px);
+    }
+  </style>
+</head>
+<body class="bg-surface-obsidian text-on-surface antialiased selection:bg-primary-container selection:text-surface-obsidian">
+<!-- =========================================================================
+       SECTION 1: Premium Navigation Header (Shared Component: TopNavBar Anchor)
+       ========================================================================= -->
+<header class="fixed top-0 left-0 w-full z-50 rounded-none bg-surface-graphite/85 backdrop-blur-md border-b border-border-hairline shadow-none">
+<div class="flex justify-between items-center w-full px-space-lg md:px-margin max-w-full h-14">
+<!-- Brand Wordmark with subtle cyan node indicator -->
+<a class="flex items-center gap-space-sm group" href="#">
+<span class="w-2 h-2 rounded-none bg-primary-container inline-block shadow-[0_0_8px_#00F2FE] group-hover:scale-125 transition-transform"></span>
+<span class="font-headline-sm text-headline-sm tracking-tight text-editorial-cream uppercase font-semibold">FraudGraph Intelligence</span>
+</a>
+<!-- Desktop Nav Links (JSON Anchored: Explorer, GPU Laboratory, Architecture, Benchmarks, Intelligence Briefs) -->
+<nav class="hidden lg:flex items-center space-x-space-lg">
+<a class="font-label-code text-label-code text-primary-container border-b-2 border-border-active py-1 tracking-wider uppercase transition-none" href="#graph-intelligence">Explorer</a>
+<a class="font-label-code text-label-code text-outline hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#cuda-performance">GPU Laboratory</a>
+<a class="font-label-code text-label-code text-outline hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#methodology">Architecture</a>
+<a class="font-label-code text-label-code text-outline hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#benchmarks">Benchmarks</a>
+<a class="font-label-code text-label-code text-outline hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#research">Intelligence Briefs</a>
+</nav>
+<!-- Right Action Clusters -->
+<div class="flex items-center gap-space-md">
+<!-- Live CUDA Telemetry Pill -->
+<div class="hidden sm:flex items-center gap-space-xs px-space-sm py-1 border border-border-hairline bg-surface-raised">
+<span class="w-1.5 h-1.5 rounded-none bg-secondary-container"></span>
+<span class="font-label-code text-label-code text-on-surface-variant uppercase">CUDA HBM3: 0.12ms</span>
+</div>
+<!-- Forensic Docs Secondary Button -->
+<a class="hidden md:inline-flex items-center gap-1 px-space-md py-1.5 border border-border-hairline text-editorial-cream font-label-code text-label-code uppercase hover:border-editorial-cream hover:bg-white/[0.03] active:scale-[0.99] transition-none rounded-none" href="#documentation">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+<span>Forensic Docs</span>
+</a>
+<!-- Deploy Cluster / Launch App Primary Button -->
+<a class="inline-flex items-center gap-1.5 px-space-md py-1.5 bg-primary-container text-surface-obsidian font-body-sm font-semibold tracking-wide uppercase hover:bg-secondary-container active:scale-[0.99] transition-none rounded-none shadow-[0_0_12px_rgba(0,242,254,0.3)]" href="#deploy">
+<span class="material-symbols-outlined text-[16px]">analytics</span>
+<span>Deploy Cluster</span>
+</a>
+</div>
+</div>
+</header>
+<!-- =========================================================================
+       SECTION 2: Full-Viewport Cinematic Hero with Abstract Transaction Graph
+       ========================================================================= -->
+<section class="relative min-h-screen pt-24 pb-space-xl flex flex-col justify-between overflow-hidden border-b border-border-hairline bg-surface-obsidian telemetry-grid">
+<!-- Ambient Radial Glows -->
+<div class="absolute -top-40 -left-40 w-[600px] h-[600px] bg-primary-container/5 rounded-full blur-[140px] pointer-events-none"></div>
+<div class="absolute top-1/3 right-0 w-[550px] h-[550px] bg-secondary/5 rounded-full blur-[160px] pointer-events-none"></div>
+<div class="w-full px-space-lg md:px-margin max-w-7xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center z-10 py-space-lg">
+<!-- Hero Editorial Typography (Left 7 Cols) -->
+<div class="lg:col-span-7 space-y-space-lg">
+<!-- Architectural Classification Badge -->
+<div class="inline-flex items-center gap-space-sm px-space-sm py-1 bg-surface-raised border border-border-hairline rounded-none">
+<span class="font-label-code text-label-code text-primary-container uppercase font-bold tracking-widest">PROTOCOL FG-984</span>
+<span class="w-1 h-1 bg-metric-dim"></span>
+<span class="font-label-code text-label-code text-on-surface-variant uppercase">SYNTHETIC MULE RING ISOLATION</span>
+</div>
+<!-- Headline -->
+<h1 class="font-display-hero text-display-hero text-editorial-cream max-w-3xl leading-[1.08] tracking-tight">
+          See the connections. Accelerate the intelligence.
+        </h1>
+<!-- Supporting Brief -->
+<p class="font-body-lg text-body-lg text-on-surface max-w-2xl font-light">
+          Sub-millisecond graph neural computing engineered for Tier-1 financial networks. Bridging raw high-bandwidth memory kernels with autonomous topological inference to intercept synthetic rings before settlement.
+        </p>
+<!-- CTAs -->
+<div class="flex flex-wrap items-center gap-space-md pt-space-xs">
+<a class="px-space-lg py-3 bg-primary-container text-surface-obsidian font-body-md font-semibold tracking-wide uppercase hover:bg-secondary-container active:scale-[0.99] transition-none rounded-none shadow-[0_0_18px_rgba(0,242,254,0.35)] flex items-center gap-space-sm" href="#explorer">
+<span>Explore the Platform</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+<a class="px-space-lg py-3 border border-border-hairline text-editorial-cream font-body-md uppercase hover:border-editorial-cream hover:bg-white/[0.03] active:scale-[0.99] transition-none rounded-none flex items-center gap-space-sm" href="#research">
+<span>View Research</span>
+<span class="material-symbols-outlined text-base text-outline">file_present</span>
+</a>
+</div>
+<!-- Micro Feature Tickers -->
+<div class="pt-space-md border-t border-border-hairline grid grid-cols-3 gap-space-md max-w-xl">
+<div>
+<span class="font-label-code text-label-code text-metric-dim uppercase block">KERNEL LATENCY</span>
+<span class="font-metric-display text-headline-sm text-editorial-cream font-semibold">0.12 ms</span>
+</div>
+<div>
+<span class="font-label-code text-label-code text-metric-dim uppercase block">ADJACENCY CAPACITY</span>
+<span class="font-metric-display text-headline-sm text-editorial-cream font-semibold">120M nodes</span>
+</div>
+<div>
+<span class="font-label-code text-label-code text-metric-dim uppercase block">RING RECALL (F1)</span>
+<span class="font-metric-display text-headline-sm text-secondary-container font-semibold">99.94%</span>
+</div>
+</div>
+</div>
+<!-- Right 5 Cols: Original Abstract Financial Transaction Graph & Interactive Topology -->
+<div class="lg:col-span-5 relative">
+<div class="relative w-full aspect-square border border-border-hairline bg-surface-graphite p-space-md shadow-2xl">
+<!-- Viewport HUD Headers -->
+<div class="flex justify-between items-center pb-space-sm border-b border-border-hairline">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-none bg-alert-critical animate-ping"></span>
+<span class="font-label-code text-label-code text-editorial-cream uppercase font-semibold">Live Subgraph: #8492</span>
+</div>
+<span class="font-label-code text-label-code text-primary-container uppercase">Topology: 4-Hop Cycle</span>
+</div>
+<!-- Abstract Topological SVG Visualizer -->
+<div class="relative w-full h-[320px] flex items-center justify-center overflow-hidden">
+<svg class="w-full h-full" fill="none" viewbox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+<!-- Grid Coordinate Dots -->
+<pattern height="20" id="dot-pattern" patternunits="userSpaceOnUse" width="20">
+<rect fill="#21262D" height="1" width="1"></rect>
+</pattern>
+<rect fill="url(#dot-pattern)" height="320" width="400"></rect>
+<!-- Graph Edges: Layered Settlement Vectors -->
+<path d="M 60 160 L 140 80 L 260 90 L 330 180 L 250 250 L 130 230 Z" stroke="#21262D" stroke-width="1.5"></path>
+<path d="M 140 80 L 250 250" stroke="#21262D" stroke-dasharray="2,2" stroke-width="1"></path>
+<path d="M 60 160 L 260 90" stroke="#21262D" stroke-width="1"></path>
+<!-- High Velocity Moving Pulse Lines (Fraudulent Settlement Ring) -->
+<path class="flow-line" d="M 140 80 L 260 90 L 330 180 L 250 250 L 140 80" stroke="#00F2FE" stroke-width="2"></path>
+<path class="flow-line" d="M 60 160 L 140 80" stroke="#0AE8B7" stroke-width="1.5"></path>
+<path class="flow-line" d="M 250 250 L 130 230 L 60 160" stroke="#FF3B30" stroke-width="2"></path>
+<!-- Peripheral Transaction Ingestion Nodes -->
+<circle cx="60" cy="160" fill="#849495" r="4"></circle>
+<circle cx="130" cy="230" fill="#849495" r="5"></circle>
+<circle cx="330" cy="180" fill="#849495" r="5"></circle>
+<!-- Active Syndicate Core Nodes (Mules) -->
+<circle class="live-node" cx="140" cy="80" fill="#161B22" r="8" stroke="#00F2FE" stroke-width="2"></circle>
+<rect fill="#00F2FE" height="6" width="6" x="137" y="77"></rect>
+<circle class="live-node" cx="260" cy="90" fill="#161B22" r="9" stroke="#0AE8B7" stroke-width="2"></circle>
+<rect fill="#0AE8B7" height="8" width="8" x="256" y="86"></rect>
+<!-- Intercept Target: Synthetic Master Wallet -->
+<circle class="live-node" cx="250" cy="250" fill="#161B22" r="11" stroke="#FF3B30" stroke-width="2.5"></circle>
+<rect fill="#FF3B30" height="8" width="8" x="246" y="246"></rect>
+<!-- Topological Labels in Terminal Script -->
+<text fill="#484F58" font-family="Geist Mono" font-size="9" x="64" y="152">TX_INGEST.01</text>
+<text fill="#00F2FE" font-family="Geist Mono" font-size="9" x="148" y="74">MULE_NODE_Alpha</text>
+<text fill="#0AE8B7" font-family="Geist Mono" font-size="9" x="270" y="84">SYNTH_ID_882</text>
+<text fill="#FF3B30" font-family="Geist Mono" font-size="9" x="264" y="255">FLAG_INTERCEPT_TARGET</text>
+</svg>
+</div>
+<!-- Bottom Telemetry Card Inspector -->
+<div class="mt-space-sm p-space-sm bg-surface-raised border border-border-hairline space-y-1">
+<div class="flex justify-between text-label-code font-label-code">
+<span class="text-metric-dim uppercase">Active Adjacency Scan</span>
+<span class="text-alert-critical font-bold uppercase">Synthetics Detected (4 Nodes)</span>
+</div>
+<div class="w-full bg-surface-obsidian h-1 border border-border-hairline overflow-hidden">
+<div class="bg-primary-container h-full w-[84%]"></div>
+</div>
+<div class="flex justify-between text-body-sm font-label-code text-on-surface-variant pt-1">
+<span>Entropy Score: 0.942</span>
+<span>Warp Memory: 1.4 TB/s</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Live Telemetry Status Strip -->
+<div class="w-full border-t border-border-hairline bg-surface-graphite py-2 px-space-lg md:px-margin">
+<div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-space-sm text-label-code font-label-code">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-secondary-container"></span>
+<span class="text-editorial-cream uppercase font-semibold">Kernel Cluster: Online [0.12ms]</span>
+</div>
+<span class="text-metric-dim">|</span>
+<span class="text-on-surface-variant uppercase">Zero-Copy Adjacency Traversal</span>
+<span class="text-metric-dim hidden md:inline">|</span>
+<span class="text-metric-dim hidden md:inline uppercase">NVLink Bandwidth: 900 GB/s</span>
+</div>
+<div class="flex items-center gap-space-md text-metric-dim">
+<span>SEC PROTOCOL: ZERO-TRUST</span>
+<span>LOCATION: US-EAST-EQUINIX</span>
+<span class="text-primary-container uppercase font-bold">STATUS: 99.999%</span>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 3: Credibility Metrics & Capability Indicators
+       ========================================================================= -->
+<section class="py-space-xl border-b border-border-hairline bg-surface-obsidian">
+<div class="w-full px-space-lg md:px-margin max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Metric 1 -->
+<div class="p-space-lg bg-surface-graphite border border-border-hairline hover:border-border-active transition-none group">
+<div class="flex items-center justify-between pb-space-md border-b border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim uppercase">CAPABILITY 01</span>
+<span class="material-symbols-outlined text-primary-container text-lg">bolt</span>
+</div>
+<div class="pt-space-md space-y-2">
+<div class="font-metric-display text-metric-display text-editorial-cream group-hover:text-primary-container transition-none">
+              &lt; 0.85 ms
+            </div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">Sub-Millisecond Ingestion</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+              Zero-copy Apache Arrow &amp; CUDA FP8 memory mapping stream straight from network interfaces to GPU tensor cores.
+            </p>
+</div>
+</div>
+<!-- Metric 2 -->
+<div class="p-space-lg bg-surface-graphite border border-border-hairline hover:border-border-active transition-none group">
+<div class="flex items-center justify-between pb-space-md border-b border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim uppercase">CAPABILITY 02</span>
+<span class="material-symbols-outlined text-secondary-container text-lg">hub</span>
+</div>
+<div class="pt-space-md space-y-2">
+<div class="font-metric-display text-metric-display text-editorial-cream group-hover:text-primary-container transition-none">
+              100M+ Nodes
+            </div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">Synthetic Scale</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+              Lab-verified in-memory adjacency stress tests maintain deterministic traversal latency at billion-edge thresholds.
+            </p>
+</div>
+</div>
+<!-- Metric 3 -->
+<div class="p-space-lg bg-surface-graphite border border-border-hairline hover:border-border-active transition-none group">
+<div class="flex items-center justify-between pb-space-md border-b border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim uppercase">CAPABILITY 03</span>
+<span class="material-symbols-outlined text-primary-container text-lg">cyclone</span>
+</div>
+<div class="pt-space-md space-y-2">
+<div class="font-metric-display text-metric-display text-editorial-cream group-hover:text-primary-container transition-none">
+              3-Hop Exact
+            </div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">Cycle-Isomorphism Engine</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+              Real-time identification of laundering syndicates using GPU warp bitonic sorting over cyclic topological rings.
+            </p>
+</div>
+</div>
+<!-- Metric 4 -->
+<div class="p-space-lg bg-surface-graphite border border-border-hairline hover:border-border-active transition-none group">
+<div class="flex items-center justify-between pb-space-md border-b border-border-hairline">
+<span class="font-label-code text-label-code text-metric-dim uppercase">CAPABILITY 04</span>
+<span class="material-symbols-outlined text-alert-critical text-lg">verified_user</span>
+</div>
+<div class="pt-space-md space-y-2">
+<div class="font-metric-display text-metric-display text-editorial-cream group-hover:text-primary-container transition-none">
+              Zero PII Leak
+            </div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">Zero-Knowledge Disclosure</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+              Verifiable zk-SNARK compliance receipts issued to regulatory clearinghouses without exposing raw transaction payloads.
+            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 4: Large Editorial Feature Sections
+       ========================================================================= -->
+<section class="py-space-xl border-b border-border-hairline bg-surface-graphite" id="graph-intelligence">
+<div class="w-full px-space-lg md:px-margin max-w-7xl mx-auto space-y-24">
+<!-- Feature 1: Graph Intelligence -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+<div class="lg:col-span-5 space-y-space-md">
+<div class="inline-flex items-center gap-space-xs px-space-sm py-0.5 bg-surface-raised border border-border-hairline">
+<span class="w-1.5 h-1.5 bg-primary-container"></span>
+<span class="font-label-code text-label-code text-primary-container uppercase">TOPOLOGICAL INSPECTION</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-editorial-cream">
+            Dissect cyclical entity clusters before funds disperse.
+          </h2>
+<p class="font-body-lg text-body-lg text-on-surface font-light">
+            Conventional fraud systems evaluate isolated accounts sequentially. FraudGraph analyzes the dynamic macro-graph across correspondent banking rails, identifying coordinated smurfing rings, synthetic payroll anomalies, and layered entity clusters in memory.
+          </p>
+<div class="space-y-space-sm pt-space-sm">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-sm mt-1">check_circle</span>
+<p class="font-body-md text-body-md text-on-surface-variant">Continuous sub-graph decomposition via parallel Louvain community extraction.</p>
+</div>
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-sm mt-1">check_circle</span>
+<p class="font-body-md text-body-md text-on-surface-variant">Temporal edge weighting reflecting transaction velocity and sudden hop bursts.</p>
+</div>
+</div>
+</div>
+<div class="lg:col-span-7">
+<div class="bg-surface-obsidian border border-border-hairline p-space-md">
+<div class="flex justify-between items-center pb-space-sm border-b border-border-hairline font-label-code text-label-code">
+<span class="text-on-surface-variant uppercase">STRUCTURAL ADJACENCY MATRIX [WARP DUMP]</span>
+<span class="text-primary-container uppercase font-semibold">TENSOR BUFFER 0x48FA</span>
+</div>
+<div class="py-space-md grid grid-cols-6 gap-1 font-label-code text-[10px] text-metric-dim select-none">
+<div class="p-2 border border-border-hairline bg-surface-raised text-primary-container">0.984 [M]</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.001</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.012</div>
+<div class="p-2 border border-border-hairline bg-surface-raised text-alert-critical font-bold">0.998 [M]</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.000</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.024</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.001</div>
+<div class="p-2 border border-border-hairline bg-surface-raised text-primary-container">0.892 [M]</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.033</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.010</div>
+<div class="p-2 border border-border-hairline bg-surface-raised text-alert-critical font-bold">0.965 [M]</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.004</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.012</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.033</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.000</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.002</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.001</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.005</div>
+<div class="p-2 border border-border-hairline bg-surface-raised text-alert-critical font-bold">0.998 [M]</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.010</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.002</div>
+<div class="p-2 border border-border-hairline bg-surface-raised text-primary-container">0.971 [M]</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.008</div>
+<div class="p-2 border border-border-hairline bg-surface-raised">0.011</div>
+</div>
+<div class="p-space-sm bg-surface-raised border border-border-hairline flex items-center justify-between font-label-code text-label-code">
+<span class="text-on-surface">SYNTHETIC SYNDICATE CONFIDENCE</span>
+<span class="text-alert-critical font-bold uppercase tracking-wider">CRITICAL RING IDENTIFIED</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Feature 2: CUDA Performance -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center pt-space-xl border-t border-border-hairline" id="cuda-performance">
+<div class="lg:col-span-7 order-2 lg:order-1">
+<div class="bg-surface-obsidian border border-border-hairline p-space-md space-y-space-md">
+<div class="flex justify-between items-center pb-space-sm border-b border-border-hairline font-label-code text-label-code">
+<span class="text-on-surface-variant uppercase">EXECUTION TIME PER 10M HOP ADJACENCY</span>
+<span class="text-secondary-container uppercase">LOWER IS BETTER</span>
+</div>
+<!-- Benchmark Bars -->
+<div class="space-y-space-md pt-space-xs font-label-code">
+<!-- FraudGraph -->
+<div class="space-y-1">
+<div class="flex justify-between text-body-sm">
+<span class="text-editorial-cream font-semibold">FraudGraph cuGraph FP8 Engine</span>
+<span class="text-primary-container font-bold">4.6 ms</span>
+</div>
+<div class="w-full bg-surface-raised h-4 border border-border-hairline">
+<div class="bg-primary-container h-full w-[3.5%] shadow-[0_0_10px_#00F2FE]"></div>
+</div>
+</div>
+<!-- Distributed Graph Database -->
+<div class="space-y-1">
+<div class="flex justify-between text-body-sm">
+<span class="text-on-surface-variant">Distributed In-Memory Graph DB (8 Nodes)</span>
+<span class="text-on-surface">184.2 ms</span>
+</div>
+<div class="w-full bg-surface-raised h-4 border border-border-hairline">
+<div class="bg-outline-variant h-full w-[42%]"></div>
+</div>
+</div>
+<!-- Legacy JVM Server -->
+<div class="space-y-1">
+<div class="flex justify-between text-body-sm">
+<span class="text-metric-dim">Legacy Java Enterprise Clustering (Dual Xeon)</span>
+<span class="text-metric-dim">840.0 ms</span>
+</div>
+<div class="w-full bg-surface-raised h-4 border border-border-hairline">
+<div class="bg-metric-dim/40 h-full w-[95%]"></div>
+</div>
+</div>
+</div>
+<div class="pt-space-sm border-t border-border-hairline flex items-center justify-between font-label-code text-label-code text-metric-dim">
+<span>NVIDIA H100 80GB SXM5</span>
+<span>182x THROUGHPUT GAIN</span>
+</div>
+</div>
+</div>
+<div class="lg:col-span-5 space-y-space-md order-1 lg:order-2">
+<div class="inline-flex items-center gap-space-xs px-space-sm py-0.5 bg-surface-raised border border-border-hairline">
+<span class="w-1.5 h-1.5 bg-secondary-container"></span>
+<span class="font-label-code text-label-code text-secondary-container uppercase">GPU ACCELERATION</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-editorial-cream">
+            Warp-level bitonic sorting eliminates CPU bottlenecks.
+          </h2>
+<p class="font-body-lg text-body-lg text-on-surface font-light">
+            By avoiding serialize-deserialize protocols across networked microservices, transactions undergo instant vectorization directly in unified GPU memory, evaluating multi-hop loops within the payment rail's 20ms settlement gate.
+          </p>
+<div class="p-space-md bg-surface-obsidian border border-border-hairline">
+<div class="font-label-code text-label-code text-primary-container uppercase">Memory Coalescing Protocol</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light mt-1">
+              Zero PCIe bus contention via custom GPUDirect Storage kernels mapped directly to NVMe-oF financial event queues.
+            </p>
+</div>
+</div>
+</div>
+<!-- Feature 3: Research Reproducibility -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center pt-space-xl border-t border-border-hairline" id="research">
+<div class="lg:col-span-6 space-y-space-md">
+<div class="inline-flex items-center gap-space-xs px-space-sm py-0.5 bg-surface-raised border border-border-hairline">
+<span class="w-1.5 h-1.5 bg-outline"></span>
+<span class="font-label-code text-label-code text-outline uppercase">ACADEMIC RIGOR</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-editorial-cream">
+            Peer-reviewed graph kernel proofs and deterministic seed validation.
+          </h2>
+<p class="font-body-lg text-body-lg text-on-surface font-light">
+            Engineered in consultation with leading cryptofinance institutes. Every cycle traversal output can be deterministically verified across distributed nodes using zero-knowledge cryptographic hashes.
+          </p>
+<div class="flex items-center gap-space-md pt-space-xs">
+<a class="px-space-md py-2 border border-border-hairline text-editorial-cream font-label-code text-label-code uppercase hover:border-editorial-cream hover:bg-white/[0.03] active:scale-[0.99] transition-none rounded-none flex items-center gap-space-xs" href="#whitepaper">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Download Forensic Whitepaper (PDF)</span>
+</a>
+<span class="font-label-code text-label-code text-metric-dim">SHA256: e8b94...39ac</span>
+</div>
+</div>
+<div class="lg:col-span-6">
+<div class="bg-surface-obsidian border border-border-hairline p-space-lg space-y-space-md">
+<h4 class="font-headline-sm text-headline-sm text-editorial-cream border-b border-border-hairline pb-space-sm">
+              Selected Peer Citations
+            </h4>
+<div class="space-y-space-md font-body-sm">
+<div class="space-y-1">
+<span class="font-label-code text-label-code text-primary-container">STANFORD FINTECH LAB (2024)</span>
+<p class="text-on-surface font-medium">"Asynchronous Cycle Isomorphism on Massively Parallel High-Bandwidth Memory Architectures."</p>
+<p class="text-metric-dim text-[11px] font-label-code">Published in J. Cryptographic Systems, Vol. 14</p>
+</div>
+<div class="space-y-1 border-t border-border-hairline pt-space-sm">
+<span class="font-label-code text-label-code text-secondary-container">MIT CRYPTOFINANCE WORKING GROUP</span>
+<p class="text-on-surface font-medium">"Deterministic Ring Detection Over High-Throughput Synthetic Clearing Rails."</p>
+<p class="text-metric-dim text-[11px] font-label-code">Preprint Archival Reference: FG-TR-2024-09</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 5: Horizontal Feature-Card Showcase
+       ========================================================================= -->
+<section class="py-space-xl border-b border-border-hairline bg-surface-obsidian">
+<div class="w-full px-space-lg md:px-margin max-w-7xl mx-auto space-y-space-lg">
+<!-- Section Header with Controls -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-space-md pb-space-md border-b border-border-hairline">
+<div>
+<span class="font-label-code text-label-code text-primary-container uppercase tracking-wider block">CORE SUB-SYSTEMS</span>
+<h2 class="font-headline-md text-headline-md text-editorial-cream">Forensic Kernel Modules</h2>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 border border-border-hairline bg-surface-graphite text-on-surface hover:border-editorial-cream active:scale-[0.99] flex items-center justify-center transition-none rounded-none">
+<span class="material-symbols-outlined text-sm">west</span>
+</button>
+<button class="w-10 h-10 border border-border-hairline bg-surface-graphite text-on-surface hover:border-editorial-cream active:scale-[0.99] flex items-center justify-center transition-none rounded-none">
+<span class="material-symbols-outlined text-sm">east</span>
+</button>
+</div>
+</div>
+<!-- 4 High-Density Showcase Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Card 1 -->
+<div class="bg-surface-graphite border border-border-hairline p-space-md hover:border-border-active transition-none flex flex-col justify-between h-72">
+<div class="space-y-space-sm">
+<div class="flex justify-between items-start">
+<span class="font-label-code text-label-code text-metric-dim">SYS_MOD // 01</span>
+<span class="material-symbols-outlined text-primary-container text-xl">grain</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">Autonomous Ring Synthesis</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+              Accelerated with NVIDIA cuGraph. Discovers nested and disconnected smurfing loops simultaneously across 16 GPU nodes.
+            </p>
+</div>
+<div class="pt-space-sm border-t border-border-hairline flex justify-between font-label-code text-label-code text-metric-dim">
+<span>cuGraph v24.10</span>
+<span class="text-primary-container">WARP OPTIMIZED</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-graphite border border-border-hairline p-space-md hover:border-border-active transition-none flex flex-col justify-between h-72">
+<div class="space-y-space-sm">
+<div class="flex justify-between items-start">
+<span class="font-label-code text-label-code text-metric-dim">SYS_MOD // 02</span>
+<span class="material-symbols-outlined text-secondary-container text-xl">memory</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">FP8 Tensor Core Traversal</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+              Low-precision, high-density matrix math executes 4x faster than standard FP32 graphs with zero loss in ring topology precision.
+            </p>
+</div>
+<div class="pt-space-sm border-t border-border-hairline flex justify-between font-label-code text-label-code text-metric-dim">
+<span>TensorRT-LLM</span>
+<span class="text-secondary-container">4X SPEEDUP</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-graphite border border-border-hairline p-space-md hover:border-border-active transition-none flex flex-col justify-between h-72">
+<div class="space-y-space-sm">
+<div class="flex justify-between items-start">
+<span class="font-label-code text-label-code text-metric-dim">SYS_MOD // 03</span>
+<span class="material-symbols-outlined text-editorial-cream text-xl">shield_lock</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">Immutable zk-SNARK Trail</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+              Generates cryptographic zero-knowledge proofs of every detection verdict for direct submission to regulatory auditors.
+            </p>
+</div>
+<div class="pt-space-sm border-t border-border-hairline flex justify-between font-label-code text-label-code text-metric-dim">
+<span>Groth16 / Halo2</span>
+<span class="text-editorial-cream">AUDIT VERIFIED</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-graphite border border-border-hairline p-space-md hover:border-border-active transition-none flex flex-col justify-between h-72">
+<div class="space-y-space-sm">
+<div class="flex justify-between items-start">
+<span class="font-label-code text-label-code text-metric-dim">SYS_MOD // 04</span>
+<span class="material-symbols-outlined text-alert-critical text-xl">storage</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">Adjacency Memory Pools</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+              Direct DMA pin-allocated pools stream updates straight to HBM3 without host paging interrupts or kernel swaps.
+            </p>
+</div>
+<div class="pt-space-sm border-t border-border-hairline flex justify-between font-label-code text-label-code text-metric-dim">
+<span>DirectStorage DMA</span>
+<span class="text-alert-critical">0.00ms JITTER</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 6: Product Preview Interface (HUD Explorer View)
+       ========================================================================= -->
+<section class="py-space-xl border-b border-border-hairline bg-surface-graphite" id="explorer">
+<div class="w-full px-space-lg md:px-margin max-w-7xl mx-auto space-y-space-lg">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-space-sm">
+<div>
+<span class="font-label-code text-label-code text-primary-container uppercase tracking-wider block">INTERFACE PREVIEW</span>
+<h2 class="font-headline-lg text-headline-lg text-editorial-cream">FraudGraph Explorer HUD</h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+          Live command console deployed by Tier-1 fraud investigation units, providing sub-millisecond graph query visualization.
+        </p>
+</div>
+<!-- Cinematic Interface Terminal Box -->
+<div class="border border-border-hairline bg-surface-obsidian shadow-2xl overflow-hidden">
+<!-- Window Frame Header -->
+<div class="bg-surface-graphite px-space-md py-2 border-b border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-none bg-alert-critical"></span>
+<span class="w-2.5 h-2.5 rounded-none bg-metric-dim"></span>
+<span class="w-2.5 h-2.5 rounded-none bg-secondary-container"></span>
+</div>
+<span class="font-label-code text-label-code text-on-surface-variant uppercase ml-2">EXPLORER // NODE_CLUSTER_INSPECTOR (WARP_04)</span>
+</div>
+<div class="flex items-center gap-space-md font-label-code text-label-code">
+<span class="text-primary-container">STREAM: ACTIVE (14,290 EPS)</span>
+<span class="text-metric-dim">FRAME: 120 FPS</span>
+</div>
+</div>
+<!-- Interface Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 min-h-[500px]">
+<!-- Left 8 Cols: Topological WebGL Mock Canvas -->
+<div class="lg:col-span-8 p-space-md border-b lg:border-b-0 lg:border-r border-border-hairline relative flex flex-col justify-between telemetry-grid">
+<!-- Canvas HUD Overlay -->
+<div class="flex justify-between items-start z-10">
+<div class="bg-surface-graphite/90 border border-border-hairline p-space-sm font-label-code text-label-code space-y-1">
+<div class="text-editorial-cream font-bold">SUBGRAPH: CLUSTER_8492_MULE</div>
+<div class="text-metric-dim">Hop Depth: 4 | Path Weight: 0.998</div>
+<div class="text-alert-critical">DETECTED: CYCLIC FUNDS RETURNING</div>
+</div>
+<div class="flex items-center gap-1 bg-surface-graphite/90 border border-border-hairline p-1">
+<button class="px-2 py-1 text-label-code font-label-code text-editorial-cream hover:bg-surface-raised uppercase">2D Force</button>
+<button class="px-2 py-1 text-label-code font-label-code text-primary-container bg-surface-raised uppercase">3D Tensor</button>
+</div>
+</div>
+<!-- Graphic Simulation Visualization -->
+<div class="my-auto py-space-xl flex items-center justify-center">
+<div class="relative w-full max-w-lg aspect-video flex items-center justify-center">
+<!-- Outer Ring Orbit -->
+<div class="absolute inset-0 border border-dashed border-border-hairline rounded-full animate-spin [animation-duration:40s]"></div>
+<!-- Nodes inside Canvas -->
+<div class="absolute top-1/4 left-1/4 p-2 bg-surface-graphite border border-primary-container shadow-[0_0_12px_#00F2FE]">
+<span class="font-label-code text-[10px] text-primary-container">NODE: 0x892A</span>
+</div>
+<div class="absolute bottom-1/4 left-1/3 p-2 bg-surface-graphite border border-secondary-container">
+<span class="font-label-code text-[10px] text-secondary-container">NODE: 0x73B1</span>
+</div>
+<div class="absolute top-1/3 right-1/4 p-2 bg-surface-graphite border border-alert-critical shadow-[0_0_12px_#FF3B30]">
+<span class="font-label-code text-[10px] text-alert-critical">FLAGGED: 0x489C</span>
+</div>
+<div class="absolute bottom-1/3 right-1/3 p-2 bg-surface-graphite border border-border-hairline">
+<span class="font-label-code text-[10px] text-editorial-cream">NODE: 0x110E</span>
+</div>
+<!-- Core Hub Node -->
+<div class="p-3 bg-surface-raised border-2 border-primary-container shadow-[0_0_24px_rgba(0,242,254,0.4)] text-center">
+<span class="font-label-code text-label-code text-editorial-cream block font-bold">SYNDICATE ANCHOR</span>
+<span class="font-label-code text-[10px] text-primary-container">SCORE: 99.8%</span>
+</div>
+</div>
+</div>
+<!-- Bottom Canvas Telemetry Strip -->
+<div class="flex items-center justify-between font-label-code text-label-code border-t border-border-hairline pt-space-sm z-10 bg-surface-obsidian/80">
+<span class="text-metric-dim">COORDINATES: X: 489.2 Y: -129.4 Z: 88.0</span>
+<span class="text-on-surface-variant">ISOMORPHISM EVALUATED IN 0.08ms</span>
+</div>
+</div>
+<!-- Right 4 Cols: Inspector Drawer & Metrics Meters -->
+<div class="lg:col-span-4 bg-surface-graphite p-space-md flex flex-col justify-between space-y-space-md">
+<div class="space-y-space-md">
+<div class="border-b border-border-hairline pb-space-sm flex justify-between items-center font-label-code text-label-code">
+<span class="text-editorial-cream uppercase font-semibold">Inspector Drawer</span>
+<span class="text-alert-critical uppercase">Status: Isolated</span>
+</div>
+<!-- Node Parameters -->
+<div class="space-y-space-xs font-label-code text-label-code">
+<div class="flex justify-between py-1 border-b border-border-hairline">
+<span class="text-metric-dim">Target Entity</span>
+<span class="text-editorial-cream font-mono">SYNTH_ID_884920</span>
+</div>
+<div class="flex justify-between py-1 border-b border-border-hairline">
+<span class="text-metric-dim">Clearing Channel</span>
+<span class="text-editorial-cream">Fedwire ISO20022</span>
+</div>
+<div class="flex justify-between py-1 border-b border-border-hairline">
+<span class="text-metric-dim">Hop Velocity</span>
+<span class="text-primary-container">4 hops / 18 seconds</span>
+</div>
+<div class="flex justify-between py-1 border-b border-border-hairline">
+<span class="text-metric-dim">Aggregated Volume</span>
+<span class="text-editorial-cream">$4,850,000.00 USD</span>
+</div>
+</div>
+<!-- Real-time Memory Buffer Meters -->
+<div class="space-y-space-sm pt-space-xs">
+<span class="font-label-code text-label-code text-metric-dim uppercase block">GPU Hardware Telemetry</span>
+<div class="space-y-1 font-label-code text-body-sm">
+<div class="flex justify-between">
+<span class="text-on-surface">HBM3 Tensor Allocation</span>
+<span class="text-primary-container">74.2 / 80 GB</span>
+</div>
+<div class="w-full bg-surface-obsidian h-2 border border-border-hairline">
+<div class="bg-primary-container h-full w-[92%]"></div>
+</div>
+</div>
+<div class="space-y-1 font-label-code text-body-sm">
+<div class="flex justify-between">
+<span class="text-on-surface">NVLink Fabric Throughput</span>
+<span class="text-secondary-container">884 GB/s</span>
+</div>
+<div class="w-full bg-surface-obsidian h-2 border border-border-hairline">
+<div class="bg-secondary-container h-full w-[88%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Intercept Action Button -->
+<div class="pt-space-md border-t border-border-hairline space-y-2">
+<button class="w-full py-2.5 bg-alert-critical text-editorial-cream font-label-code text-label-code uppercase tracking-wider font-semibold active:scale-[0.99] transition-none rounded-none shadow-[0_0_12px_rgba(255,59,48,0.3)]">
+                Trigger Immediate Settlement Intercept
+              </button>
+<button class="w-full py-2 border border-border-hairline text-metric-dim hover:text-editorial-cream font-label-code text-label-code uppercase tracking-wider active:scale-[0.99] transition-none rounded-none">
+                Export Encrypted zk-Proof
+              </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 7: Research Methodology (Structured 4-Phase Architecture)
+       ========================================================================= -->
+<section class="py-space-xl border-b border-border-hairline bg-surface-obsidian" id="methodology">
+<div class="w-full px-space-lg md:px-margin max-w-7xl mx-auto space-y-space-xl">
+<div class="max-w-2xl space-y-space-sm">
+<span class="font-label-code text-label-code text-primary-container uppercase tracking-wider">SYSTEM EXECUTION PIPELINE</span>
+<h2 class="font-headline-lg text-headline-lg text-editorial-cream">
+          Four-phase forensic pipeline from wire tap to settlement freeze.
+        </h2>
+<p class="font-body-md text-body-md text-on-surface-variant font-light">
+          Engineered to satisfy high-throughput banking SLA requirements without adding latency to non-fraudulent settlement flows.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Phase 01 -->
+<div class="p-space-lg bg-surface-graphite border border-border-hairline relative space-y-space-md">
+<div class="flex items-center justify-between border-b border-border-hairline pb-space-sm">
+<span class="font-label-code text-headline-sm text-editorial-cream font-bold">01</span>
+<span class="font-label-code text-label-code text-primary-container uppercase">INGESTION</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">Zero-Copy Ingestion</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+            Transaction messages stream via Apache Arrow IPC directly from network interface card buffers without serialization cycles on the host CPU.
+          </p>
+<div class="font-label-code text-[11px] text-metric-dim pt-space-xs">
+            Protocol: RDMA / Arrow IPC
+          </div>
+</div>
+<!-- Phase 02 -->
+<div class="p-space-lg bg-surface-graphite border border-border-hairline relative space-y-space-md">
+<div class="flex items-center justify-between border-b border-border-hairline pb-space-sm">
+<span class="font-label-code text-headline-sm text-editorial-cream font-bold">02</span>
+<span class="font-label-code text-label-code text-secondary-container uppercase">CONSTRUCTION</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">Dynamic Subgraphs</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+            Constructs temporal entity subgraphs directly inside GPU High-Bandwidth Memory (HBM3), instantly recalculating edge properties.
+          </p>
+<div class="font-label-code text-[11px] text-metric-dim pt-space-xs">
+            Memory: Unified GPU Pool
+          </div>
+</div>
+<!-- Phase 03 -->
+<div class="p-space-lg bg-surface-graphite border border-border-hairline relative space-y-space-md">
+<div class="flex items-center justify-between border-b border-border-hairline pb-space-sm">
+<span class="font-label-code text-headline-sm text-editorial-cream font-bold">03</span>
+<span class="font-label-code text-label-code text-primary-container uppercase">INFERENCE</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">GNN Cycle Detection</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+            Runs TensorRT-optimized Graph Neural Network kernels in parallel to isolate cycle-isomorphism and synthetic identity anomalies.
+          </p>
+<div class="font-label-code text-[11px] text-metric-dim pt-space-xs">
+            Model: cuGraph-GNN FP8
+          </div>
+</div>
+<!-- Phase 04 -->
+<div class="p-space-lg bg-surface-graphite border border-border-hairline relative space-y-space-md">
+<div class="flex items-center justify-between border-b border-border-hairline pb-space-sm">
+<span class="font-label-code text-headline-sm text-editorial-cream font-bold">04</span>
+<span class="font-label-code text-label-code text-alert-critical uppercase">INTERCEPT</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-editorial-cream">Settlement Intercept</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+            Emits an authenticated cryptographic kill-switch packet to payment rails to freeze pending ledger writes before finality.
+          </p>
+<div class="font-label-code text-[11px] text-metric-dim pt-space-xs">
+            Reaction: &lt; 2.2ms Total
+          </div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 8: Experimental Case-Study Results (Enterprise Laboratory)
+       ========================================================================= -->
+<section class="py-space-xl border-b border-border-hairline bg-surface-graphite" id="benchmarks">
+<div class="w-full px-space-lg md:px-margin max-w-7xl mx-auto space-y-space-xl">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+<div class="lg:col-span-6 space-y-space-md">
+<div class="inline-flex items-center gap-space-xs px-space-sm py-0.5 bg-surface-raised border border-border-hairline">
+<span class="w-1.5 h-1.5 bg-secondary-container"></span>
+<span class="font-label-code text-label-code text-secondary-container uppercase">LAB CASE STUDY #442</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-editorial-cream">
+            Cross-Border Synthetic Clearing Intercept
+          </h2>
+<p class="font-body-lg text-body-lg text-on-surface font-light">
+            Conducted on live-replicated clearing data simulating 40,000 transactions per second. FraudGraph identified 100% of planted 3-to-5 hop mule accounts with 0 false-positive lockouts on Tier-1 corporate treasuries.
+          </p>
+<div class="grid grid-cols-3 gap-space-md pt-space-sm border-t border-border-hairline">
+<div>
+<span class="font-label-code text-label-code text-metric-dim uppercase block">CPU BASELINE</span>
+<span class="font-headline-sm text-headline-sm text-on-surface-variant font-bold">840 ms</span>
+</div>
+<div>
+<span class="font-label-code text-label-code text-metric-dim uppercase block">FRAUDGRAPH</span>
+<span class="font-headline-sm text-headline-sm text-primary-container font-bold">4.6 ms</span>
+</div>
+<div>
+<span class="font-label-code text-label-code text-metric-dim uppercase block">TOTAL SPEEDUP</span>
+<span class="font-headline-sm text-headline-sm text-secondary-container font-bold">182x</span>
+</div>
+</div>
+</div>
+<div class="lg:col-span-6">
+<div class="bg-surface-obsidian border border-border-hairline p-space-lg space-y-space-md">
+<div class="flex justify-between items-center pb-space-sm border-b border-border-hairline font-label-code text-label-code">
+<span class="text-editorial-cream uppercase font-semibold">Verification Audit Receipt</span>
+<span class="text-metric-dim">HASH: 0x93FA...A29C</span>
+</div>
+<div class="space-y-space-sm font-label-code text-body-sm">
+<div class="flex justify-between py-1 border-b border-border-hairline">
+<span class="text-metric-dim">Simulated Throughput</span>
+<span class="text-on-surface">40,000 TPS Continuous</span>
+</div>
+<div class="flex justify-between py-1 border-b border-border-hairline">
+<span class="text-metric-dim">Synthetic Rings Planted</span>
+<span class="text-on-surface">2,400 Rings</span>
+</div>
+<div class="flex justify-between py-1 border-b border-border-hairline">
+<span class="text-metric-dim">Rings Intercepted</span>
+<span class="text-primary-container font-bold">2,400 (100.0%)</span>
+</div>
+<div class="flex justify-between py-1 border-b border-border-hairline">
+<span class="text-metric-dim">False Positive Rate</span>
+<span class="text-secondary-container font-bold">0.002%</span>
+</div>
+<div class="flex justify-between py-1 border-b border-border-hairline">
+<span class="text-metric-dim">Window Pre-Settlement</span>
+<span class="text-editorial-cream">Intercepted in 4.6ms (SLA &lt; 20ms)</span>
+</div>
+</div>
+<div class="p-space-sm bg-surface-raised border border-border-hairline font-label-code text-label-code text-metric-dim">
+              Verified by independent cryptographic audit under ISO/IEC 27001 zero-trust protocols.
+            </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 9: Interactive FAQ Accordion
+       ========================================================================= -->
+<section class="py-space-xl border-b border-border-hairline bg-surface-obsidian">
+<div class="w-full px-space-lg md:px-margin max-w-4xl mx-auto space-y-space-xl">
+<div class="space-y-space-xs text-center">
+<span class="font-label-code text-label-code text-primary-container uppercase tracking-wider">TECHNICAL SPECIFICATIONS</span>
+<h2 class="font-headline-lg text-headline-lg text-editorial-cream">Frequently Asked Architectural Questions</h2>
+</div>
+<div class="space-y-space-md">
+<!-- FAQ Item 1 -->
+<details class="group bg-surface-graphite border border-border-hairline p-space-md open:border-border-active transition-none">
+<summary class="flex justify-between items-center cursor-pointer list-none font-headline-sm text-headline-sm text-editorial-cream">
+<span>How does FraudGraph differ from standard Neo4j or TigerGraph clusters?</span>
+<span class="material-symbols-outlined text-metric-dim group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-space-md font-body-md text-body-md text-on-surface-variant font-light space-y-2 border-t border-border-hairline mt-space-md">
+<p>
+              Standard graph databases run primarily on general-purpose CPU architectures and rely on disk or distributed JVM RAM caching. While suitable for analytical queries, they incur substantial latency (often 80ms to 800ms) during multi-hop cycle searches.
+            </p>
+<p>
+              FraudGraph operates strictly in GPU High-Bandwidth Memory (HBM3) using custom CUDA FP8 kernels. We execute massive graph isomorphism searches in parallel across thousands of tensor cores, maintaining deterministic latencies below 1 millisecond.
+            </p>
+</div>
+</details>
+<!-- FAQ Item 2 -->
+<details class="group bg-surface-graphite border border-border-hairline p-space-md open:border-border-active transition-none">
+<summary class="flex justify-between items-center cursor-pointer list-none font-headline-sm text-headline-sm text-editorial-cream">
+<span>What hardware topology is required to achieve sub-millisecond traversal?</span>
+<span class="material-symbols-outlined text-metric-dim group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-space-md font-body-md text-body-md text-on-surface-variant font-light space-y-2 border-t border-border-hairline mt-space-md">
+<p>
+              Our reference cluster leverages NVIDIA HGX H100 or H200 8-GPU systems interconnected with 900 GB/s NVLink fabrics. Network ingestion uses dual 400Gb/s ConnectX-7 NICs supporting RoCE (RDMA over Converged Ethernet) to stream incoming banking events directly into GPU memory with zero host CPU intervention.
+            </p>
+</div>
+</details>
+<!-- FAQ Item 3 -->
+<details class="group bg-surface-graphite border border-border-hairline p-space-md open:border-border-active transition-none">
+<summary class="flex justify-between items-center cursor-pointer list-none font-headline-sm text-headline-sm text-editorial-cream">
+<span>How are zero-knowledge audit proofs generated without exposing consumer PII?</span>
+<span class="material-symbols-outlined text-metric-dim group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-space-md font-body-md text-body-md text-on-surface-variant font-light space-y-2 border-t border-border-hairline mt-space-md">
+<p>
+              FraudGraph hashes incoming account identifiers and attributes locally at the perimeter. Detection logic operates entirely on numerical node features and topological properties. When an alert triggers an automated settlement halt, the engine compiles a succinct zk-SNARK cryptographic receipt proving topological cyclicity without revealing names, balances, or raw IBAN numbers.
+            </p>
+</div>
+</details>
+<!-- FAQ Item 4 -->
+<details class="group bg-surface-graphite border border-border-hairline p-space-md open:border-border-active transition-none">
+<summary class="flex justify-between items-center cursor-pointer list-none font-headline-sm text-headline-sm text-editorial-cream">
+<span>Can the CUDA graph engine integrate with existing Kafka event streams?</span>
+<span class="material-symbols-outlined text-metric-dim group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-space-md font-body-md text-body-md text-on-surface-variant font-light space-y-2 border-t border-border-hairline mt-space-md">
+<p>
+              Yes. FraudGraph ships with high-throughput native Apache Kafka and Redpanda connectors utilizing our zero-copy librdkafka C++ bridge. Inbound event batches are pinned directly to GPU memory buffers, sustaining upwards of 120,000 messages per second per appliance.
+            </p>
+</div>
+</details>
+</div>
+</div>
+</section>
+<!-- =========================================================================
+       SECTION 10: Final Call to Action & Professional Enterprise Footer
+       ========================================================================= -->
+<section class="py-space-xl border-b border-border-hairline bg-surface-graphite telemetry-grid relative overflow-hidden" id="deploy">
+<div class="w-full px-space-lg md:px-margin max-w-5xl mx-auto text-center space-y-space-lg relative z-10">
+<div class="inline-flex items-center gap-space-xs px-space-sm py-1 bg-surface-obsidian border border-border-hairline">
+<span class="w-2 h-2 bg-primary-container"></span>
+<span class="font-label-code text-label-code text-primary-container uppercase tracking-widest font-semibold">DEPLOYMENT READINESS</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg md:text-[48px] md:leading-[56px] text-editorial-cream max-w-3xl mx-auto">
+        Isolate synthetic rings before the settlement window expires.
+      </h2>
+<p class="font-body-lg text-body-lg text-on-surface max-w-xl mx-auto font-light">
+        Schedule a dedicated lab evaluation on your institution's transaction topology or test on our deterministic synthetic benchmark datasets.
+      </p>
+<div class="flex flex-wrap items-center justify-center gap-space-md pt-space-xs">
+<a class="px-space-lg py-3.5 bg-primary-container text-surface-obsidian font-body-md font-semibold tracking-wide uppercase hover:bg-secondary-container active:scale-[0.99] transition-none rounded-none shadow-[0_0_24px_rgba(0,242,254,0.35)] flex items-center gap-space-sm" href="#contact-sales">
+<span class="material-symbols-outlined text-base">cloud_download</span>
+<span>Deploy Dedicated Cluster</span>
+</a>
+<a class="px-space-lg py-3.5 border border-border-hairline text-editorial-cream font-body-md uppercase hover:border-editorial-cream hover:bg-white/[0.03] active:scale-[0.99] transition-none rounded-none flex items-center gap-space-sm" href="#sandbox">
+<span class="material-symbols-outlined text-base text-outline">key</span>
+<span>Request Sandbox API Key</span>
+</a>
+</div>
+<div class="font-label-code text-label-code text-metric-dim pt-space-md">
+        Zero hardware lock-in. Available via private cloud VPC or on-premise air-gapped appliances.
+      </div>
+</div>
+</section>
+<!-- =========================================================================
+       FOOTER (Shared Component: Footer Anchor)
+       ========================================================================= -->
+<footer class="w-full rounded-none border-t border-border-hairline bg-surface-obsidian flat no shadows">
+<div class="w-full px-space-lg md:px-margin py-space-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-space-lg">
+<!-- Brand & Copyright -->
+<div class="space-y-space-sm max-w-md">
+<div class="flex items-center gap-space-sm">
+<span class="w-2 h-2 bg-primary-container inline-block"></span>
+<span class="font-headline-sm text-headline-sm text-editorial-cream font-semibold uppercase">FraudGraph Systems Inc.</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant font-light">
+          © 2025 FraudGraph Systems Inc. Sub-millisecond forensic telemetry and neural graph kernel compute. All rights reserved.
+        </p>
+</div>
+<!-- Footer Navigation Links (JSON Anchored) -->
+<div class="flex flex-wrap items-center gap-x-space-lg gap-y-space-sm font-label-code text-label-code">
+<a class="text-metric-dim hover:text-on-surface tracking-wider uppercase transition-none" href="#cuda-specs">CUDA Kernel Specs</a>
+<a class="text-metric-dim hover:text-on-surface tracking-wider uppercase transition-none" href="#zero-trust">Zero-Trust Protocol</a>
+<a class="text-metric-dim hover:text-on-surface tracking-wider uppercase transition-none" href="#dossier">Intelligence Dossier</a>
+<a class="text-metric-dim hover:text-on-surface tracking-wider uppercase transition-none" href="#api">API Telemetry</a>
+<a class="text-metric-dim hover:text-on-surface tracking-wider uppercase transition-none" href="#security">Security Architecture</a>
+<a class="text-primary-container tracking-wider uppercase transition-none font-bold" href="#status">Status: 99.999%</a>
+</div>
+</div>
+</footer>
+</body></html>

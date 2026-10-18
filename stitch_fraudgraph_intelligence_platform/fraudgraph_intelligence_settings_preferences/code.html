@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FraudGraph Intelligence — Settings &amp; Workstation Preferences</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Editorial Serif and High-Density Monospace / Sans Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Roboto+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface-variant": "#b9cacb",
+            "on-primary": "#00373a",
+            "surface-container-highest": "#32353a",
+            "border-active": "#00F2FE",
+            "surface-container-lowest": "#0b0e12",
+            "on-primary-container": "#006a70",
+            "on-tertiary-container": "#61605b",
+            "inverse-surface": "#e1e2e8",
+            "surface-container": "#1d2024",
+            "on-primary-fixed": "#002022",
+            "on-secondary": "#00382a",
+            "editorial-cream": "#F8F7F4",
+            "tertiary-fixed-dim": "#c9c6c1",
+            "primary-fixed": "#6ff6ff",
+            "primary": "#e0fdff",
+            "on-error": "#690005",
+            "secondary-fixed": "#41fecb",
+            "tertiary-container": "#dedbd5",
+            "surface-tint": "#00dce6",
+            "surface-graphite": "#0D1117",
+            "secondary-container": "#01e7b6",
+            "primary-fixed-dim": "#00dce6",
+            "surface": "#111418",
+            "surface-container-high": "#272a2f",
+            "surface-obsidian": "#05070A",
+            "tertiary-fixed": "#e5e2dc",
+            "border-hairline": "#21262D",
+            "on-tertiary": "#31302d",
+            "surface-raised": "#161B22",
+            "outline-variant": "#3a494b",
+            "alert-critical": "#FF3B30",
+            "on-secondary-fixed": "#002117",
+            "on-tertiary-fixed": "#1c1c18",
+            "surface-dim": "#111418",
+            "surface-variant": "#32353a",
+            "inverse-primary": "#00696f",
+            "inverse-on-surface": "#2e3135",
+            "on-background": "#e1e2e8",
+            "primary-container": "#00f2fe",
+            "on-error-container": "#ffdad6",
+            "on-surface": "#e1e2e8",
+            "background": "#111418",
+            "on-secondary-container": "#00624c",
+            "secondary-fixed-dim": "#00e0b1",
+            "on-primary-fixed-variant": "#004f53",
+            "on-tertiary-fixed-variant": "#474743",
+            "error": "#ffb4ab",
+            "secondary": "#7dffd5",
+            "on-secondary-fixed-variant": "#00513e",
+            "surface-bright": "#36393e",
+            "tertiary": "#faf7f1",
+            "surface-container-low": "#191c20",
+            "outline": "#849495",
+            "error-container": "#93000a",
+            "metric-dim": "#484F58"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "margin": "2.5rem",
+            "gutter-mobile": "0.75rem",
+            "margin-mobile": "1rem",
+            "gutter": "1.5rem",
+            "space-md": "1rem",
+            "space-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "headline-lg-mobile": ["Newsreader", "serif"],
+            "body-md": ["Geist", "sans-serif"],
+            "display-hero-mobile": ["Newsreader", "serif"],
+            "headline-lg": ["Newsreader", "serif"],
+            "display-hero": ["Newsreader", "serif"],
+            "metric-display": ["Geist", "sans-serif"],
+            "body-sm": ["Geist", "sans-serif"],
+            "label-code": ["Roboto Mono", "Geist", "monospace"],
+            "headline-sm": ["Newsreader", "serif"],
+            "headline-md": ["Newsreader", "serif"],
+            "body-lg": ["Geist", "sans-serif"]
+          },
+          "fontSize": {
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "400" }],
+            "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "metric-display": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "label-code": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "500" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #0D1117;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #21262D;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #00F2FE;
+    }
+    /* Hairline aesthetic without consumer rounding */
+    * {
+      border-radius: 0px !important;
+    }
+  </style>
+</head>
+<body class="bg-surface-obsidian text-on-surface antialiased font-body-md select-none overflow-hidden">
+<!-- ================= TOP NAV BAR (Shared Component Anchor) ================= -->
+<header class="fixed top-0 left-0 w-full z-50 rounded-none bg-surface-graphite/85 dark:bg-surface-graphite/85 backdrop-blur-md border-b border-border-hairline shadow-none inset-shadow-hairline flex justify-between items-center px-space-lg md:px-margin max-w-full h-14">
+<!-- Brand Anchor & Cluster Telemetry Badge -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 bg-primary-container inline-block shadow-[0_0_8px_#00F2FE]"></span>
+<span class="text-headline-sm font-headline-sm tracking-tight text-editorial-cream dark:text-editorial-cream uppercase font-semibold">FraudGraph Intelligence</span>
+</div>
+<!-- Telemetry Status Pills -->
+<div class="hidden lg:flex items-center gap-2 border-l border-border-hairline pl-4">
+<div class="flex items-center gap-1.5 px-2 py-0.5 bg-surface-raised border border-border-hairline text-label-code font-label-code text-on-surface">
+<span class="w-1.5 h-1.5 bg-secondary-fixed inline-block"></span>
+<span class="text-metric-dim">Cluster:</span>
+<span class="text-primary-container">H100-SXM5-ONLINE (8/8)</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-0.5 bg-surface-raised border border-border-hairline text-label-code font-label-code text-on-surface">
+<span class="text-metric-dim">Storage:</span>
+<span>/root/datasets/v4.2</span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-0.5 bg-surface-raised border border-border-hairline text-label-code font-label-code text-on-surface">
+<span class="material-symbols-outlined text-secondary text-[14px]">verified_user</span>
+<span class="text-metric-dim">Enclave:</span>
+<span class="text-editorial-cream">FIPS 140-3</span>
+</div>
+</div>
+</div>
+<!-- Navigation Links & System Controls -->
+<div class="flex items-center gap-space-md">
+<!-- Search Trigger ⌘K -->
+<button class="hidden md:flex items-center gap-3 px-3 py-1 bg-surface-obsidian border border-border-hairline hover:border-border-active text-metric-dim hover:text-on-surface transition-none text-label-code font-label-code">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px]">search</span>
+<span>Search forensic entities...</span>
+</div>
+<kbd class="px-1.5 py-0.2 bg-surface-graphite border border-border-hairline text-on-surface-variant text-[10px]">⌘K</kbd>
+</button>
+<!-- Save All Preferences Action -->
+<button class="flex items-center gap-2 px-space-md py-1.5 bg-primary-container text-surface-obsidian font-body-sm font-semibold hover:bg-secondary-fixed active:scale-[0.99] transition-none border-0" id="save-btn" onclick="triggerSaveFeedback()">
+<span class="material-symbols-outlined text-[16px]">sync_saved_locally</span>
+<span id="save-text">Save All Preferences</span>
+</button>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center border-l border-border-hairline pl-space-sm gap-1 text-outline">
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised transition-none" title="Terminal CLI">
+<span class="material-symbols-outlined">terminal</span>
+</button>
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised transition-none" title="Cluster Analytics">
+<span class="material-symbols-outlined">analytics</span>
+</button>
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised relative transition-none" title="System Notifications">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-1.5 h-1.5 bg-alert-critical"></span>
+</button>
+<button class="p-1.5 text-primary-container bg-surface-raised transition-none" title="Workstation Settings">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<!-- Operator Badge -->
+<div class="flex items-center gap-2 pl-space-sm border-l border-border-hairline">
+<div class="w-7 h-7 bg-surface-raised border border-border-hairline flex items-center justify-center font-label-code text-label-code text-primary-container">
+          OP-09
+        </div>
+</div>
+</div>
+</header>
+<!-- ================= WORKSPACE SHELL (SideNavBar + Main Content) ================= -->
+<div class="pt-14 flex h-screen overflow-hidden">
+<!-- ================= SIDE NAV BAR (Shared Component Anchor) ================= -->
+<aside class="fixed top-14 left-0 h-[calc(100vh-3.5rem)] w-64 rounded-none z-40 bg-surface-graphite dark:bg-surface-graphite border-r border-border-hairline flex flex-col justify-between p-space-sm">
+<!-- Upper Section: Cluster Status Header & Main Tabs -->
+<div class="flex flex-col gap-space-sm">
+<!-- Node Shield Mini Header -->
+<div class="px-space-md py-space-sm border-b border-border-hairline mb-1 bg-surface-obsidian">
+<div class="flex items-center justify-between">
+<span class="text-headline-sm font-headline-sm text-editorial-cream dark:text-editorial-cream uppercase text-xs tracking-wider">FraudGraph Core</span>
+<span class="w-1.5 h-1.5 bg-primary-container"></span>
+</div>
+<div class="text-label-code font-label-code text-metric-dim text-[10px] mt-0.5">H100-SXM5 Cluster: 8/8 Online</div>
+</div>
+<!-- 8 Navigation Tabs from Shared JSON -->
+<nav aria-label="Main Navigation" class="flex flex-col gap-0.5">
+<!-- Overview -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Graph Explorer -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">hub</span>
+<span>Graph Explorer</span>
+</a>
+<!-- Transactions -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">receipt_long</span>
+<span>Transactions</span>
+</a>
+<!-- GPU Lab -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">memory</span>
+<span>GPU Lab</span>
+</a>
+<!-- Experiments -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">science</span>
+<span>Experiments</span>
+</a>
+<!-- Evaluation -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">rule</span>
+<span>Evaluation</span>
+</a>
+<!-- Reports -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">assessment</span>
+<span>Reports</span>
+</a>
+<!-- System Health -->
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">vital_signs</span>
+<span>System Health</span>
+</a>
+</nav>
+<!-- CTA Action -->
+<div class="px-space-md pt-2">
+<button class="w-full py-2 px-space-sm border border-border-hairline bg-surface-obsidian hover:border-primary-container text-on-surface hover:text-primary-container flex items-center justify-center gap-2 text-label-code font-label-code tracking-wider uppercase transition-none">
+<span class="material-symbols-outlined text-[15px]">play_arrow</span>
+<span>Execute Pipeline</span>
+</button>
+</div>
+</div>
+<!-- Footer Navigation Tabs (Preferences is ACTIVE target) -->
+<div class="border-t border-border-hairline pt-space-sm flex flex-col gap-0.5">
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">menu_book</span>
+<span>Documentation</span>
+</a>
+<a class="text-outline dark:text-outline hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-raised dark:hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined text-[17px]">dns</span>
+<span>Cluster Status</span>
+</a>
+<!-- ACTIVE: Preferences matching Shared Components JSON exact execution -->
+<a class="bg-surface-raised dark:bg-surface-raised text-primary-container dark:text-primary-container border-l-2 border-border-active flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase" href="#">
+<span class="material-symbols-outlined text-[17px] text-primary-container">tune</span>
+<span>Preferences</span>
+</a>
+</div>
+</aside>
+<!-- ================= MAIN SETTINGS WORKSPACE ================= -->
+<main class="ml-64 flex-1 h-[calc(100vh-3.5rem)] flex flex-col bg-surface-obsidian overflow-hidden">
+<!-- Top Title & Editorial Header Ribbon -->
+<section class="border-b border-border-hairline px-space-lg py-space-md bg-surface-graphite flex-shrink-0">
+<div class="flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2 text-label-code font-label-code text-metric-dim tracking-wider uppercase mb-1">
+<span>ROOT</span>
+<span>//</span>
+<span>SYSTEM</span>
+<span>//</span>
+<span class="text-primary-container">PREFERENCES &amp; CONFIGURATION</span>
+</div>
+<h1 class="text-headline-md font-headline-md text-editorial-cream tracking-tight font-medium">Settings &amp; Workstation Preferences</h1>
+</div>
+<div class="text-right">
+<span class="text-label-code font-label-code px-2 py-1 bg-surface-obsidian border border-border-hairline text-on-surface-variant">
+              LOCAL_STORAGE_STATE: <span class="text-secondary-fixed">SYNCHRONIZED (FIPS-256)</span>
+</span>
+</div>
+</div>
+<p class="text-body-sm font-body-sm text-outline mt-1 max-w-4xl">
+          Configure workspace visualization density, default CUDA execution parameters, telemetry cache, and export compliance profiles. Preferences persist across active sessions via local encrypted storage.
+        </p>
+</section>
+<!-- Settings Layout: Rapid Jump Nav + Scrollable Bento Workstation -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Jump Nav (Left Index Sub-Rail) -->
+<nav aria-label="Settings Categories" class="w-60 border-r border-border-hairline bg-surface-graphite/40 flex-shrink-0 p-space-sm custom-scroll overflow-y-auto">
+<div class="text-label-code font-label-code text-metric-dim px-3 py-1 uppercase tracking-widest text-[10px]">Categories</div>
+<ul class="flex flex-col gap-0.5 mt-1 text-label-code font-label-code">
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-on-surface hover:text-primary-container hover:bg-surface-raised border-l border-transparent hover:border-primary-container" href="#section-theme">
+<span>01. Theme &amp; Accessibility</span>
+<span class="material-symbols-outlined text-[14px]">contrast</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-outline hover:text-primary-container hover:bg-surface-raised border-l border-transparent hover:border-primary-container" href="#section-datasets">
+<span>02. Default Datasets</span>
+<span class="material-symbols-outlined text-[14px]">database</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-outline hover:text-primary-container hover:bg-surface-raised border-l border-transparent hover:border-primary-container" href="#section-cuda">
+<span>03. CUDA &amp; Kernels</span>
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-outline hover:text-primary-container hover:bg-surface-raised border-l border-transparent hover:border-primary-container" href="#section-density">
+<span>04. Table &amp; Density</span>
+<span class="material-symbols-outlined text-[14px]">table_rows</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-outline hover:text-primary-container hover:bg-surface-raised border-l border-transparent hover:border-primary-container" href="#section-charts">
+<span>05. Chart Rendering</span>
+<span class="material-symbols-outlined text-[14px]">show_chart</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-outline hover:text-primary-container hover:bg-surface-raised border-l border-transparent hover:border-primary-container" href="#section-export">
+<span>06. Export Protocols</span>
+<span class="material-symbols-outlined text-[14px]">ios_share</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-outline hover:text-primary-container hover:bg-surface-raised border-l border-transparent hover:border-primary-container" href="#section-cache">
+<span>07. Storage &amp; NVMe Cache</span>
+<span class="material-symbols-outlined text-[14px]">hard_drive</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-outline hover:text-primary-container hover:bg-surface-raised border-l border-transparent hover:border-primary-container" href="#section-version">
+<span>08. Attestation &amp; Links</span>
+<span class="material-symbols-outlined text-[14px]">verified</span>
+</a>
+</li>
+<li>
+<a class="flex items-center justify-between px-3 py-2 text-alert-critical/80 hover:text-alert-critical hover:bg-alert-critical/10 border-l border-transparent" href="#section-danger">
+<span>09. Factory Reset</span>
+<span class="material-symbols-outlined text-[14px]">dangerous</span>
+</a>
+</li>
+</ul>
+<!-- Encrypted Session Status Box -->
+<div class="mt-8 mx-2 p-space-sm bg-surface-obsidian border border-border-hairline">
+<div class="flex items-center gap-1.5 text-label-code font-label-code text-metric-dim text-[10px]">
+<span class="material-symbols-outlined text-[12px] text-secondary">lock</span>
+<span>ENCLAVE ENCRYPTION</span>
+</div>
+<div class="text-[11px] font-label-code text-on-surface-variant mt-1">AES-256-GCM hardware key bound to client socket node.</div>
+</div>
+</nav>
+<!-- Main Configuration Panel Canvas (Scrollable Bento Grid) -->
+<div class="flex-1 p-space-lg custom-scroll overflow-y-auto space-y-space-lg pb-24">
+<!-- 1. THEME & ACCESSIBILITY -->
+<section class="bg-surface-graphite border border-border-hairline" id="section-theme">
+<div class="px-space-md py-space-sm border-b border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-label-code font-label-code text-primary-container">SECTION // 01</span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream">Theme &amp; Accessibility</h2>
+</div>
+<span class="text-label-code font-label-code text-metric-dim uppercase">SPEC 2.4-A11Y</span>
+</div>
+<div class="p-space-md space-y-space-md">
+<!-- Theme Selectors (Radio Cards) -->
+<div>
+<label class="block text-label-code font-label-code text-metric-dim uppercase tracking-wider mb-2">Display Luminance Mode</label>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+<!-- Option 1: Selected -->
+<div class="cursor-pointer border-2 border-border-active bg-surface-raised p-space-md relative flex flex-col justify-between" onclick="selectTheme(this)">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-code font-label-code text-primary-container font-semibold">Obsidian Cyber (Dark)</span>
+<div class="w-3.5 h-3.5 border border-primary-container flex items-center justify-center">
+<span class="w-1.5 h-1.5 bg-primary-container inline-block"></span>
+</div>
+</div>
+<p class="text-body-sm font-body-sm text-outline">High-contrast obsidian base (#05070A) with electric cyan telemetry vectors.</p>
+</div>
+<div class="mt-4 flex gap-1 h-2">
+<div class="w-1/3 bg-[#05070A] border border-border-hairline"></div>
+<div class="w-1/3 bg-[#0D1117] border border-border-hairline"></div>
+<div class="w-1/3 bg-[#00F2FE]"></div>
+</div>
+</div>
+<!-- Option 2 -->
+<div class="cursor-pointer border border-border-hairline hover:border-outline bg-surface-obsidian p-space-md relative flex flex-col justify-between transition-none" onclick="selectTheme(this)">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-code font-label-code text-on-surface font-semibold">Graphite Terminal</span>
+<div class="w-3.5 h-3.5 border border-border-hairline"></div>
+</div>
+<p class="text-body-sm font-body-sm text-outline">Deep slate monochrome palette with subdued green status signals.</p>
+</div>
+<div class="mt-4 flex gap-1 h-2">
+<div class="w-1/3 bg-[#111418] border border-border-hairline"></div>
+<div class="w-1/3 bg-[#1D2024] border border-border-hairline"></div>
+<div class="w-1/3 bg-[#849495]"></div>
+</div>
+</div>
+<!-- Option 3 -->
+<div class="cursor-pointer border border-border-hairline hover:border-outline bg-surface-obsidian p-space-md relative flex flex-col justify-between transition-none" onclick="selectTheme(this)">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-code font-label-code text-on-surface font-semibold">OLED Pure Black</span>
+<div class="w-3.5 h-3.5 border border-border-hairline"></div>
+</div>
+<p class="text-body-sm font-body-sm text-outline">#000000 true zero emissive surfaces for maximum edge fidelity.</p>
+</div>
+<div class="mt-4 flex gap-1 h-2">
+<div class="w-1/3 bg-[#000000] border border-border-hairline"></div>
+<div class="w-1/3 bg-[#0A0A0A] border border-border-hairline"></div>
+<div class="w-1/3 bg-[#F8F7F4]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Toggles Row: Reduced Motion & Screen-reader verbosity -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-sm border-t border-border-hairline">
+<!-- Reduced Motion -->
+<div class="flex items-start justify-between gap-4 p-space-sm bg-surface-obsidian border border-border-hairline">
+<div>
+<span class="text-label-code font-label-code text-editorial-cream block font-medium">Reduced Motion &amp; Pulse Override</span>
+<p class="text-body-sm font-body-sm text-outline mt-1">
+                      Reduce interface animations and pulse effects — disables smooth transitions, particle animations, and canvas zooms for reduced cognitive load and WCAG 2.1 compliance.
+                    </p>
+</div>
+<!-- Square Toggle Switch -->
+<button aria-checked="false" class="w-10 h-5 bg-surface-container border border-border-hairline relative flex-shrink-0 cursor-pointer" id="reduced-motion-btn" onclick="toggleSwitch(this)" role="switch">
+<span class="toggle-knob block w-3.5 h-3.5 bg-metric-dim absolute top-0.5 left-0.5"></span>
+</button>
+</div>
+<!-- Screen-reader Verbosity -->
+<div class="flex items-start justify-between gap-4 p-space-sm bg-surface-obsidian border border-border-hairline">
+<div>
+<span class="text-label-code font-label-code text-editorial-cream block font-medium">Screen-Reader Hardware Readouts</span>
+<p class="text-body-sm font-body-sm text-outline mt-1">
+                      Select NVML GPU telemetry detail streamed via aria-live attributes to assistive devices.
+                    </p>
+<div class="flex gap-2 mt-3">
+<label class="flex items-center gap-2 cursor-pointer text-label-code font-label-code text-on-surface">
+<input checked="" class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" name="sr-verbosity" type="radio"/>
+<span>Concise (Status Only)</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer text-label-code font-label-code text-outline ml-3">
+<input class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" name="sr-verbosity" type="radio"/>
+<span>Verbose (Per-SM Telemetry)</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. DEFAULT DATASET & INGESTION WORKSPACE -->
+<section class="bg-surface-graphite border border-border-hairline" id="section-datasets">
+<div class="px-space-md py-space-sm border-b border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-label-code font-label-code text-primary-container">SECTION // 02</span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream">Default Dataset &amp; Ingestion Workspace</h2>
+</div>
+<span class="text-label-code font-label-code text-metric-dim uppercase">SCHEMA V4.2</span>
+</div>
+<div class="p-space-md grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Dropdown: Default Ingestion Dataset -->
+<div class="md:col-span-2">
+<label class="block text-label-code font-label-code text-metric-dim uppercase tracking-wider mb-1.5">Default Workspace Ingestion Baseline</label>
+<div class="relative">
+<select class="w-full bg-surface-obsidian border border-border-hairline text-editorial-cream px-3 py-2 text-label-code font-label-code focus:border-border-active focus:ring-0 appearance-none">
+<option selected="">FedWire-Synthetic-2025-Q1 (12.4M records, 48.2M edges) [Active Default]</option>
+<option>SWIFT-FinCEN-Advisory-2024-H2 (8.1M records, 31.9M edges)</option>
+<option>ACH-HighVelocity-MicroBatch-v3 (24.0M records, 94.6M edges)</option>
+<option>Custody-Internal-Ledger-Recon-2025 (4.2M records, 11.0M edges)</option>
+</select>
+<span class="material-symbols-outlined text-[16px] text-metric-dim absolute right-2.5 top-2.5 pointer-events-none">expand_more</span>
+</div>
+<div class="text-body-sm font-body-sm text-outline mt-1.5 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-secondary">info</span>
+<span>Automatically mounts schema graph topology on cold workstation initialization.</span>
+</div>
+</div>
+<!-- Currency Standard -->
+<div>
+<label class="block text-label-code font-label-code text-metric-dim uppercase tracking-wider mb-1.5">Base ISO 4217 Currency</label>
+<select class="w-full bg-surface-obsidian border border-border-hairline text-editorial-cream px-3 py-2 text-label-code font-label-code focus:border-border-active focus:ring-0">
+<option selected="">USD ($) — FedWire Benchmark Standard</option>
+<option>EUR (€) — ECB Clearing Target</option>
+<option>GBP (£) — CHAPS Gross Settlement</option>
+<option>CHF (Fr) — SIX Interbank Clearing</option>
+</select>
+</div>
+<!-- Auto-Stage in GPU VRAM Toggle -->
+<div class="md:col-span-3 p-space-sm bg-surface-obsidian border border-border-hairline flex items-center justify-between">
+<div>
+<span class="text-label-code font-label-code text-on-surface font-medium block">Pre-allocate Graph Node Adjacency into H100 GPU VRAM</span>
+<span class="text-body-sm font-body-sm text-outline block mt-0.5">
+                    When enabled, the selected default dataset is immediately loaded to NVLink unified memory on launch. Raw data is never committed to VRAM without explicit confirmation if cluster allocation exceeds 80%.
+                  </span>
+</div>
+<button aria-checked="true" class="w-10 h-5 bg-primary-container border border-primary-container relative flex-shrink-0 cursor-pointer" id="vram-toggle" onclick="toggleSwitch(this)" role="switch">
+<span class="toggle-knob block w-3.5 h-3.5 bg-surface-obsidian absolute top-0.5 right-0.5"></span>
+</button>
+</div>
+</div>
+</section>
+<!-- 3. DEFAULT EXPERIMENT & EXECUTION PARAMETERS -->
+<section class="bg-surface-graphite border border-border-hairline" id="section-cuda">
+<div class="px-space-md py-space-sm border-b border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-label-code font-label-code text-primary-container">SECTION // 03</span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream">Default CUDA &amp; Execution Parameters</h2>
+</div>
+<span class="text-label-code font-label-code text-secondary-fixed">NVCC 12.4</span>
+</div>
+<div class="p-space-md space-y-space-md">
+<!-- Execution Architecture Cards -->
+<div>
+<label class="block text-label-code font-label-code text-metric-dim uppercase tracking-wider mb-2">Default Graph Analytics Engine</label>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+<!-- Selected Architecture -->
+<div class="arch-card cursor-pointer border-2 border-border-active bg-surface-raised p-space-sm flex flex-col justify-between" onclick="selectArch(this)">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-primary-container font-semibold">Hopper sm_90 Bitonic</span>
+<span class="text-[10px] bg-secondary-fixed/10 text-secondary-fixed border border-secondary-fixed px-1 font-label-code">4.62ms</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline mt-1">Optimized warp shuffle registers with Tensor Memory Accelerator (TMA).</p>
+<div class="text-label-code font-label-code text-metric-dim text-[10px] mt-2 border-t border-border-hairline pt-1">RECOMMENDED FOR H100/H200</div>
+</div>
+<!-- Option 2 -->
+<div class="arch-card cursor-pointer border border-border-hairline hover:border-outline bg-surface-obsidian p-space-sm flex flex-col justify-between transition-none" onclick="selectArch(this)">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-on-surface font-semibold">Naive CUDA cuGraph</span>
+<span class="text-[10px] bg-surface-graphite text-metric-dim border border-border-hairline px-1 font-label-code">18.40ms</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline mt-1">Generic global SMEM kernel fallback for non-Hopper GPU architectures.</p>
+<div class="text-label-code font-label-code text-metric-dim text-[10px] mt-2 border-t border-border-hairline pt-1">COMPATIBILITY MODE</div>
+</div>
+<!-- Option 3 -->
+<div class="arch-card cursor-pointer border border-border-hairline hover:border-outline bg-surface-obsidian p-space-sm flex flex-col justify-between transition-none" onclick="selectArch(this)">
+<div class="flex items-center justify-between">
+<span class="text-label-code font-label-code text-on-surface font-semibold">OpenMP-64Th CPU</span>
+<span class="text-[10px] bg-surface-graphite text-metric-dim border border-border-hairline px-1 font-label-code">142.1ms</span>
+</div>
+<p class="text-body-sm font-body-sm text-outline mt-1">Host CPU reference implementation. Zero VRAM footprint.</p>
+<div class="text-label-code font-label-code text-metric-dim text-[10px] mt-2 border-t border-border-hairline pt-1">DETERMINISTIC VERIFICATION</div>
+</div>
+</div>
+</div>
+<!-- Numerical Precision, Warp Threshold & Epsilon -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md pt-space-sm border-t border-border-hairline">
+<div>
+<label class="block text-label-code font-label-code text-metric-dim uppercase tracking-wider mb-1.5">Tensor Precision Pipeline</label>
+<select class="w-full bg-surface-obsidian border border-border-hairline text-editorial-cream px-3 py-2 text-label-code font-label-code focus:border-border-active focus:ring-0">
+<option selected="">FP8 (E4M3 Tensor Cores - 4.62ms)</option>
+<option>FP16 (Half Precision - 7.14ms)</option>
+<option>FP32 (IEEE 754 Single Precision - 14.80ms)</option>
+</select>
+</div>
+<div>
+<label class="block text-label-code font-label-code text-metric-dim uppercase tracking-wider mb-1.5">Max In-Degree Warp Limit</label>
+<div class="flex items-center">
+<input class="w-full bg-surface-obsidian border border-border-hairline text-editorial-cream px-3 py-2 text-label-code font-label-code focus:border-border-active focus:ring-0" type="number" value="65536"/>
+<span class="px-2 py-2 bg-surface-raised border border-l-0 border-border-hairline text-metric-dim text-label-code font-label-code">EDGES</span>
+</div>
+</div>
+<div>
+<label class="block text-label-code font-label-code text-metric-dim uppercase tracking-wider mb-1.5">Convergence Epsilon (ε)</label>
+<div class="flex items-center">
+<input class="w-full bg-surface-obsidian border border-border-hairline text-editorial-cream px-3 py-2 text-label-code font-label-code focus:border-border-active focus:ring-0 font-label-code" type="text" value="1e-7"/>
+<span class="px-2 py-2 bg-surface-raised border border-l-0 border-border-hairline text-metric-dim text-label-code font-label-code">TOL</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. TABLE DENSITY & TELEMETRY DISPLAY -->
+<section class="bg-surface-graphite border border-border-hairline" id="section-density">
+<div class="px-space-md py-space-sm border-b border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-label-code font-label-code text-primary-container">SECTION // 04</span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream">Table Density &amp; Telemetry Display</h2>
+</div>
+<span class="text-label-code font-label-code text-metric-dim uppercase">VIEWPORT OPTICS</span>
+</div>
+<div class="p-space-md space-y-space-md">
+<!-- Segmented Control for Density -->
+<div>
+<label class="block text-label-code font-label-code text-metric-dim uppercase tracking-wider mb-2">Forensic Data Grid Density</label>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-0 border border-border-hairline bg-surface-obsidian">
+<button class="density-btn px-4 py-2 text-left bg-surface-raised border-r border-border-hairline border-b-2 border-b-border-active text-primary-container text-label-code font-label-code transition-none" onclick="setDensity('compact', this)">
+<span class="font-bold block">Compact (28px Row)</span>
+<span class="text-[10px] text-metric-dim block">Maximum information throughput</span>
+</button>
+<button class="density-btn px-4 py-2 text-left border-r border-border-hairline text-outline hover:text-on-surface text-label-code font-label-code transition-none" onclick="setDensity('standard', this)">
+<span class="font-bold block">Standard (36px Row)</span>
+<span class="text-[10px] text-metric-dim block">Balanced touch &amp; eye cadence</span>
+</button>
+<button class="density-btn px-4 py-2 text-left text-outline hover:text-on-surface text-label-code font-label-code transition-none" onclick="setDensity('spacious', this)">
+<span class="font-bold block">Spacious (44px Row)</span>
+<span class="text-[10px] text-metric-dim block">Expanded audit review</span>
+</button>
+</div>
+</div>
+<!-- Miniature Live Preview of Forensic Table -->
+<div class="border border-border-hairline bg-surface-obsidian">
+<div class="px-space-md py-1.5 bg-surface-graphite border-b border-border-hairline flex items-center justify-between text-label-code font-label-code text-[10px]">
+<span class="text-metric-dim uppercase">LIVE PREVIEW // FORENSIC TRANSACTION MATRIX</span>
+<span class="text-secondary-fixed font-semibold" id="density-indicator">CURRENT: COMPACT (28PX)</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-label-code text-label-code border-collapse" id="preview-table">
+<thead>
+<tr class="border-b border-border-hairline text-metric-dim bg-surface-graphite/40">
+<th class="px-3 py-1 font-medium">TX_HASH</th>
+<th class="px-3 py-1 font-medium">TIMESTAMP_UTC</th>
+<th class="px-3 py-1 font-medium">ORIGIN_ACCOUNT</th>
+<th class="px-3 py-1 font-medium text-right">NOTIONAL (USD)</th>
+<th class="px-3 py-1 font-medium">RISK_SCORE</th>
+<th class="px-3 py-1 font-medium">FLAG</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-hairline">
+<tr class="sample-row hover:bg-surface-raised/40 transition-none">
+<td class="px-3 py-1 text-primary-container font-mono">0x7c49...b4e2</td>
+<td class="px-3 py-1 text-on-surface-variant">2025-05-18 14:02:11.902</td>
+<td class="px-3 py-1 text-on-surface font-mono">ACCT-CORP-9482</td>
+<td class="px-3 py-1 text-right text-editorial-cream font-mono">$1,450,000.00</td>
+<td class="px-3 py-1 text-alert-critical font-bold">0.984</td>
+<td class="px-3 py-1"><span class="px-1 bg-alert-critical/10 text-alert-critical border border-alert-critical text-[9px]">MALICIOUS_CYCLE</span></td>
+</tr>
+<tr class="sample-row hover:bg-surface-raised/40 transition-none">
+<td class="px-3 py-1 text-primary-container font-mono">0x3b11...9a0c</td>
+<td class="px-3 py-1 text-on-surface-variant">2025-05-18 14:02:12.118</td>
+<td class="px-3 py-1 text-on-surface font-mono">ACCT-CORP-9483</td>
+<td class="px-3 py-1 text-right text-editorial-cream font-mono">$1,449,850.00</td>
+<td class="px-3 py-1 text-alert-critical font-bold">0.961</td>
+<td class="px-3 py-1"><span class="px-1 bg-alert-critical/10 text-alert-critical border border-alert-critical text-[9px]">STRUCTURING</span></td>
+</tr>
+<tr class="sample-row hover:bg-surface-raised/40 transition-none">
+<td class="px-3 py-1 text-primary-container font-mono">0x12a9...d317</td>
+<td class="px-3 py-1 text-on-surface-variant">2025-05-18 14:02:12.554</td>
+<td class="px-3 py-1 text-on-surface font-mono">ACCT-RETAIL-104</td>
+<td class="px-3 py-1 text-right text-editorial-cream font-mono">$12,400.00</td>
+<td class="px-3 py-1 text-secondary-fixed font-bold">0.012</td>
+<td class="px-3 py-1"><span class="px-1 bg-secondary-fixed/10 text-secondary-fixed border border-secondary-fixed text-[9px]">VERIFIED_BENIGN</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Additional Display Toggles -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md pt-space-sm border-t border-border-hairline">
+<div>
+<label class="block text-label-code font-label-code text-metric-dim uppercase tracking-wider mb-1.5">Telemetry Monospace Font Size</label>
+<select class="w-full bg-surface-obsidian border border-border-hairline text-editorial-cream px-3 py-1.5 text-label-code font-label-code focus:border-border-active focus:ring-0">
+<option selected="">11px — High Density Engineering Standard</option>
+<option>12px — Standard Monospace</option>
+<option>13px — Enhanced Readability</option>
+</select>
+</div>
+<div class="flex items-center justify-between p-2 bg-surface-obsidian border border-border-hairline">
+<span class="text-label-code font-label-code text-on-surface">Render Row Dividers</span>
+<input checked="" class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+</div>
+<div class="flex items-center justify-between p-2 bg-surface-obsidian border border-border-hairline">
+<span class="text-label-code font-label-code text-on-surface">Truncate Hash Hex (0x...)</span>
+<input checked="" class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. CHART & GRAPH RENDERING PREFERENCES -->
+<section class="bg-surface-graphite border border-border-hairline" id="section-charts">
+<div class="px-space-md py-space-sm border-b border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-label-code font-label-code text-primary-container">SECTION // 05</span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream">Chart &amp; Graph Rendering Preferences</h2>
+</div>
+<span class="text-label-code font-label-code text-metric-dim uppercase">WEBGL 2.0 ACCELERATED</span>
+</div>
+<div class="p-space-md grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- PR / ROC Curve Mode -->
+<div>
+<label class="block text-label-code font-label-code text-metric-dim uppercase tracking-wider mb-1.5">PR-Curve &amp; ROC Interpolation</label>
+<div class="space-y-2 bg-surface-obsidian p-space-sm border border-border-hairline">
+<label class="flex items-center gap-3 cursor-pointer text-body-sm font-body-sm text-on-surface">
+<input class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" name="roc-mode" type="radio"/>
+<div>
+<span class="font-medium text-editorial-cream">Smooth Bezier Spline</span>
+<span class="block text-outline text-[11px]">Interpolated visually continuous aesthetic for publication dossiers.</span>
+</div>
+</label>
+<label class="flex items-center gap-3 cursor-pointer text-body-sm font-body-sm text-on-surface pt-2 border-t border-border-hairline">
+<input checked="" class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" name="roc-mode" type="radio"/>
+<div>
+<span class="font-medium text-editorial-cream">Strict Step-Function Interpolation [Recommended]</span>
+<span class="block text-outline text-[11px]">Mathematical forensic accuracy without algorithmic smoothing.</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Colorblind & Confidence Bounds -->
+<div class="space-y-space-sm">
+<div class="p-space-sm bg-surface-obsidian border border-border-hairline flex items-start justify-between">
+<div>
+<span class="text-label-code font-label-code text-editorial-cream block font-medium">Colorblind-Safe Spectral Palette</span>
+<span class="text-body-sm font-body-sm text-outline block mt-0.5">
+                      Protanopia / Deuteranopia optimized cyan-amber spectrum with verified 4.5:1 contrast ratio against obsidian ground plane.
+                    </span>
+</div>
+<button aria-checked="false" class="w-10 h-5 bg-surface-container border border-border-hairline relative flex-shrink-0 cursor-pointer ml-3" onclick="toggleSwitch(this)" role="switch">
+<span class="toggle-knob block w-3.5 h-3.5 bg-metric-dim absolute top-0.5 left-0.5"></span>
+</button>
+</div>
+<div class="p-space-sm bg-surface-obsidian border border-border-hairline flex items-start justify-between">
+<div>
+<span class="text-label-code font-label-code text-editorial-cream block font-medium">Show 5-Fold Cross-Validation Shading (±0.12%)</span>
+<span class="text-body-sm font-body-sm text-outline block mt-0.5">
+                      Render empirical confidence intervals on all ROC and precision-recall charts by default.
+                    </span>
+</div>
+<button aria-checked="true" class="w-10 h-5 bg-primary-container border border-primary-container relative flex-shrink-0 cursor-pointer ml-3" onclick="toggleSwitch(this)" role="switch">
+<span class="toggle-knob block w-3.5 h-3.5 bg-surface-obsidian absolute top-0.5 right-0.5"></span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. EXPORT & DOSSIER DEFAULTS -->
+<section class="bg-surface-graphite border border-border-hairline" id="section-export">
+<div class="px-space-md py-space-sm border-b border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-label-code font-label-code text-primary-container">SECTION // 06</span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream">Export Protocols &amp; Cryptographic Attestation</h2>
+</div>
+<span class="text-label-code font-label-code text-metric-dim uppercase">IEEE / ACM DOSSIER COMPLIANT</span>
+</div>
+<div class="p-space-md space-y-space-md">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Export Format -->
+<div>
+<label class="block text-label-code font-label-code text-metric-dim uppercase tracking-wider mb-1.5">Default Export Format</label>
+<select class="w-full bg-surface-obsidian border border-border-hairline text-editorial-cream px-3 py-2 text-label-code font-label-code focus:border-border-active focus:ring-0">
+<option selected="">LaTeX Research Dossier (IEEE/ACM Transaction Spec)</option>
+<option>PDF Institutional Forensic Monograph (Executive Summary)</option>
+<option>JSON-LD Graph Schema (Machine Ingestion)</option>
+<option>CSV Raw Edgelist (RFC 4180 Compressed)</option>
+</select>
+</div>
+<!-- Attestation Options -->
+<div class="space-y-2 bg-surface-obsidian p-space-sm border border-border-hairline">
+<label class="flex items-center gap-2.5 text-label-code font-label-code text-on-surface cursor-pointer">
+<input checked="" class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+<span>Embed SHA-256 Hash of Graph State in Dossier Header</span>
+</label>
+<label class="flex items-center gap-2.5 text-label-code font-label-code text-on-surface cursor-pointer">
+<input checked="" class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+<span>Attach zk-SNARK Zero-Knowledge Equivalence Proof</span>
+</label>
+<label class="flex items-center gap-2.5 text-label-code font-label-code text-on-surface cursor-pointer">
+<input checked="" class="w-3.5 h-3.5 bg-surface-obsidian border-border-hairline text-primary-container focus:ring-0" type="checkbox"/>
+<span>Include SR 11-7 Supervisory Attestation Appendix</span>
+</label>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. LOCAL STORAGE & CLIENT CACHE TELEMETRY -->
+<section class="bg-surface-graphite border border-border-hairline" id="section-cache">
+<div class="px-space-md py-space-sm border-b border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-label-code font-label-code text-primary-container">SECTION // 07</span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream">Storage &amp; Client Cache Telemetry</h2>
+</div>
+<span class="text-label-code font-label-code text-secondary-fixed">TOTAL: 2.39 GB ALLOCATED</span>
+</div>
+<div class="p-space-md space-y-space-md">
+<!-- Diagnostic Metric Breakdown Bento -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-space-sm">
+<!-- IndexedDB -->
+<div class="bg-surface-obsidian border border-border-hairline p-space-sm">
+<div class="text-label-code font-label-code text-metric-dim uppercase text-[10px]">IndexedDB Cache</div>
+<div class="text-metric-display font-metric-display text-primary-container mt-1">412.4 <span class="text-xs text-on-surface-variant font-label-code">MB</span></div>
+<div class="text-[11px] text-outline mt-1 font-label-code">3 cached graph topologies</div>
+</div>
+<!-- WebGL Buffer -->
+<div class="bg-surface-obsidian border border-border-hairline p-space-sm">
+<div class="text-label-code font-label-code text-metric-dim uppercase text-[10px]">WebGL Buffer</div>
+<div class="text-metric-display font-metric-display text-editorial-cream mt-1">128.0 <span class="text-xs text-on-surface-variant font-label-code">MB</span></div>
+<div class="text-[11px] text-outline mt-1 font-label-code">Hardware surface backing</div>
+</div>
+<!-- NVMe Pinned -->
+<div class="bg-surface-obsidian border border-border-hairline p-space-sm">
+<div class="text-label-code font-label-code text-metric-dim uppercase text-[10px]">NVMe Pinned Scratch</div>
+<div class="text-metric-display font-metric-display text-secondary-fixed mt-1">1.84 <span class="text-xs text-on-surface-variant font-label-code">GB</span></div>
+<div class="text-[11px] text-outline mt-1 font-label-code">Staged edge partitions</div>
+</div>
+<!-- Telemetry Logs -->
+<div class="bg-surface-obsidian border border-border-hairline p-space-sm">
+<div class="text-label-code font-label-code text-metric-dim uppercase text-[10px]">Telemetry &amp; Logs</div>
+<div class="text-metric-display font-metric-display text-editorial-cream mt-1">14.2 <span class="text-xs text-on-surface-variant font-label-code">MB</span></div>
+<div class="text-[11px] text-outline mt-1 font-label-code">42,810 event audit pips</div>
+</div>
+</div>
+<!-- Cache Action Controls -->
+<div class="flex flex-wrap items-center justify-between gap-4 pt-space-sm border-t border-border-hairline">
+<div class="text-body-sm font-body-sm text-outline max-w-xl">
+                  Clearing IndexedDB forces client-side re-download of schemas on next query. Does not affect central cluster database states.
+                </div>
+<div class="flex items-center gap-2">
+<button class="px-space-md py-1.5 bg-surface-obsidian border border-border-hairline hover:border-alert-critical text-on-surface hover:text-alert-critical text-label-code font-label-code transition-none flex items-center gap-1.5" onclick="triggerPurge()">
+<span class="material-symbols-outlined text-[15px]">delete_sweep</span>
+<span>Purge Staged NVMe Buffer</span>
+</button>
+<button class="px-space-md py-1.5 bg-surface-raised border border-border-hairline hover:border-border-active text-on-surface hover:text-primary-container text-label-code font-label-code transition-none flex items-center gap-1.5" onclick="triggerCacheClear()">
+<span class="material-symbols-outlined text-[15px]">cleaning_services</span>
+<span>Clear Client Cache</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 8. APPLICATION VERSION & DOCUMENTATION LINKS -->
+<section class="bg-surface-graphite border border-border-hairline" id="section-version">
+<div class="px-space-md py-space-sm border-b border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-label-code font-label-code text-primary-container">SECTION // 08</span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream">Attestation, Compliance &amp; Documentation</h2>
+</div>
+<span class="text-label-code font-label-code text-metric-dim uppercase">FIPS 140-3 VERIFIED</span>
+</div>
+<div class="p-space-md space-y-space-md">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Build Attestation Card -->
+<div class="bg-surface-obsidian border border-border-hairline p-space-md flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-code font-label-code text-editorial-cream font-bold">FraudGraph Core Runtime</span>
+<span class="px-2 py-0.5 bg-surface-raised border border-border-hairline text-secondary-fixed text-[10px] font-label-code">PROD-RELEASE</span>
+</div>
+<div class="space-y-1 font-label-code text-[11px] text-outline">
+<div>Version: <span class="text-on-surface">v2.4.1-hopper-prod</span></div>
+<div>Git Commit: <span class="text-primary-container font-mono">c48f91ae907d890b</span></div>
+<div>Build Timestamp: <span class="text-on-surface">2025-05-18T04:12:00Z</span></div>
+<div>Toolchain: <span class="text-on-surface">CUDA 12.4 // Driver 550.54.14 // cuGraph 24.04</span></div>
+</div>
+</div>
+<div class="mt-4 pt-2 border-t border-border-hairline flex items-center gap-2 text-label-code font-label-code text-secondary text-[11px]">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span>SR 11-7 Regulatory Compliance Seal &amp; OCC 2011-12 validation verified.</span>
+</div>
+</div>
+<!-- Documentation Monograph Links Grid -->
+<div class="grid grid-cols-1 gap-2">
+<a class="p-2.5 bg-surface-obsidian border border-border-hairline hover:border-border-active flex items-center justify-between text-label-code font-label-code group transition-none" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-metric-dim group-hover:text-primary-container">description</span>
+<span class="text-on-surface group-hover:text-primary-container">Technical Monograph (PDF - 42 Pages)</span>
+</div>
+<span class="material-symbols-outlined text-[15px] text-metric-dim group-hover:text-primary-container">arrow_forward</span>
+</a>
+<a class="p-2.5 bg-surface-obsidian border border-border-hairline hover:border-border-active flex items-center justify-between text-label-code font-label-code group transition-none" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-metric-dim group-hover:text-primary-container">code</span>
+<span class="text-on-surface group-hover:text-primary-container">CUDA sm_90 Bitonic Kernel Docs</span>
+</div>
+<span class="material-symbols-outlined text-[15px] text-metric-dim group-hover:text-primary-container">arrow_forward</span>
+</a>
+<a class="p-2.5 bg-surface-obsidian border border-border-hairline hover:border-border-active flex items-center justify-between text-label-code font-label-code group transition-none" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-metric-dim group-hover:text-primary-container">api</span>
+<span class="text-on-surface group-hover:text-primary-container">API Reference &amp; Python SDK</span>
+</div>
+<span class="material-symbols-outlined text-[15px] text-metric-dim group-hover:text-primary-container">arrow_forward</span>
+</a>
+<a class="p-2.5 bg-surface-obsidian border border-border-hairline hover:border-border-active flex items-center justify-between text-label-code font-label-code group transition-none" href="#">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-metric-dim group-hover:text-primary-container">shield</span>
+<span class="text-on-surface group-hover:text-primary-container">FIPS Enclave Security Whitepaper</span>
+</div>
+<span class="material-symbols-outlined text-[15px] text-metric-dim group-hover:text-primary-container">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- 9. DANGEROUS ZONE: FACTORY RESET -->
+<section class="bg-surface-graphite border border-alert-critical/50" id="section-danger">
+<div class="px-space-md py-space-sm border-b border-alert-critical/50 flex items-center justify-between bg-alert-critical/5">
+<div class="flex items-center gap-2">
+<span class="text-label-code font-label-code text-alert-critical">SECTION // 09</span>
+<h2 class="text-headline-sm font-headline-sm text-alert-critical font-medium">Dangerous Zone // Factory Reset</h2>
+</div>
+<span class="text-label-code font-label-code text-alert-critical uppercase">DESTRUCTIVE ACTION</span>
+</div>
+<div class="p-space-md space-y-space-md">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<span class="text-label-code font-label-code text-editorial-cream font-bold block">Reset All Preferences to Factory Defaults</span>
+<p class="text-body-sm font-body-sm text-outline mt-1 max-w-xl">
+                    Reverts all display density parameters, default execution architectures, ISO currency bases, and purges all cached IndexedDB schema topologies from this workstation. Central server audit trails are untouched.
+                  </p>
+</div>
+<button class="px-space-md py-2 bg-alert-critical text-editorial-cream hover:bg-alert-critical/90 active:scale-[0.99] font-body-sm font-semibold tracking-wider uppercase transition-none border-0 flex items-center justify-center gap-2 flex-shrink-0" onclick="openResetModal()">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+<span>Reset All Preferences</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+</div>
+<!-- ================= INLINE INTERACTIVE CONFIRMATION MODAL ================= -->
+<div class="fixed inset-0 z-50 bg-surface-obsidian/85 backdrop-blur-sm hidden items-center justify-center p-4" id="reset-modal">
+<div class="w-full max-w-lg bg-surface-graphite border-2 border-alert-critical p-space-lg shadow-[0_0_30px_rgba(255,59,48,0.25)]">
+<div class="flex items-center gap-3 text-alert-critical mb-3">
+<span class="material-symbols-outlined text-[28px]">warning</span>
+<h3 class="text-headline-sm font-headline-sm text-editorial-cream font-bold">Confirm Workstation Factory Reset</h3>
+</div>
+<p class="text-body-md font-body-md text-on-surface mb-4">
+        Are you sure? This will reset all display density, default kernels, and clear local cached schemas. This action cannot be undone.
+      </p>
+<div class="p-space-sm bg-surface-obsidian border border-border-hairline mb-6 font-label-code text-[11px] text-metric-dim space-y-1">
+<div>• IndexedDB Topologies: 412.4 MB will be deleted.</div>
+<div>• Execution Kernel: Reverting to Bitonic sm_90 Default.</div>
+<div>• Local Storage Keys: Purged from browser origin.</div>
+</div>
+<div class="flex items-center justify-end gap-3">
+<button class="px-space-md py-2 border border-border-hairline hover:border-on-surface text-outline hover:text-editorial-cream text-label-code font-label-code transition-none" onclick="closeResetModal()">
+          Cancel
+        </button>
+<button class="px-space-md py-2 bg-alert-critical hover:bg-alert-critical/90 text-editorial-cream text-label-code font-label-code font-bold uppercase transition-none" onclick="executeReset()">
+          Confirm Reset
+        </button>
+</div>
+</div>
+</div>
+<!-- Toast Notification -->
+<div class="fixed bottom-6 right-6 z-50 bg-surface-raised border border-border-active text-editorial-cream px-4 py-2.5 font-label-code text-label-code hidden shadow-[0_0_15px_rgba(0,242,254,0.2)] items-center gap-2" id="toast">
+<span class="w-2 h-2 bg-primary-container"></span>
+<span id="toast-text">Preferences saved successfully.</span>
+</div>
+<!-- ================= JAVASCRIPT MICRO-INTERACTIONS ================= -->
+<script>
+    // Toggle switch interaction
+    function toggleSwitch(btn) {
+      const isChecked = btn.getAttribute('aria-checked') === 'true';
+      const newChecked = !isChecked;
+      btn.setAttribute('aria-checked', newChecked);
+      
+      const knob = btn.querySelector('.toggle-knob');
+      if (newChecked) {
+        btn.classList.remove('bg-surface-container', 'border-border-hairline');
+        btn.classList.add('bg-primary-container', 'border-primary-container');
+        knob.classList.remove('left-0.5', 'bg-metric-dim');
+        knob.classList.add('right-0.5', 'bg-surface-obsidian');
+      } else {
+        btn.classList.remove('bg-primary-container', 'border-primary-container');
+        btn.classList.add('bg-surface-container', 'border-border-hairline');
+        knob.classList.remove('right-0.5', 'bg-surface-obsidian');
+        knob.classList.add('left-0.5', 'bg-metric-dim');
+      }
+    }
+
+    // Theme Selector
+    function selectTheme(card) {
+      document.querySelectorAll('#section-theme .cursor-pointer').forEach(c => {
+        c.classList.remove('border-2', 'border-border-active', 'bg-surface-raised');
+        c.classList.add('border', 'border-border-hairline', 'bg-surface-obsidian');
+        const check = c.querySelector('.w-3\\.5');
+        if (check) check.innerHTML = '';
+      });
+      card.classList.remove('border', 'border-border-hairline', 'bg-surface-obsidian');
+      card.classList.add('border-2', 'border-border-active', 'bg-surface-raised');
+      const targetCheck = card.querySelector('.w-3\\.5');
+      if (targetCheck) {
+        targetCheck.innerHTML = '<span class="w-1.5 h-1.5 bg-primary-container inline-block"></span>';
+      }
+    }
+
+    // Architecture Card Selector
+    function selectArch(card) {
+      document.querySelectorAll('.arch-card').forEach(c => {
+        c.classList.remove('border-2', 'border-border-active', 'bg-surface-raised');
+        c.classList.add('border', 'border-border-hairline', 'bg-surface-obsidian');
+      });
+      card.classList.remove('border', 'border-border-hairline', 'bg-surface-obsidian');
+      card.classList.add('border-2', 'border-border-active', 'bg-surface-raised');
+    }
+
+    // Table Density Switcher & Live Preview Updater
+    function setDensity(mode, btn) {
+      document.querySelectorAll('.density-btn').forEach(b => {
+        b.classList.remove('bg-surface-raised', 'border-b-2', 'border-b-border-active', 'text-primary-container');
+        b.classList.add('text-outline');
+      });
+      btn.classList.add('bg-surface-raised', 'border-b-2', 'border-b-border-active', 'text-primary-container');
+      btn.classList.remove('text-outline');
+
+      const tableRows = document.querySelectorAll('#preview-table .sample-row td');
+      const indicator = document.getElementById('density-indicator');
+
+      if (mode === 'compact') {
+        tableRows.forEach(td => { td.style.paddingTop = '4px'; td.style.paddingBottom = '4px'; });
+        indicator.textContent = 'CURRENT: COMPACT (28PX)';
+      } else if (mode === 'standard') {
+        tableRows.forEach(td => { td.style.paddingTop = '8px'; td.style.paddingBottom = '8px'; });
+        indicator.textContent = 'CURRENT: STANDARD (36PX)';
+      } else if (mode === 'spacious') {
+        tableRows.forEach(td => { td.style.paddingTop = '12px'; td.style.paddingBottom = '12px'; });
+        indicator.textContent = 'CURRENT: SPACIOUS (44PX)';
+      }
+    }
+
+    // Save All Preferences Persistence Simulation
+    function triggerSaveFeedback() {
+      const btn = document.getElementById('save-btn');
+      const text = document.getElementById('save-text');
+      text.textContent = 'Persisting...';
+      btn.classList.add('opacity-75');
+
+      setTimeout(() => {
+        text.textContent = 'Preferences Saved';
+        btn.classList.remove('opacity-75');
+        showToast('All workstation configurations synced to local FIPS enclave.');
+        setTimeout(() => {
+          text.textContent = 'Save All Preferences';
+        }, 2200);
+      }, 500);
+    }
+
+    // Reset Modal Flow
+    function openResetModal() {
+      const modal = document.getElementById('reset-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    function closeResetModal() {
+      const modal = document.getElementById('reset-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+    function executeReset() {
+      closeResetModal();
+      showToast('Factory reset complete. Workstation restored to default baseline.');
+    }
+
+    function triggerCacheClear() {
+      showToast('IndexedDB graph cache cleared (412.4 MB released).');
+    }
+    function triggerPurge() {
+      showToast('Staged NVMe partition buffer purged.');
+    }
+
+    // Toast
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toast-text');
+      toastText.textContent = message;
+      toast.classList.remove('hidden');
+      toast.classList.add('flex');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+        toast.classList.remove('flex');
+      }, 3000);
+    }
+  </script>
+</body></html>

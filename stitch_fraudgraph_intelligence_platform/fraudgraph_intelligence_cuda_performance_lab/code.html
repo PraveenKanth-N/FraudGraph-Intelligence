@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FRAUDGRAPH // TELEMETRY - CUDA LAB</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Newsreader for serif titles, Geist & JetBrains Mono for telemetry -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;family=Geist:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with custom configuration -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-fixed": "#1c1c18",
+            "on-error-container": "#ffdad6",
+            "on-primary-container": "#006a70",
+            "on-tertiary-container": "#61605b",
+            "outline": "#849495",
+            "surface-raised": "#161B22",
+            "tertiary-fixed": "#e5e2dc",
+            "border-active": "#00F2FE",
+            "outline-variant": "#3a494b",
+            "surface-container-high": "#272a2f",
+            "primary-container": "#00f2fe",
+            "surface-container": "#1d2024",
+            "surface-dim": "#111418",
+            "surface": "#111418",
+            "error": "#ffb4ab",
+            "secondary-container": "#01e7b6",
+            "tertiary-fixed-dim": "#c9c6c1",
+            "surface-graphite": "#0D1117",
+            "on-primary": "#00373a",
+            "tertiary": "#faf7f1",
+            "inverse-on-surface": "#2e3135",
+            "editorial-cream": "#F8F7F4",
+            "on-background": "#e1e2e8",
+            "on-surface": "#e1e2e8",
+            "on-tertiary-fixed-variant": "#474743",
+            "tertiary-container": "#dedbd5",
+            "on-surface-variant": "#b9cacb",
+            "background": "#111418",
+            "on-error": "#690005",
+            "secondary-fixed-dim": "#00e0b1",
+            "inverse-primary": "#00696f",
+            "primary-fixed-dim": "#00dce6",
+            "on-secondary": "#00382a",
+            "surface-container-highest": "#32353a",
+            "on-primary-fixed": "#002022",
+            "surface-bright": "#36393e",
+            "primary-fixed": "#6ff6ff",
+            "surface-container-low": "#191c20",
+            "secondary-fixed": "#41fecb",
+            "surface-container-lowest": "#0b0e12",
+            "alert-critical": "#FF3B30",
+            "inverse-surface": "#e1e2e8",
+            "on-secondary-fixed": "#002117",
+            "error-container": "#93000a",
+            "on-secondary-fixed-variant": "#00513e",
+            "surface-variant": "#32353a",
+            "border-hairline": "#21262D",
+            "on-tertiary": "#31302d",
+            "metric-dim": "#484F58",
+            "secondary": "#7dffd5",
+            "on-primary-fixed-variant": "#004f53",
+            "surface-tint": "#00dce6",
+            "surface-obsidian": "#05070A",
+            "on-secondary-container": "#00624c",
+            "primary": "#e0fdff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0px",
+            "none": "0px",
+            "sm": "0px",
+            "md": "0px",
+            "lg": "0px",
+            "xl": "0px",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "margin-mobile": "1rem",
+            "space-xl": "2.5rem",
+            "gutter": "1.5rem",
+            "space-xs": "0.25rem",
+            "margin": "2.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem"
+          },
+          "fontFamily": {
+            "display-hero": ["Newsreader", "serif"],
+            "body-lg": ["Geist", "sans-serif"],
+            "body-md": ["Geist", "sans-serif"],
+            "headline-sm": ["Newsreader", "serif"],
+            "headline-lg": ["Newsreader", "serif"],
+            "label-code": ["Geist Mono", "monospace"],
+            "display-hero-mobile": ["Newsreader", "serif"],
+            "body-sm": ["Geist", "sans-serif"],
+            "headline-md": ["Newsreader", "serif"],
+            "metric-display": ["Geist Mono", "monospace"],
+            "headline-lg-mobile": ["Newsreader", "serif"]
+          },
+          "fontSize": {
+            "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "400" }],
+            "label-code": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "500" }],
+            "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "metric-display": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Absolute Zero Radius Architecture */
+    * {
+      border-radius: 0px !important;
+    }
+    
+    /* Custom scrollbar for dense forensic data view */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #05070A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #21262D;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00F2FE;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; filter: drop-shadow(0 0 6px rgba(0, 242, 254, 0.6)); }
+      50% { opacity: 0.4; filter: drop-shadow(0 0 1px rgba(0, 242, 254, 0.2)); }
+    }
+    .pulse-live {
+      animation: livePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-surface-obsidian text-on-surface antialiased overflow-x-hidden selection:bg-primary-container selection:text-surface-obsidian min-h-screen flex flex-col">
+<!-- ========================================================================= -->
+<!-- 1. TOP NAVIGATION BAR (Exact Match to JSON Anchors + Extended Spec)      -->
+<!-- ========================================================================= -->
+<header class="flex justify-between items-center w-full px-space-lg h-14 bg-surface-obsidian border-b border-border-hairline z-50 sticky top-0">
+<!-- Brand / Identifier -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2.5 h-2.5 bg-primary-container pulse-live"></span>
+<span class="text-headline-sm font-headline-sm text-editorial-cream tracking-widest font-normal">FRAUDGRAPH // TELEMETRY</span>
+</div>
+<div class="h-4 w-px bg-border-hairline hidden md:block"></div>
+<span class="font-label-code text-label-code text-primary-container hidden lg:inline-flex items-center gap-1 bg-surface-raised px-2 py-0.5 border border-border-hairline">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span>
+        H100-SXM5 8/8 ONLINE [0.12ms Sync]
+      </span>
+</div>
+<!-- Cluster Telemetry Navigation Links from JSON -->
+<nav class="hidden 2xl:flex items-center gap-space-md text-metric-dim font-label-code text-label-code">
+<span class="hover:text-on-surface cursor-pointer border-b-2 border-border-active text-primary-container font-medium pb-0.5">Cluster Status: Operational</span>
+<span class="hover:text-on-surface cursor-pointer">Nodes: 8x H100 SXM5</span>
+<span class="hover:text-on-surface cursor-pointer">NVLink: 900 GB/s</span>
+<span class="hover:text-on-surface cursor-pointer">VRAM: 640 GB Active</span>
+</nav>
+<!-- Trailing Actions & Icons -->
+<div class="flex items-center gap-space-sm font-label-code text-label-code">
+<!-- Secondary Action from JSON -->
+<button class="hidden xl:flex items-center gap-1 px-3 py-1.5 border border-border-hairline text-editorial-cream hover:bg-surface-raised hover:border-editorial-cream transition-none">
+<span class="material-symbols-outlined text-sm">history_edu</span>
+        Export Run Ledger
+      </button>
+<!-- Primary Action from JSON & Prompt -->
+<button class="flex items-center gap-1.5 px-4 py-1.5 bg-primary-container text-surface-obsidian font-semibold tracking-wider hover:bg-secondary-container active:scale-[0.99] transition-none shadow-[0_0_12px_rgba(0,242,254,0.3)]" id="runBtn">
+<span class="material-symbols-outlined text-base">play_arrow</span>
+        Execute Benchmark
+      </button>
+<!-- Trailing Icon Actions from JSON -->
+<div class="flex items-center border-l border-border-hairline pl-space-sm ml-1 gap-1">
+<button class="p-1.5 text-metric-dim hover:text-primary-container hover:bg-surface-raised" title="Terminal Log">
+<span class="material-symbols-outlined text-lg">terminal</span>
+</button>
+<button class="p-1.5 text-metric-dim hover:text-primary-container hover:bg-surface-raised" title="Refresh Node Status">
+<span class="material-symbols-outlined text-lg">refresh</span>
+</button>
+<button class="p-1.5 text-metric-dim hover:text-primary-container hover:bg-surface-raised" title="Settings">
+<span class="material-symbols-outlined text-lg">settings</span>
+</button>
+</div>
+<!-- Profile Avatar -->
+<div class="ml-2 flex items-center gap-2 pl-2 border-l border-border-hairline">
+<div class="w-7 h-7 bg-surface-raised border border-border-hairline flex items-center justify-center text-primary-container font-label-code text-xs">
+          AV
+        </div>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE: SIDEBAR + CONTENT CANVAS (Split-Grid Architecture)       -->
+<!-- ========================================================================= -->
+<div class="flex flex-1 w-full overflow-hidden">
+<!-- ======================================================================= -->
+<!-- 2. LEFT PERSISTENT SIDEBAR (Exact Match to SideNavBar in JSON)          -->
+<!-- ======================================================================= -->
+<aside class="hidden md:flex flex-col justify-between h-[calc(100vh-3.5rem)] w-64 border-r border-border-hairline bg-surface-graphite p-space-md shrink-0 select-none">
+<!-- Upper Section: Node Identifier & Navigation -->
+<div class="space-y-4">
+<!-- Node Header Identity -->
+<div class="border-b border-border-hairline pb-space-sm">
+<div class="flex items-center justify-between">
+<span class="text-headline-sm font-headline-sm text-editorial-cream">CUDA LAB // v12.4</span>
+<span class="text-xs px-1.5 py-0.5 bg-primary-container/10 border border-primary-container text-primary-container font-label-code">PROD</span>
+</div>
+<div class="font-label-code text-label-code text-metric-dim mt-0.5">H100 SXM5 80GB (NODE-0)</div>
+</div>
+<!-- Navigation Tab Array (Derived from JSON tab_labels & icons) -->
+<!-- Active Tab: GPU Lab (Index 0 maps to active destination) -->
+<nav class="space-y-1">
+<!-- Item 0: GPU Lab (ACTIVE) -->
+<a class="flex items-center gap-space-sm bg-surface-raised text-primary-container border-l-2 border-border-active px-space-sm py-space-xs font-label-code text-label-code tracking-wider transition-none" href="#">
+<span class="material-symbols-outlined text-base">memory</span>
+<span>GPU Lab</span>
+</a>
+<!-- Item 1: Graph Topology -->
+<a class="flex items-center gap-space-sm text-metric-dim hover:text-on-surface hover:bg-surface-raised px-space-sm py-space-xs font-label-code text-label-code tracking-wider transition-none" href="#">
+<span class="material-symbols-outlined text-base">hub</span>
+<span>Graph Topology</span>
+</a>
+<!-- Item 2: Kernel Profiler -->
+<a class="flex items-center gap-space-sm text-metric-dim hover:text-on-surface hover:bg-surface-raised px-space-sm py-space-xs font-label-code text-label-code tracking-wider transition-none" href="#">
+<span class="material-symbols-outlined text-base">speed</span>
+<span>Kernel Profiler</span>
+</a>
+<!-- Item 3: Telemetry Stream -->
+<a class="flex items-center gap-space-sm text-metric-dim hover:text-on-surface hover:bg-surface-raised px-space-sm py-space-xs font-label-code text-label-code tracking-wider transition-none" href="#">
+<span class="material-symbols-outlined text-base">monitoring</span>
+<span>Telemetry Stream</span>
+</a>
+<!-- Item 4: Validation Engine -->
+<a class="flex items-center gap-space-sm text-metric-dim hover:text-on-surface hover:bg-surface-raised px-space-sm py-space-xs font-label-code text-label-code tracking-wider transition-none" href="#">
+<span class="material-symbols-outlined text-base">verified</span>
+<span>Validation Engine</span>
+</a>
+<!-- Item 5: Audit Dossier -->
+<a class="flex items-center gap-space-sm text-metric-dim hover:text-on-surface hover:bg-surface-raised px-space-sm py-space-xs font-label-code text-label-code tracking-wider transition-none" href="#">
+<span class="material-symbols-outlined text-base">history_edu</span>
+<span>Audit Dossier</span>
+</a>
+</nav>
+<!-- CTA Action from JSON -->
+<button class="w-full py-2 bg-surface-raised border border-border-hairline hover:border-primary-container text-editorial-cream hover:text-primary-container font-label-code text-label-code flex items-center justify-center gap-2 transition-none">
+<span class="material-symbols-outlined text-sm">build</span>
+<span>Compile Kernel</span>
+</button>
+<!-- Cluster Hardware Telemetry Widget (from Prompt Spec) -->
+<div class="border border-border-hairline bg-surface-obsidian p-2.5 space-y-2 mt-4 font-label-code text-label-code">
+<div class="flex items-center justify-between text-metric-dim border-b border-border-hairline pb-1">
+<span>SXM5-00 STATUS</span>
+<span class="text-secondary-container">ACTIVE</span>
+</div>
+<div>
+<div class="flex justify-between text-on-surface text-[10px]">
+<span>VRAM ALLOCATED</span>
+<span class="text-primary-container font-semibold">62.4 / 80.0 GB (78%)</span>
+</div>
+<div class="w-full bg-surface-raised h-1 mt-1">
+<div class="bg-primary-container h-1 w-[78%]"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 text-[10px] pt-1">
+<div>
+<span class="text-metric-dim block">CORE TEMP</span>
+<span class="text-editorial-cream">61°C (NORMAL)</span>
+</div>
+<div>
+<span class="text-metric-dim block">WARP EFF.</span>
+<span class="text-secondary-container font-semibold">98.4%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Lower Section: Operator & JSON Footer Links -->
+<div class="space-y-3 pt-3 border-t border-border-hairline">
+<!-- Operator Identity Badge -->
+<div class="p-2 bg-surface-raised border border-border-hairline">
+<div class="font-label-code text-[10px] text-metric-dim">OPERATOR CREDENTIAL</div>
+<div class="font-label-code text-xs text-editorial-cream truncate font-semibold">Dr. A. Vance // Lead Forensic Eng</div>
+<div class="font-label-code text-[9px] text-primary-container mt-0.5">CLEARANCE: LEVEL-4 TS/SCI</div>
+</div>
+<!-- Footer Links from JSON -->
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-2 text-metric-dim hover:text-on-surface font-label-code text-label-code py-1" href="#">
+<span class="material-symbols-outlined text-sm">menu_book</span>
+            Documentation
+          </a>
+<a class="flex items-center gap-2 text-metric-dim hover:text-on-surface font-label-code text-label-code py-1" href="#">
+<span class="material-symbols-outlined text-sm">code</span>
+            Terminal Log
+          </a>
+</div>
+</div>
+</aside>
+<!-- ======================================================================= -->
+<!-- CONTENT CANVAS: FORENSIC WORKSTATION                                    -->
+<!-- ======================================================================= -->
+<main class="flex-1 overflow-y-auto bg-surface-obsidian p-space-md lg:p-space-lg space-y-space-lg">
+<!-- Top Forensic Header Banner -->
+<div class="flex flex-col xl:flex-row xl:items-end justify-between gap-4 border-b border-border-hairline pb-4">
+<div>
+<div class="font-label-code text-label-code text-primary-container tracking-widest uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-xs">biotech</span>
+            Forensic Graph Analytics &amp; High-Throughput CUDA Lab
+          </div>
+<h1 class="font-display-hero text-headline-lg lg:text-[44px] text-editorial-cream font-normal tracking-tight mt-1">
+            GPU Kernel Acceleration Benchmark
+          </h1>
+<p class="font-body-md text-body-md text-metric-dim max-w-3xl mt-1">
+            Empirical comparative analysis of 3-hop directed cycle isomorphism detection in sparse transaction topologies. Evaluated on hardware-synchronized dual-Xeon and 8x NVIDIA H100 SXM5 architectures.
+          </p>
+</div>
+<!-- Operational Status Pill -->
+<div class="flex items-center gap-2 bg-surface-graphite border border-border-hairline p-2 shrink-0 self-start xl:self-auto font-label-code text-label-code">
+<span class="inline-block w-2 h-2 bg-secondary-container"></span>
+<span class="text-metric-dim">DISPATCH ENGINE:</span>
+<span class="text-editorial-cream font-medium">READY TO DISPATCH</span>
+<span class="text-border-hairline">|</span>
+<span class="text-primary-container">RUN ID #9824-B</span>
+</div>
+</div>
+<!-- ===================================================================== -->
+<!-- 3. EXPERIMENT CONFIGURATION PANEL                                      -->
+<!-- ===================================================================== -->
+<section class="bg-surface-graphite border border-border-hairline">
+<!-- Panel Header -->
+<div class="flex items-center justify-between px-space-md py-2 border-b border-border-hairline bg-surface-obsidian">
+<div class="flex items-center gap-2 font-label-code text-label-code text-editorial-cream">
+<span class="material-symbols-outlined text-sm text-primary-container">tune</span>
+<span>EXPERIMENT TOPOLOGY &amp; DISPATCH SPECIFICATION</span>
+</div>
+<span class="font-label-code text-[10px] text-metric-dim">SYS_CONF // REV_08</span>
+</div>
+<div class="p-space-md space-y-space-md">
+<!-- Implementation Tabs / Segmented Switcher -->
+<div>
+<label class="font-label-code text-label-code text-metric-dim block mb-1.5 uppercase">
+              Target Kernel Implementation
+            </label>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+<button class="p-3 text-left border border-border-hairline bg-surface-obsidian hover:border-metric-dim transition-none">
+<div class="flex items-center justify-between font-label-code text-xs text-metric-dim">
+<span>BASELINE 01</span>
+<span class="text-[9px] px-1 bg-surface-raised">CPU</span>
+</div>
+<div class="font-body-md text-editorial-cream text-xs font-medium mt-1">CPU Reference Implementation</div>
+<div class="font-label-code text-[10px] text-metric-dim mt-0.5">64-Core Dual Intel Xeon Platinum 8480+</div>
+</button>
+<button class="p-3 text-left border border-border-hairline bg-surface-obsidian hover:border-metric-dim transition-none">
+<div class="flex items-center justify-between font-label-code text-xs text-metric-dim">
+<span>BASELINE 02</span>
+<span class="text-[9px] px-1 bg-surface-raised">NAIVE</span>
+</div>
+<div class="font-body-md text-editorial-cream text-xs font-medium mt-1">Baseline CUDA (Naive Matrix)</div>
+<div class="font-label-code text-[10px] text-metric-dim mt-0.5">Global Memory Adjacency Traversal</div>
+</button>
+<button class="p-3 text-left border-2 border-border-active bg-surface-raised relative shadow-[0_0_16px_rgba(0,242,254,0.1)]">
+<div class="flex items-center justify-between font-label-code text-xs text-primary-container">
+<span class="flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 bg-primary-container"></span>
+                    ACTIVE CANDIDATE
+                  </span>
+<span class="text-[9px] px-1 bg-primary-container text-surface-obsidian font-bold">FP8 TENSOR</span>
+</div>
+<div class="font-body-md text-primary-container text-xs font-semibold mt-1">Optimized CUDA (FP8 Tensor + Warp Sort)</div>
+<div class="font-label-code text-[10px] text-editorial-cream/70 mt-0.5">Warp Bitonic Sorter + Direct Register Cache</div>
+</button>
+</div>
+</div>
+<!-- Topology & Parameter Sub-Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 border-t border-border-hairline">
+<!-- Dataset Selector -->
+<div>
+<label class="font-label-code text-[10px] text-metric-dim uppercase block mb-1">Dataset Reference</label>
+<div class="p-2 bg-surface-obsidian border border-border-hairline flex items-center justify-between font-label-code text-xs text-editorial-cream">
+<span class="truncate">FedWire-Synth-2025-Q1</span>
+<span class="text-metric-dim text-[10px]">12.4M</span>
+</div>
+</div>
+<!-- Precision Selector -->
+<div>
+<label class="font-label-code text-[10px] text-metric-dim uppercase block mb-1">Arithmetic Precision</label>
+<div class="flex gap-1">
+<button class="flex-1 py-1.5 bg-surface-raised border border-border-active text-primary-container font-label-code text-[11px] font-semibold text-center">
+                  FP8 (E4M3)
+                </button>
+<button class="flex-1 py-1.5 bg-surface-obsidian border border-border-hairline text-metric-dim font-label-code text-[11px] hover:text-on-surface text-center">
+                  FP16
+                </button>
+<button class="flex-1 py-1.5 bg-surface-obsidian border border-border-hairline text-metric-dim font-label-code text-[11px] hover:text-on-surface text-center">
+                  FP32
+                </button>
+</div>
+</div>
+<!-- Memory Mode -->
+<div>
+<label class="font-label-code text-[10px] text-metric-dim uppercase block mb-1">DMA Pipeline</label>
+<div class="p-2 bg-surface-obsidian border border-border-hairline font-label-code text-xs text-editorial-cream flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 bg-secondary-container"></span>
+<span class="truncate">GPU-Direct RDMA (Zero-Copy)</span>
+</div>
+</div>
+<!-- Topology Scale -->
+<div>
+<label class="font-label-code text-[10px] text-metric-dim uppercase block mb-1">Topology Dimensions</label>
+<div class="p-2 bg-surface-obsidian border border-border-hairline font-label-code text-xs text-editorial-cream flex justify-between">
+<span>10M Vertices</span>
+<span class="text-primary-container font-semibold">48.2M Edges</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- 4. REAL-TIME BENCHMARK TELEMETRY & KPI CARDS                          -->
+<!-- ===================================================================== -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+<!-- KPI 1 -->
+<div class="bg-surface-graphite border border-border-hairline p-space-md relative overflow-hidden group hover:border-primary-container transition-none">
+<div class="flex items-center justify-between text-metric-dim font-label-code text-[10px]">
+<span>KERNEL-ONLY LATENCY</span>
+<span class="text-primary-container px-1 bg-surface-raised border border-border-hairline">SUB-MS</span>
+</div>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-metric-display text-metric-display text-primary-container font-bold tracking-tighter">4.62</span>
+<span class="font-label-code text-xs text-primary-container">ms</span>
+</div>
+<p class="font-body-sm text-[11px] text-metric-dim mt-2 leading-tight">
+            Measured on H100 Tensor Cores; 100M Edges evaluated in-SRAM.
+          </p>
+<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-container/20 group-hover:bg-primary-container"></div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-graphite border border-border-hairline p-space-md relative overflow-hidden group hover:border-editorial-cream transition-none">
+<div class="flex items-center justify-between text-metric-dim font-label-code text-[10px]">
+<span>END-TO-END WIRE LATENCY</span>
+<span class="text-editorial-cream px-1 bg-surface-raised border border-border-hairline">FULL PATH</span>
+</div>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-metric-display text-metric-display text-editorial-cream font-bold tracking-tighter">11.84</span>
+<span class="font-label-code text-xs text-editorial-cream">ms</span>
+</div>
+<p class="font-body-sm text-[11px] text-metric-dim mt-2 leading-tight">
+            Includes PCIe/NVLink D2H sync and tensor deserialization overhead.
+          </p>
+<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-editorial-cream/20 group-hover:bg-editorial-cream"></div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-graphite border border-border-hairline p-space-md relative overflow-hidden group hover:border-secondary-container transition-none">
+<div class="flex items-center justify-between text-metric-dim font-label-code text-[10px]">
+<span>GRAPH THROUGHPUT</span>
+<span class="text-secondary-container px-1 bg-surface-raised border border-border-hairline">SATURATED</span>
+</div>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-metric-display text-metric-display text-secondary-container font-bold tracking-tighter">2.16</span>
+<span class="font-label-code text-xs text-secondary-container">B edges/s</span>
+</div>
+<p class="font-body-sm text-[11px] text-metric-dim mt-2 leading-tight">
+            1.42M tx/s sustaining 2.84 TB/s against HBM3 memory controllers.
+          </p>
+<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary-container/20 group-hover:bg-secondary-container"></div>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface-graphite border border-border-hairline p-space-md relative overflow-hidden group hover:border-border-active transition-none">
+<div class="flex items-center justify-between text-metric-dim font-label-code text-[10px]">
+<span>MEASURED SPEEDUP</span>
+<span class="text-primary-container px-1 bg-surface-raised border border-border-hairline">VS XEON</span>
+</div>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-metric-display text-metric-display text-primary-container font-bold tracking-tighter">182.4x</span>
+</div>
+<p class="font-body-sm text-[11px] text-metric-dim mt-2 leading-tight">
+            Versus 64-Thread Dual Xeon Platinum 8480+ Reference Baseline.
+          </p>
+<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-container/20 group-hover:bg-primary-container"></div>
+</div>
+<!-- KPI 5 -->
+<div class="bg-surface-graphite border border-border-hairline p-space-md relative overflow-hidden group hover:border-secondary-container transition-none">
+<div class="flex items-center justify-between text-metric-dim font-label-code text-[10px]">
+<span>CORRECTNESS &amp; PROOF</span>
+<span class="text-secondary-container px-1 bg-surface-raised border border-border-hairline">ATTESTED</span>
+</div>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-metric-display text-metric-display text-secondary-container font-bold tracking-tighter">100.00%</span>
+</div>
+<p class="font-body-sm text-[11px] text-metric-dim mt-2 leading-tight">
+            Bit-exact isomorphism hash verification + zk-SNARK attestation.
+          </p>
+<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary-container/20 group-hover:bg-secondary-container"></div>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- 5. CORE BENCHMARK VISUALIZATIONS & CHARTS (Side-by-Side Dual Engine) -->
+<!-- ===================================================================== -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-space-md">
+<!-- CHART 1: Horizontal Latency Comparison (7 Cols) -->
+<div class="lg:col-span-7 bg-surface-graphite border border-border-hairline flex flex-col justify-between">
+<div>
+<!-- Card Header -->
+<div class="flex items-center justify-between px-space-md py-2.5 border-b border-border-hairline bg-surface-obsidian">
+<div>
+<span class="font-label-code text-label-code text-editorial-cream block">BENCHMARK LATENCY COMPARISON</span>
+<span class="font-label-code text-[10px] text-metric-dim">Logarithmic Scale, Lower Execution Time is Superior</span>
+</div>
+<span class="font-label-code text-xs px-2 py-0.5 bg-surface-raised border border-border-hairline text-primary-container">
+                10M NODES // 48.2M EDGES
+              </span>
+</div>
+<!-- Chart Body -->
+<div class="p-space-md space-y-4">
+<!-- Item 1: CPU Baseline -->
+<div>
+<div class="flex justify-between font-label-code text-xs mb-1">
+<span class="text-metric-dim">Dual Xeon Platinum 8480+ (64-Thread OpenMP)</span>
+<span class="text-editorial-cream font-medium">840.20 ms <span class="text-metric-dim">[1.0x Base]</span></span>
+</div>
+<div class="w-full bg-surface-obsidian h-6 border border-border-hairline relative">
+<div class="bg-surface-container-high h-full w-[100%] flex items-center px-2 text-[10px] font-label-code text-metric-dim">
+                    BASELINE RUNTIME (840.20 ms)
+                  </div>
+</div>
+</div>
+<!-- Item 2: Apache GraphX -->
+<div>
+<div class="flex justify-between font-label-code text-xs mb-1">
+<span class="text-metric-dim">Distributed In-Memory GraphX (8-Node Cluster)</span>
+<span class="text-editorial-cream font-medium">312.40 ms <span class="text-secondary-container">[2.7x Speedup]</span></span>
+</div>
+<div class="w-full bg-surface-obsidian h-6 border border-border-hairline relative">
+<div class="bg-surface-raised h-full w-[37.1%] border-r border-border-hairline flex items-center px-2 text-[10px] font-label-code text-on-surface">
+                    312.4 ms
+                  </div>
+</div>
+</div>
+<!-- Item 3: Naive CUDA -->
+<div>
+<div class="flex justify-between font-label-code text-xs mb-1">
+<span class="text-metric-dim">Baseline CUDA (Global Memory Sparse Adjacency)</span>
+<span class="text-editorial-cream font-medium">48.60 ms <span class="text-secondary-container">[17.3x Speedup]</span></span>
+</div>
+<div class="w-full bg-surface-obsidian h-6 border border-border-hairline relative">
+<div class="bg-surface-container-highest h-full w-[5.7%] border-r border-border-active flex items-center px-1 text-[10px] font-label-code text-on-surface">
+</div>
+<span class="absolute left-[7%] top-1 font-label-code text-[11px] text-editorial-cream">48.60 ms</span>
+</div>
+</div>
+<!-- Item 4: Optimized CUDA (Featured Glowing Bar) -->
+<div class="pt-1">
+<div class="flex justify-between font-label-code text-xs mb-1">
+<span class="text-primary-container font-semibold flex items-center gap-1.5">
+<span class="w-2 h-2 bg-primary-container inline-block"></span>
+                    FraudGraph Optimized CUDA (FP8 Tensor + Warp Bitonic)
+                  </span>
+<span class="text-primary-container font-bold">4.62 ms <span class="text-secondary-container">[182.4x Speedup]</span></span>
+</div>
+<div class="w-full bg-surface-obsidian h-7 border border-primary-container relative shadow-[0_0_12px_rgba(0,242,254,0.15)]">
+<div class="bg-primary-container h-full w-[1.5%]"></div>
+<span class="absolute left-3 top-1 font-label-code text-xs font-bold text-primary-container flex items-center gap-2">
+                    4.62 ms KERNEL ONLY
+                    <span class="text-[10px] text-surface-obsidian bg-primary-container px-1 font-mono font-semibold">182.4x FASTER</span>
+</span>
+</div>
+</div>
+<!-- Latency Stack Breakdown Ribbon -->
+<div class="mt-4 pt-3 border-t border-border-hairline">
+<div class="font-label-code text-[10px] text-metric-dim mb-1 uppercase tracking-wider">
+                  Optimized Execution Pipeline Latency Breakdown (Total: 11.84 ms)
+                </div>
+<div class="flex h-5 w-full border border-border-hairline font-label-code text-[10px] leading-5 text-center">
+<div class="w-[27%] bg-surface-raised border-r border-border-hairline text-metric-dim overflow-hidden truncate">
+                    H2D DMA (3.20ms)
+                  </div>
+<div class="w-[39%] bg-primary-container text-surface-obsidian font-bold overflow-hidden truncate">
+                    CUDA KERNEL (4.62ms)
+                  </div>
+<div class="w-[34%] bg-surface-container-high border-l border-border-hairline text-on-surface overflow-hidden truncate">
+                    D2H SYNC (4.02ms)
+                  </div>
+</div>
+</div>
+</div>
+</div>
+<div class="px-space-md py-2 border-t border-border-hairline bg-surface-obsidian flex justify-between font-label-code text-[10px] text-metric-dim">
+<span>MEASURED ON H100 SXM5 80GB (PCIe Gen5 / NVLink 4.0)</span>
+<span class="text-primary-container">SAMPLE ITERATIONS: n=1,000</span>
+</div>
+</div>
+<!-- CHART 2: Graph-Size Scaling Curve SVG (5 Cols) -->
+<div class="lg:col-span-5 bg-surface-graphite border border-border-hairline flex flex-col justify-between">
+<div>
+<!-- Card Header -->
+<div class="flex items-center justify-between px-space-md py-2.5 border-b border-border-hairline bg-surface-obsidian">
+<div>
+<span class="font-label-code text-label-code text-editorial-cream block">GRAPH-SIZE SCALING PROFILE</span>
+<span class="font-label-code text-[10px] text-metric-dim">Latency vs Graph Scale (1M -&gt; 100M Nodes)</span>
+</div>
+<span class="font-label-code text-[10px] text-metric-dim">O(V + E)</span>
+</div>
+<!-- Interactive SVG Vector Chart -->
+<div class="p-space-md">
+<div class="relative w-full h-48 bg-surface-obsidian border border-border-hairline p-2">
+<!-- SVG Canvas -->
+<svg class="w-full h-full overflow-visible" viewbox="0 0 320 160">
+<!-- Grid Lines -->
+<line stroke="#21262D" stroke-dasharray="2,2" stroke-width="0.7" x1="20" x2="310" y1="10" y2="10"></line>
+<line stroke="#21262D" stroke-dasharray="2,2" stroke-width="0.7" x1="20" x2="310" y1="45" y2="45"></line>
+<line stroke="#21262D" stroke-dasharray="2,2" stroke-width="0.7" x1="20" x2="310" y1="85" y2="85"></line>
+<line stroke="#21262D" stroke-dasharray="2,2" stroke-width="0.7" x1="20" x2="310" y1="125" y2="125"></line>
+<line stroke="#21262D" stroke-width="1" x1="20" x2="310" y1="145" y2="145"></line>
+<!-- Curve 1: CPU Exponential Explosion (Red/Dim) -->
+<path d="M 30 142 Q 120 135 180 85 T 300 12" fill="none" stroke="#FF3B30" stroke-width="1.8"></path>
+<!-- CPU Data Points -->
+<circle cx="30" cy="142" fill="#FF3B30" r="2.5"></circle>
+<circle cx="120" cy="135" fill="#FF3B30" r="2.5"></circle>
+<circle cx="180" cy="85" fill="#FF3B30" r="2.5"></circle>
+<circle cx="240" cy="40" fill="#FF3B30" r="2.5"></circle>
+<circle cx="300" cy="12" fill="#FF3B30" r="2.5"></circle>
+<!-- Curve 2: Naive CUDA (Medium White) -->
+<path d="M 30 144 Q 130 138 220 115 T 300 82" fill="none" stroke="#8B949E" stroke-dasharray="3,3" stroke-width="1.2"></path>
+<!-- Curve 3: FraudGraph Optimized CUDA (Electric Cyan Flat Line) -->
+<path d="M 30 145 L 90 144 L 160 143 L 230 141 L 300 138" fill="none" stroke="#00F2FE" stroke-width="2.5"></path>
+<circle cx="30" cy="145" fill="#00F2FE" r="3"></circle>
+<circle cx="90" cy="144" fill="#00F2FE" r="3"></circle>
+<circle cx="160" cy="143" fill="#00F2FE" r="3"></circle>
+<circle cx="230" cy="141" fill="#00F2FE" r="3"></circle>
+<circle cx="300" cy="138" fill="#00F2FE" r="3.5" stroke="#05070A" stroke-width="1.5"></circle>
+<!-- Text Labels inside SVG -->
+<text fill="#484F58" font-family="Geist Mono" font-size="8" x="30" y="156">1M</text>
+<text fill="#484F58" font-family="Geist Mono" font-size="8" x="90" y="156">10M</text>
+<text fill="#484F58" font-family="Geist Mono" font-size="8" x="160" y="156">25M</text>
+<text fill="#484F58" font-family="Geist Mono" font-size="8" x="230" y="156">50M</text>
+<text fill="#484F58" font-family="Geist Mono" font-size="8" x="290" y="156">100M</text>
+<text fill="#FF3B30" font-family="Geist Mono" font-size="8" font-weight="bold" x="240" y="24">CPU: 4.8 sec</text>
+<text fill="#00F2FE" font-family="Geist Mono" font-size="9" font-weight="bold" x="220" y="132">CUDA: 38.4 ms</text>
+</svg>
+</div>
+<!-- Curve Legend -->
+<div class="grid grid-cols-3 gap-2 mt-3 font-label-code text-[10px]">
+<div class="flex items-center gap-1.5 text-metric-dim">
+<span class="w-2.5 h-0.5 bg-alert-critical inline-block"></span>
+<span>CPU Xeon (Exp)</span>
+</div>
+<div class="flex items-center gap-1.5 text-metric-dim">
+<span class="w-2.5 h-0.5 bg-metric-dim inline-block"></span>
+<span>Naive CUDA</span>
+</div>
+<div class="flex items-center gap-1.5 text-primary-container font-semibold">
+<span class="w-2.5 h-0.5 bg-primary-container inline-block"></span>
+<span>FP8 Warp Core</span>
+</div>
+</div>
+</div>
+</div>
+<div class="px-space-md py-2 border-t border-border-hairline bg-surface-obsidian flex justify-between font-label-code text-[10px] text-metric-dim">
+<span>SECONDARY AXIS: HBM3 FOOTPRINT 4.2 GB @ 100M NODES</span>
+<span class="text-secondary-container">NO SPILLOVER</span>
+</div>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- 6. KERNEL OPTIMIZATION FORENSIC BREAKDOWN TABLE                        -->
+<!-- ===================================================================== -->
+<section class="bg-surface-graphite border border-border-hairline">
+<!-- Section Header -->
+<div class="flex items-center justify-between px-space-md py-2.5 border-b border-border-hairline bg-surface-obsidian">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-primary-container">developer_board</span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream">Forensic Kernel Architecture Breakdown</h2>
+</div>
+<span class="font-label-code text-label-code text-metric-dim">COMPILER: NVCC v12.4.131 // ARCH: SM_90A</span>
+</div>
+<!-- Analytical Matrix Grid -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse font-label-code text-label-code">
+<thead>
+<tr class="border-b border-border-hairline bg-surface-obsidian/70 text-metric-dim uppercase text-[10px] tracking-wider">
+<th class="py-2.5 px-4 font-medium">Routine / Execution Phase</th>
+<th class="py-2.5 px-4 font-medium">Memory Access Hierarchy</th>
+<th class="py-2.5 px-4 font-medium text-right">Arithmetic Intensity</th>
+<th class="py-2.5 px-4 font-medium text-right">Active Occupancy</th>
+<th class="py-2.5 px-4 font-medium text-right">Speedup</th>
+<th class="py-2.5 px-4 font-medium text-center">Hardware Attestation</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-raised font-body-sm text-xs">
+<!-- Row 1 -->
+<tr class="hover:bg-primary-container/[0.02] transition-none group">
+<td class="py-3 px-4 font-label-code text-editorial-cream group-hover:text-primary-container font-semibold">
+                  01. Adjacency Matrix CSR Fetch
+                </td>
+<td class="py-3 px-4 text-metric-dim font-label-code text-[11px]">
+                  Shared Memory Tiling (228 KB/SM) + L2 Cache Bypass
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-on-surface">
+                  14.2 FLOP/Byte
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-secondary-container">
+                  96.8%
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-primary-container font-semibold">
+                  14.8x
+                </td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 bg-secondary-container/10 border border-secondary-container text-secondary-container text-[10px] font-label-code">
+                    VERIFIED
+                  </span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-primary-container/[0.02] transition-none group">
+<td class="py-3 px-4 font-label-code text-editorial-cream group-hover:text-primary-container font-semibold">
+                  02. 3-Hop Cycle Isomorphism
+                </td>
+<td class="py-3 px-4 text-metric-dim font-label-code text-[11px]">
+                  Tensor Core Matrix Registers (FP8 MMA instructions)
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-on-surface">
+                  84.6 FLOP/Byte
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-secondary-container">
+                  94.2%
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-primary-container font-semibold">
+                  218.4x
+                </td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 bg-secondary-container/10 border border-secondary-container text-secondary-container text-[10px] font-label-code">
+                    VERIFIED
+                  </span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-primary-container/[0.02] transition-none group">
+<td class="py-3 px-4 font-label-code text-editorial-cream group-hover:text-primary-container font-semibold">
+                  03. Warp-Level Bitonic Sort
+                </td>
+<td class="py-3 px-4 text-metric-dim font-label-code text-[11px]">
+                  Zero-Memory In-Register Warp Shuffle (<code class="text-primary-container">__shfl_xor_sync</code>)
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-on-surface">
+                  128.0 FLOP/Byte
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-secondary-container">
+                  98.9%
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-primary-container font-semibold">
+                  89.2x
+                </td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 bg-secondary-container/10 border border-secondary-container text-secondary-container text-[10px] font-label-code">
+                    VERIFIED
+                  </span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-primary-container/[0.02] transition-none group">
+<td class="py-3 px-4 font-label-code text-editorial-cream group-hover:text-primary-container font-semibold">
+                  04. Subgraph Hash Attestation
+                </td>
+<td class="py-3 px-4 text-metric-dim font-label-code text-[11px]">
+                  Direct HBM3 Ring Buffer with Lockless Atomic CAS
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-on-surface">
+                  32.1 FLOP/Byte
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-secondary-container">
+                  91.5%
+                </td>
+<td class="py-3 px-4 text-right font-label-code text-primary-container font-semibold">
+                  42.6x
+                </td>
+<td class="py-3 px-4 text-center">
+<span class="px-2 py-0.5 bg-secondary-container/10 border border-secondary-container text-secondary-container text-[10px] font-label-code">
+                    VERIFIED
+                  </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- 7. LIVE EXECUTION STATE & GPU-UNAVAILABLE DIAGNOSTIC SWITCHER          -->
+<!-- ===================================================================== -->
+<section class="border border-border-hairline bg-surface-graphite">
+<!-- Diagnostic Header with Warning Banner -->
+<div class="p-space-md border-b border-border-hairline bg-surface-obsidian flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-alert-critical text-base">emergency_home</span>
+<span class="font-label-code text-xs text-editorial-cream font-medium uppercase tracking-wider">
+              Diagnostic Hardware State Harness:
+            </span>
+<span class="font-body-sm text-xs text-metric-dim">
+              Simulate operational conditions &amp; verify hardware fallback handling.
+            </span>
+</div>
+<!-- Strict Compliance Banner -->
+<div class="px-2 py-1 bg-alert-critical/10 border border-alert-critical text-alert-critical font-label-code text-[10px]">
+            MEASURED DATA ONLY: Do not simulate successful CUDA execution without connected hardware.
+          </div>
+</div>
+<!-- Interactive Diagnostic State Buttons -->
+<div class="p-space-md grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 font-label-code text-label-code">
+<!-- Mode 1: Measured Live (Active) -->
+<button class="p-3 bg-surface-raised border border-border-active text-left transition-none">
+<div class="flex items-center justify-between">
+<span class="text-primary-container font-semibold">STATE: ACTIVE H100</span>
+<span class="w-2 h-2 bg-primary-container"></span>
+</div>
+<div class="text-[11px] text-editorial-cream mt-1 font-medium">Active H100 SXM5 Cluster</div>
+<div class="text-[10px] text-metric-dim mt-0.5">Physical hardware online. 0 errors.</div>
+</button>
+<!-- Mode 2: Simulating -->
+<button class="p-3 bg-surface-obsidian border border-border-hairline text-left hover:border-metric-dim transition-none">
+<div class="flex items-center justify-between">
+<span class="text-metric-dim font-medium">STATE: SIMULATING</span>
+<span class="w-2 h-2 bg-secondary-container animate-pulse"></span>
+</div>
+<div class="text-[11px] text-editorial-cream mt-1 font-medium">Running Benchmark (68%)</div>
+<div class="text-[10px] text-metric-dim mt-0.5">Iterating warm-up runs (n=680/1000)</div>
+</button>
+<!-- Mode 3: Hardware Fallback / GPU Unavailable -->
+<button class="p-3 bg-surface-obsidian border border-border-hairline text-left hover:border-alert-critical transition-none">
+<div class="flex items-center justify-between">
+<span class="text-alert-critical font-medium">STATE: UNAVAILABLE</span>
+<span class="material-symbols-outlined text-alert-critical text-xs">warning</span>
+</div>
+<div class="text-[11px] text-alert-critical mt-1 font-medium">GPU UNAVAILABLE</div>
+<div class="text-[10px] text-metric-dim mt-0.5">No compatible CUDA device detected.</div>
+</button>
+<!-- Mode 4: OOM Error State -->
+<button class="p-3 bg-surface-obsidian border border-border-hairline text-left hover:border-alert-critical transition-none">
+<div class="flex items-center justify-between">
+<span class="text-alert-critical font-medium">STATE: OOM EXCEPTION</span>
+<span class="material-symbols-outlined text-alert-critical text-xs">error</span>
+</div>
+<div class="text-[11px] text-alert-critical mt-1 font-medium">Kernel OOM Error State</div>
+<div class="text-[10px] text-metric-dim mt-0.5">cudaErrorMemoryAllocation in sm_90</div>
+</button>
+</div>
+</section>
+<!-- ===================================================================== -->
+<!-- 8. EXPERIMENT HISTORY LEDGER & EXPORT TABLE                           -->
+<!-- ===================================================================== -->
+<section class="bg-surface-graphite border border-border-hairline">
+<!-- Header -->
+<div class="flex items-center justify-between px-space-md py-2.5 border-b border-border-hairline bg-surface-obsidian">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-editorial-cream">history</span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream">Recent Benchmark Runs &amp; Cryptographic Dossier</h2>
+</div>
+<div class="flex items-center gap-2 font-label-code text-[11px]">
+<button class="px-2 py-1 bg-surface-raised border border-border-hairline text-editorial-cream hover:text-primary-container">
+              Download CSV
+            </button>
+<button class="px-2 py-1 bg-surface-raised border border-border-hairline text-editorial-cream hover:text-primary-container">
+              Export PTX Artifacts
+            </button>
+</div>
+</div>
+<!-- Ledger Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse font-label-code text-label-code">
+<thead>
+<tr class="border-b border-border-hairline bg-surface-obsidian/70 text-metric-dim uppercase text-[10px] tracking-wider">
+<th class="py-2.5 px-4 font-medium">Run Hash / ID</th>
+<th class="py-2.5 px-4 font-medium">Kernel Revision</th>
+<th class="py-2.5 px-4 font-medium">Scale (Nodes / Edges)</th>
+<th class="py-2.5 px-4 font-medium text-right">Kernel Latency</th>
+<th class="py-2.5 px-4 font-medium text-right">Speedup</th>
+<th class="py-2.5 px-4 font-medium text-center">Correctness Proof</th>
+<th class="py-2.5 px-4 font-medium text-right">Ledger Artifact</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-raised font-body-sm text-xs">
+<!-- Ledger Row 1 -->
+<tr class="hover:bg-surface-raised transition-none">
+<td class="py-2.5 px-4 font-label-code text-primary-container font-medium">
+                  #RUN-09824-B
+                </td>
+<td class="py-2.5 px-4 font-label-code text-editorial-cream">
+                  fg_cycle_v4.2_fp8
+                </td>
+<td class="py-2.5 px-4 font-label-code text-metric-dim">
+                  10,000,000 / 48.2M
+                </td>
+<td class="py-2.5 px-4 text-right font-label-code text-primary-container font-semibold">
+                  4.62 ms
+                </td>
+<td class="py-2.5 px-4 text-right font-label-code text-secondary-container">
+                  182.4x
+                </td>
+<td class="py-2.5 px-4 text-center">
+<span class="text-secondary-container font-label-code text-[11px]">
+                    BIT-EXACT [zk-SNARK: 0x8a91]
+                  </span>
+</td>
+<td class="py-2.5 px-4 text-right">
+<a class="text-primary-container hover:underline font-label-code text-xs" href="#">
+                    .PTX / .JSON
+                  </a>
+</td>
+</tr>
+<!-- Ledger Row 2 -->
+<tr class="hover:bg-surface-raised transition-none">
+<td class="py-2.5 px-4 font-label-code text-editorial-cream font-medium">
+                  #RUN-09823-A
+                </td>
+<td class="py-2.5 px-4 font-label-code text-on-surface">
+                  fg_cycle_v4.1_fp16
+                </td>
+<td class="py-2.5 px-4 font-label-code text-metric-dim">
+                  10,000,000 / 48.2M
+                </td>
+<td class="py-2.5 px-4 text-right font-label-code text-on-surface">
+                  7.84 ms
+                </td>
+<td class="py-2.5 px-4 text-right font-label-code text-secondary-container">
+                  107.1x
+                </td>
+<td class="py-2.5 px-4 text-center">
+<span class="text-secondary-container font-label-code text-[11px]">
+                    BIT-EXACT [zk-SNARK: 0x3f12]
+                  </span>
+</td>
+<td class="py-2.5 px-4 text-right">
+<a class="text-primary-container hover:underline font-label-code text-xs" href="#">
+                    .PTX / .JSON
+                  </a>
+</td>
+</tr>
+<!-- Ledger Row 3 -->
+<tr class="hover:bg-surface-raised transition-none">
+<td class="py-2.5 px-4 font-label-code text-editorial-cream font-medium">
+                  #RUN-09822-N
+                </td>
+<td class="py-2.5 px-4 font-label-code text-on-surface">
+                  cuda_naive_adj_v1.0
+                </td>
+<td class="py-2.5 px-4 font-label-code text-metric-dim">
+                  10,000,000 / 48.2M
+                </td>
+<td class="py-2.5 px-4 text-right font-label-code text-on-surface">
+                  48.60 ms
+                </td>
+<td class="py-2.5 px-4 text-right font-label-code text-metric-dim">
+                  17.3x
+                </td>
+<td class="py-2.5 px-4 text-center">
+<span class="text-secondary-container font-label-code text-[11px]">
+                    BIT-EXACT [MATCH]
+                  </span>
+</td>
+<td class="py-2.5 px-4 text-right">
+<a class="text-primary-container hover:underline font-label-code text-xs" href="#">
+                    .PTX / .JSON
+                  </a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+</div>
+<!-- Micro-interaction script for dispatch feedback -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const runBtn = document.getElementById('runBtn');
+      if (runBtn) {
+        runBtn.addEventListener('click', () => {
+          const originalText = runBtn.innerHTML;
+          runBtn.innerHTML = `
+            <span class="material-symbols-outlined text-base animate-spin">refresh</span>
+            DISPATCHING WARPS...
+          `;
+          runBtn.classList.add('bg-secondary-container');
+          setTimeout(() => {
+            runBtn.innerHTML = originalText;
+            runBtn.classList.remove('bg-secondary-container');
+          }, 1200);
+        });
+      }
+    });
+  </script>
+</body></html>

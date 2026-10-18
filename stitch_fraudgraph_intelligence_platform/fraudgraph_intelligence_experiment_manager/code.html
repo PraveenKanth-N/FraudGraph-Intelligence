@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FraudGraph Intelligence — Experiment Manager</title>
+<!-- Material Symbols Outlined font -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&amp;family=Geist:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-highest": "#32353a",
+            "surface-obsidian": "#05070A",
+            "secondary-fixed-dim": "#00e0b1",
+            "on-error-container": "#ffdad6",
+            "border-active": "#00F2FE",
+            "tertiary": "#faf7f1",
+            "on-secondary-fixed": "#002117",
+            "inverse-surface": "#e1e2e8",
+            "on-surface-variant": "#b9cacb",
+            "on-tertiary-fixed-variant": "#474743",
+            "metric-dim": "#484F58",
+            "tertiary-fixed-dim": "#c9c6c1",
+            "on-tertiary-fixed": "#1c1c18",
+            "outline-variant": "#3a494b",
+            "on-primary-container": "#006a70",
+            "surface-variant": "#32353a",
+            "on-primary": "#00373a",
+            "background": "#111418",
+            "alert-critical": "#FF3B30",
+            "surface-container-lowest": "#0b0e12",
+            "on-secondary": "#00382a",
+            "primary-fixed-dim": "#00dce6",
+            "on-background": "#e1e2e8",
+            "on-primary-fixed-variant": "#004f53",
+            "on-surface": "#e1e2e8",
+            "tertiary-fixed": "#e5e2dc",
+            "border-hairline": "#21262D",
+            "surface-dim": "#111418",
+            "secondary": "#7dffd5",
+            "error-container": "#93000a",
+            "outline": "#849495",
+            "primary-fixed": "#6ff6ff",
+            "surface-container-low": "#191c20",
+            "surface": "#111418",
+            "on-secondary-fixed-variant": "#00513e",
+            "surface-raised": "#161B22",
+            "error": "#ffb4ab",
+            "inverse-primary": "#00696f",
+            "on-primary-fixed": "#002022",
+            "secondary-container": "#01e7b6",
+            "secondary-fixed": "#41fecb",
+            "primary": "#e0fdff",
+            "on-secondary-container": "#00624c",
+            "inverse-on-surface": "#2e3135",
+            "primary-container": "#00f2fe",
+            "surface-container-high": "#272a2f",
+            "surface-bright": "#36393e",
+            "on-error": "#690005",
+            "surface-tint": "#00dce6",
+            "surface-graphite": "#0D1117",
+            "tertiary-container": "#dedbd5",
+            "on-tertiary-container": "#61605b",
+            "editorial-cream": "#F8F7F4",
+            "surface-container": "#1d2024",
+            "on-tertiary": "#31302d"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2.5rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem",
+            "margin": "2.5rem",
+            "space-sm": "0.5rem",
+            "margin-mobile": "1rem",
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "gutter": "1.5rem"
+          },
+          "fontFamily": {
+            "display-hero-mobile": ["Newsreader"],
+            "headline-lg": ["Newsreader"],
+            "body-md": ["Geist"],
+            "headline-md": ["Newsreader"],
+            "label-code": ["Geist Mono", "Geist"],
+            "display-hero": ["Newsreader"],
+            "headline-sm": ["Newsreader"],
+            "body-lg": ["Geist"],
+            "headline-lg-mobile": ["Newsreader"],
+            "body-sm": ["Geist"],
+            "metric-display": ["Geist Mono", "Geist"]
+          },
+          "fontSize": {
+            "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-md": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "label-code": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "500" }],
+            "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0", "fontWeight": "500" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "metric-display": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Absolute crisp corners & custom scrollbars for HPC workstation feel */
+    * {
+      border-radius: 0 !important;
+      box-sizing: border-box;
+    }
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #05070A;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #21262D;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00F2FE;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    .glow-cyan-rim {
+      box-shadow: 0 0 0 1px #00F2FE, 0 8px 24px -4px rgba(0, 242, 254, 0.15);
+    }
+  </style>
+</head>
+<body class="bg-surface-obsidian text-on-surface antialiased selection:bg-primary-container selection:text-surface-obsidian min-h-screen flex flex-col font-body-md overflow-x-hidden">
+<!-- ================= TOP APP BAR (Shared Component JSON Blueprint) ================= -->
+<header class="fixed top-0 left-0 w-full z-50 rounded-none bg-surface-graphite/85 dark:bg-surface-graphite/85 backdrop-blur-md border-b border-border-hairline shadow-none flex justify-between items-center px-space-lg md:px-margin max-w-full h-14">
+<!-- Brand Anchor -->
+<div class="flex items-center gap-space-lg">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 bg-primary-container inline-block"></span>
+<span class="text-headline-sm font-headline-sm tracking-tight text-editorial-cream uppercase font-bold">FraudGraph Intelligence</span>
+</div>
+<div class="hidden lg:flex items-center gap-2 border-l border-border-hairline pl-4 text-label-code font-label-code text-metric-dim">
+<span>ENGINE // VERIFIED-REPRODUCIBILITY</span>
+<span class="text-secondary-fixed">● ACTIVE</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden xl:flex items-center gap-6 text-label-code font-label-code">
+<a class="text-outline hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#">Explorer</a>
+<a class="text-outline hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#">GPU Laboratory</a>
+<a class="text-outline hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#">Architecture</a>
+<a class="text-primary-container border-b-2 border-border-active py-1 tracking-wider uppercase" href="#">Benchmarks</a>
+<a class="text-outline hover:text-on-surface py-1 tracking-wider uppercase transition-none" href="#">Intelligence Briefs</a>
+</nav>
+<!-- Trailing Actions & Icons -->
+<div class="flex items-center gap-3">
+<div class="hidden sm:flex items-center gap-1.5 text-label-code font-label-code text-outline border border-border-hairline px-2.5 py-1 bg-surface-obsidian">
+<span class="material-symbols-outlined text-primary-container">terminal</span>
+<span class="text-editorial-cream">CUDA 12.4</span>
+<span class="text-metric-dim">|</span>
+<span class="text-secondary-fixed">sm_90a</span>
+</div>
+<div class="flex items-center gap-1 text-metric-dim">
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised transition-none" title="Cluster Telemetry">
+<span class="material-symbols-outlined">analytics</span>
+</button>
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised transition-none relative" title="Alerts">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-1.5 h-1.5 bg-secondary-fixed"></span>
+</button>
+<button class="p-1.5 hover:text-primary-container hover:bg-surface-raised transition-none" title="Engine Settings">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="h-4 w-px bg-border-hairline mx-1"></div>
+<button class="hidden md:inline-flex items-center px-3 py-1.5 text-label-code font-label-code uppercase tracking-wider text-editorial-cream border border-border-hairline hover:border-editorial-cream bg-transparent transition-none active:scale-[0.99]">
+        Forensic Docs
+      </button>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 text-label-code font-label-code uppercase tracking-wider bg-primary-container text-surface-obsidian font-semibold hover:bg-secondary-fixed transition-none active:scale-[0.99]">
+<span class="material-symbols-outlined">rocket_launch</span>
+        Deploy Cluster
+      </button>
+</div>
+</header>
+<!-- ================= MAIN LAYOUT WRAPPER ================= -->
+<div class="flex pt-14 min-h-[calc(100vh-3.5rem)]">
+<!-- ================= SIDEBAR (Shared Component JSON Blueprint) ================= -->
+<aside class="fixed top-14 left-0 h-[calc(100vh-3.5rem)] w-64 rounded-none z-40 bg-surface-graphite border-r border-border-hairline flex flex-col justify-between p-space-sm select-none">
+<!-- Cluster Node Shield Header -->
+<div class="space-y-3">
+<div class="p-space-sm border border-border-hairline bg-surface-obsidian">
+<div class="flex items-start gap-space-sm">
+<div class="p-1.5 bg-surface-raised border border-border-hairline text-primary-container">
+<span class="material-symbols-outlined fill">shield</span>
+</div>
+<div class="overflow-hidden">
+<div class="text-label-code font-label-code uppercase text-editorial-cream font-bold truncate">FraudGraph Core</div>
+<div class="text-[10px] text-secondary-fixed font-label-code flex items-center gap-1 mt-0.5 truncate">
+<span class="w-1.5 h-1.5 bg-secondary-fixed inline-block animate-pulse"></span>
+                H100-SXM5 Cluster: 8/8 Online
+              </div>
+<div class="text-[9px] text-metric-dim font-label-code tracking-wider mt-0.5">LATENCY: 0.12ms // RDMA ACTIVE</div>
+</div>
+</div>
+</div>
+<!-- Execute Pipeline CTA -->
+<button class="w-full py-2 px-space-md bg-surface-raised hover:bg-surface-container border border-border-hairline hover:border-border-active text-editorial-cream text-label-code font-label-code tracking-wider uppercase flex items-center justify-between transition-none active:scale-[0.99]">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary-container text-sm">play_arrow</span>
+            Execute Pipeline
+          </span>
+<span class="text-[9px] text-metric-dim border border-border-hairline px-1">⌘E</span>
+</button>
+<!-- Main Navigation Items (Tab list: 8 items from JSON) -->
+<nav class="space-y-0.5 pt-1">
+<!-- Overview -->
+<a class="text-outline hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Overview</span>
+</a>
+<!-- Graph Explorer -->
+<a class="text-outline hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span>Graph Explorer</span>
+</a>
+<!-- Transactions -->
+<a class="text-outline hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span>Transactions</span>
+</a>
+<!-- GPU Lab -->
+<a class="text-outline hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined">memory</span>
+<span>GPU Lab</span>
+</a>
+<!-- Experiments (ACTIVE per prompt requirements) -->
+<a class="bg-surface-raised text-primary-container border-l-2 border-border-active flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase" href="#">
+<span class="material-symbols-outlined text-primary-container">science</span>
+<span class="font-bold">Experiments</span>
+<span class="ml-auto text-[9px] bg-primary-container/10 border border-primary-container/30 px-1 text-primary-container font-mono">ACTIVE</span>
+</a>
+<!-- Evaluation -->
+<a class="text-outline hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined">rule</span>
+<span>Evaluation</span>
+</a>
+<!-- Reports -->
+<a class="text-outline hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span>Reports</span>
+</a>
+<!-- System Health -->
+<a class="text-outline hover:text-on-surface hover:bg-surface-raised flex items-center gap-space-sm px-space-md py-space-sm text-label-code font-label-code tracking-wider uppercase transition-none" href="#">
+<span class="material-symbols-outlined">vital_signs</span>
+<span>System Health</span>
+</a>
+</nav>
+</div>
+<!-- Footer navigation & Operator Credentials -->
+<div class="space-y-2 border-t border-border-hairline pt-3">
+<div class="space-y-0.5">
+<a class="text-outline hover:text-on-surface flex items-center gap-space-sm px-space-md py-1 text-label-code font-label-code tracking-wider uppercase" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span>Documentation</span>
+</a>
+<a class="text-outline hover:text-on-surface flex items-center gap-space-sm px-space-md py-1 text-label-code font-label-code tracking-wider uppercase" href="#">
+<span class="material-symbols-outlined">dns</span>
+<span>Cluster Status</span>
+</a>
+<a class="text-outline hover:text-on-surface flex items-center gap-space-sm px-space-md py-1 text-label-code font-label-code tracking-wider uppercase" href="#">
+<span class="material-symbols-outlined">tune</span>
+<span>Preferences</span>
+</a>
+</div>
+<div class="p-space-sm bg-surface-obsidian border border-border-hairline">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 bg-surface-raised border border-border-hairline flex items-center justify-center text-[10px] font-mono text-primary-container">
+                0x
+              </div>
+<div class="overflow-hidden">
+<div class="text-[11px] font-label-code text-editorial-cream truncate font-semibold">k.valenti@sec.fg</div>
+<div class="text-[9px] font-label-code text-metric-dim truncate">ROLE: Lead Kernel Arch</div>
+</div>
+</div>
+<span class="w-1.5 h-1.5 bg-secondary-fixed"></span>
+</div>
+</div>
+</div>
+</aside>
+<!-- ================= MAIN WORKSTATION CANVAS (Offset by sidebar w-64) ================= -->
+<main class="ml-64 flex-1 flex flex-col bg-surface-obsidian min-w-0 pb-16">
+<!-- ================= TOP COMMAND BAR & CONTEXT RIBBON ================= -->
+<section class="border-b border-border-hairline bg-surface-graphite px-space-lg py-2.5 flex flex-wrap items-center justify-between gap-3">
+<!-- Breadcrumbs & Pipeline Status -->
+<div class="flex flex-wrap items-center gap-2 text-label-code font-label-code text-metric-dim">
+<span class="text-outline">SYSTEM</span>
+<span>/</span>
+<span class="text-outline">GNN PIPELINE</span>
+<span>/</span>
+<span class="text-primary-container font-semibold">EXPERIMENT REPRODUCIBILITY ENGINE</span>
+<span class="mx-2 text-border-hairline">|</span>
+<div class="flex items-center gap-1.5 bg-surface-obsidian px-2 py-0.5 border border-border-hairline text-editorial-cream">
+<span class="text-metric-dim">DATASET:</span>
+<span class="text-editorial-cream font-mono">FedWire-Synthetic-2025-Q1</span>
+<span class="text-secondary-fixed font-mono">(12.4M records)</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-obsidian px-2 py-0.5 border border-border-hairline">
+<span class="text-metric-dim">HW:</span>
+<span class="text-editorial-cream font-mono">8x NVIDIA H100 SXM5 80GB</span>
+<span class="w-1.5 h-1.5 bg-secondary-fixed inline-block"></span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-2">
+<button class="inline-flex items-center gap-1 px-2.5 py-1 text-label-code font-label-code uppercase border border-border-hairline bg-surface-raised text-editorial-cream hover:border-editorial-cream transition-none active:scale-[0.99]">
+<span class="material-symbols-outlined text-sm">download</span>
+            Export Ledger (JSON/CSV)
+          </button>
+<button class="inline-flex items-center gap-1 px-2.5 py-1 text-label-code font-label-code uppercase border border-border-hairline bg-surface-raised text-editorial-cream hover:border-border-active transition-none active:scale-[0.99]">
+<span class="material-symbols-outlined text-sm text-secondary-fixed">layers</span>
+            Batch Dispatch (3)
+          </button>
+<button class="inline-flex items-center gap-1 px-3 py-1 text-label-code font-label-code uppercase bg-primary-container text-surface-obsidian font-semibold hover:bg-secondary-fixed transition-none active:scale-[0.99]">
+<span class="material-symbols-outlined text-sm">add</span>
+            + New Experiment Draft
+          </button>
+</div>
+</section>
+<!-- ================= SECTION 1: KPI TELEMETRY & RUNTIME STATE ================= -->
+<section class="border-b border-border-hairline bg-surface-obsidian grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-border-hairline">
+<!-- Metric 1: Total Dispatched Runs -->
+<div class="p-space-md flex flex-col justify-between bg-surface-graphite/40">
+<div class="flex items-center justify-between text-label-code font-label-code text-metric-dim uppercase">
+<span>Total Dispatched Runs</span>
+<span class="text-[10px] text-outline font-mono">ALL-TIME // 2025</span>
+</div>
+<div class="my-2 flex items-baseline gap-2">
+<span class="text-metric-display font-metric-display text-editorial-cream">148</span>
+<span class="text-label-code font-label-code text-secondary-fixed">CONFIRMED</span>
+</div>
+<div class="text-[11px] font-label-code text-metric-dim flex items-center justify-between border-t border-border-hairline/60 pt-1.5">
+<span><strong class="text-primary-container">42</strong> FP8 Tensor</span>
+<span><strong class="text-on-surface">68</strong> cuGraph</span>
+<span><strong class="text-outline">38</strong> CPU Base</span>
+</div>
+</div>
+<!-- Metric 2: Active Queue -->
+<div class="p-space-md flex flex-col justify-between bg-surface-graphite/40">
+<div class="flex items-center justify-between text-label-code font-label-code text-metric-dim uppercase">
+<span class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 bg-amber-400 animate-pulse"></span>
+              Active Queue Status
+            </span>
+<span class="text-[10px] text-amber-400 font-mono">1 RUNNING</span>
+</div>
+<div class="my-2 flex items-baseline justify-between">
+<div>
+<span class="text-headline-md font-metric-display text-amber-300">EXP-4112</span>
+<span class="text-body-sm font-label-code text-metric-dim ml-1">@ 74% Complete</span>
+</div>
+<span class="text-label-code font-label-code bg-amber-400/10 border border-amber-400/30 text-amber-300 px-1.5 py-0.5">38/50 REPS</span>
+</div>
+<!-- Progress bar -->
+<div class="w-full bg-surface-obsidian h-1 border border-border-hairline overflow-hidden">
+<div class="bg-amber-400 h-full w-[74%]"></div>
+</div>
+<div class="text-[11px] font-label-code text-metric-dim pt-1 flex justify-between">
+<span>Queue Backlog: <strong>2 experiments waiting</strong></span>
+<span>EST: 44.8s</span>
+</div>
+</div>
+<!-- Metric 3: Mean FP8 Speedup -->
+<div class="p-space-md flex flex-col justify-between bg-surface-graphite/40">
+<div class="flex items-center justify-between text-label-code font-label-code text-metric-dim uppercase">
+<span>Mean FP8 Acceleration</span>
+<span class="text-[10px] text-secondary-fixed font-mono">+18,320%</span>
+</div>
+<div class="my-2 flex items-baseline gap-2">
+<span class="text-metric-display font-metric-display text-primary-container">184.2x</span>
+<span class="text-label-code font-label-code text-metric-dim">vs Dual Xeon 8480+</span>
+</div>
+<div class="text-[11px] font-label-code text-metric-dim border-t border-border-hairline/60 pt-1.5 flex items-center justify-between">
+<span>Kernel: <span class="text-editorial-cream">FP8-Warp-Bitonic-Iso</span></span>
+<span class="text-secondary-fixed">p-val &lt; 0.0001</span>
+</div>
+</div>
+<!-- Metric 4: Reproducibility Proof -->
+<div class="p-space-md flex flex-col justify-between bg-surface-graphite/40">
+<div class="flex items-center justify-between text-label-code font-label-code text-metric-dim uppercase">
+<span>Reproducibility Attestation</span>
+<span class="text-[10px] text-secondary-fixed border border-secondary-fixed/30 bg-secondary-fixed/10 px-1">VERIFIED</span>
+</div>
+<div class="my-2">
+<div class="text-body-md font-body-md text-editorial-cream font-medium">Bit-Exact Attested (zk-SNARK)</div>
+<div class="text-label-code font-label-code text-primary-container font-mono text-[11px] truncate mt-0.5">sha256:0x89f41b2c4d9a...ee092a</div>
+</div>
+<div class="text-[11px] font-label-code text-metric-dim border-t border-border-hairline/60 pt-1.5 flex items-center justify-between">
+<span>Zero-drift determinism</span>
+<span class="text-editorial-cream font-mono">100.00%</span>
+</div>
+</div>
+</section>
+<!-- ================= SECTION 2: WORKSPACE (SPLIT 45% / 55%) ================= -->
+<div class="flex-1 grid grid-cols-1 xl:grid-cols-12 min-h-0 border-b border-border-hairline">
+<!-- ================= LEFT PANE: EXPERIMENT BUILDER (45% -> 5 cols xl) ================= -->
+<div class="xl:col-span-5 border-b xl:border-b-0 xl:border-r border-border-hairline bg-surface-graphite flex flex-col">
+<!-- Pane Header -->
+<div class="px-space-md py-2.5 border-b border-border-hairline bg-surface-obsidian flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-primary-container"></span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream uppercase tracking-tight text-base">Experiment Configuration &amp; Dispatch Specification</h2>
+</div>
+<span class="text-label-code font-label-code bg-surface-raised border border-border-hairline text-secondary-fixed px-2 py-0.5 font-mono">
+              SPEC-V2.8
+            </span>
+</div>
+<!-- Configuration Form Scroll Area -->
+<div class="p-space-md space-y-5 overflow-y-auto max-h-[calc(100vh-17rem)]">
+<!-- Metadata Box -->
+<div class="border border-border-hairline bg-surface-obsidian p-space-md space-y-3">
+<div class="flex items-start justify-between gap-2">
+<div>
+<div class="text-[10px] font-label-code text-metric-dim uppercase">Designation &amp; Run Signature</div>
+<div class="text-body-lg font-headline-sm text-editorial-cream font-medium mt-0.5">EXP-4114: FP8-Bitonic-Iso-Warp16</div>
+</div>
+<div class="px-2 py-1 bg-surface-raised border border-border-active/40 text-primary-container text-label-code font-label-code flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 bg-primary-container animate-pulse"></span>
+                  DRAFT // READY TO DISPATCH
+                </div>
+</div>
+<!-- State Tag Indicators -->
+<div class="flex items-center gap-1 pt-1 text-[10px] font-label-code">
+<span class="px-1.5 py-0.5 bg-primary-container text-surface-obsidian font-bold">DRAFT</span>
+<span class="px-1.5 py-0.5 bg-surface-raised text-metric-dim border border-border-hairline">QUEUED</span>
+<span class="px-1.5 py-0.5 bg-surface-raised text-metric-dim border border-border-hairline">RUNNING</span>
+<span class="px-1.5 py-0.5 bg-surface-raised text-metric-dim border border-border-hairline">COMPLETED</span>
+<span class="px-1.5 py-0.5 bg-surface-raised text-metric-dim border border-border-hairline">FAILED</span>
+</div>
+<div>
+<label class="block text-[10px] font-label-code text-metric-dim uppercase mb-1">Investigation Hypothesis / Rationale</label>
+<div class="text-body-sm font-body-sm text-on-surface bg-surface-raised/70 p-2.5 border border-border-hairline leading-relaxed">
+                  Evaluating 3-hop cycle isomorphism detection with FP8 MMA tensor cores and warp-level bitonic sorting on 10M-node synthetic wire graph with power-law degree α=2.1.
+                </div>
+</div>
+</div>
+<!-- Dataset & Topology Parameters -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-label-code font-label-code text-metric-dim uppercase">
+<span>01 // Topology &amp; Dataset Input</span>
+<span class="text-primary-container font-mono">CSR 64-BIT</span>
+</div>
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm space-y-2.5">
+<div>
+<label class="block text-[10px] font-label-code text-outline uppercase mb-1">Target Graph Dataset</label>
+<div class="relative">
+<select class="w-full bg-surface-raised border border-border-hairline text-editorial-cream text-body-sm font-label-code px-3 py-1.5 pr-8 focus:border-border-active focus:ring-0 appearance-none">
+<option selected="">FedWire-Synthetic-2025-Q1 (12.4M records) [Sample Data]</option>
+<option>SWIFT-FinInst-HighVol-2024 (8.9M records)</option>
+<option>SEPA-Instant-IsoCycles-Q4 (22.1M records)</option>
+<option>Crypto-Mixer-Trace-BtcEth (5.2M records)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 pointer-events-none text-metric-dim">expand_more</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 text-label-code font-label-code">
+<div class="p-2 bg-surface-raised border border-border-hairline">
+<div class="text-metric-dim text-[10px]">TOPOLOGY SCALE</div>
+<div class="text-editorial-cream font-mono font-medium mt-0.5">10,000,000 Nodes</div>
+<div class="text-metric-dim text-[9px] mt-0.5">48,200,000 Directed Edges</div>
+</div>
+<div class="p-2 bg-surface-raised border border-border-hairline">
+<div class="text-metric-dim text-[10px]">SPARSE MATRIX FORMAT</div>
+<div class="text-editorial-cream font-mono font-medium mt-0.5">CSR with 64-bit offsets</div>
+<div class="text-secondary-fixed text-[9px] mt-0.5">Zero-padding aligned</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Implementation & Hardware Target -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-label-code font-label-code text-metric-dim uppercase">
+<span>02 // Execution Target Architecture</span>
+<span class="text-editorial-cream font-mono">CUDA 12.4 Hopper</span>
+</div>
+<!-- Segmented Selector -->
+<div class="grid grid-cols-3 gap-1 bg-surface-obsidian border border-border-hairline p-1">
+<button class="py-2 px-1 text-center border border-transparent text-metric-dim hover:text-on-surface text-label-code font-label-code uppercase transition-none">
+<div class="text-[10px] text-metric-dim">REF-0</div>
+<div class="font-semibold text-[11px] truncate">CPU (Xeon 8480+)</div>
+</button>
+<button class="py-2 px-1 text-center border border-transparent text-metric-dim hover:text-on-surface text-label-code font-label-code uppercase transition-none">
+<div class="text-[10px] text-metric-dim">BASE-1</div>
+<div class="font-semibold text-[11px] truncate">Baseline CUDA (SpMV)</div>
+</button>
+<button class="py-2 px-1 text-center bg-surface-raised border border-border-active text-primary-container text-label-code font-label-code uppercase transition-none">
+<div class="text-[10px] text-primary-container">ACTIVE CANDIDATE</div>
+<div class="font-bold text-[11px] truncate">Optimized CUDA FP8</div>
+</button>
+</div>
+</div>
+<!-- Kernel Configuration & Hardware Controls -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-label-code font-label-code text-metric-dim uppercase">
+<span>03 // Kernel Dimensioning &amp; Precision</span>
+<span class="text-secondary-fixed font-mono">sm_90 TENSOR</span>
+</div>
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm space-y-2.5">
+<div class="grid grid-cols-2 gap-2 text-label-code font-label-code">
+<div class="p-2 bg-surface-raised border border-border-hairline">
+<span class="text-[10px] text-metric-dim block">GRID / BLOCK TOPOLOGY</span>
+<span class="text-editorial-cream font-mono block mt-0.5">Grid: (2048, 1, 1)</span>
+<span class="text-primary-container font-mono block text-[10px]">Block: (256, 1, 1) [8 Warps]</span>
+</div>
+<div class="p-2 bg-surface-raised border border-border-hairline">
+<span class="text-[10px] text-metric-dim block">SHARED MEM / SM</span>
+<span class="text-editorial-cream font-mono block mt-0.5">228 KB / SM Allocation</span>
+<span class="text-secondary-fixed text-[9px] block">smem bypass ENABLED</span>
+</div>
+</div>
+<!-- Precision Radio Options -->
+<div>
+<div class="text-[10px] font-label-code text-metric-dim uppercase mb-1">Tensor Core Arithmetic Precision:</div>
+<div class="grid grid-cols-3 gap-2">
+<label class="flex items-center gap-2 p-2 bg-surface-raised border border-border-active cursor-pointer">
+<span class="w-3.5 h-3.5 border border-border-active bg-primary-container flex items-center justify-center">
+<span class="w-1.5 h-1.5 bg-surface-obsidian"></span>
+</span>
+<span class="text-label-code font-label-code text-primary-container font-bold">FP8 (E4M3)</span>
+</label>
+<label class="flex items-center gap-2 p-2 bg-surface-raised border border-border-hairline cursor-pointer opacity-70 hover:opacity-100">
+<span class="w-3.5 h-3.5 border border-border-hairline bg-transparent flex items-center justify-center"></span>
+<span class="text-label-code font-label-code text-on-surface">FP16 Tensor</span>
+</label>
+<label class="flex items-center gap-2 p-2 bg-surface-raised border border-border-hairline cursor-pointer opacity-70 hover:opacity-100">
+<span class="w-3.5 h-3.5 border border-border-hairline bg-transparent flex items-center justify-center"></span>
+<span class="text-label-code font-label-code text-on-surface">FP32 Standard</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Execution Run Parameters -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-label-code font-label-code text-metric-dim uppercase">
+<span>04 // Benchmark Rigor &amp; Iterations</span>
+<span class="text-metric-dim font-mono">WATCHDOG: 120s</span>
+</div>
+<div class="grid grid-cols-3 gap-2 text-label-code font-label-code">
+<div class="p-2 bg-surface-obsidian border border-border-hairline">
+<div class="text-[9px] text-metric-dim uppercase">WARM-UP RUNS</div>
+<div class="text-headline-sm font-metric-display text-editorial-cream text-lg">5</div>
+<div class="text-[9px] text-metric-dim">discarded from stats</div>
+</div>
+<div class="p-2 bg-surface-obsidian border border-border-hairline">
+<div class="text-[9px] text-metric-dim uppercase">BENCH REPETITIONS</div>
+<div class="text-headline-sm font-metric-display text-primary-container text-lg">50</div>
+<div class="text-[9px] text-metric-dim">variance &amp; P99 sample</div>
+</div>
+<div class="p-2 bg-surface-obsidian border border-border-hairline">
+<div class="text-[9px] text-metric-dim uppercase">TIMEOUT GUARD</div>
+<div class="text-headline-sm font-metric-display text-editorial-cream text-lg">120s</div>
+<div class="text-[9px] text-secondary-fixed">HW Watchdog active</div>
+</div>
+</div>
+</div>
+<!-- Verified Optimization Toggles (Clear validation check per prompt) -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-label-code font-label-code text-metric-dim uppercase">
+<span>05 // Compiler &amp; Kernel Features</span>
+<span class="text-secondary-fixed font-mono">3 VERIFIED / 1 GUARDED</span>
+</div>
+<div class="border border-border-hairline bg-surface-obsidian divide-y divide-border-hairline">
+<!-- Toggle 1: Checked -->
+<div class="p-2.5 flex items-start gap-2.5">
+<div class="mt-0.5 w-3.5 h-3.5 border border-primary-container bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-surface-obsidian text-xs font-bold">check</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-body-sm font-body-sm text-editorial-cream font-medium">Warp-Level In-Register Bitonic Sort (__shfl_xor_sync)</span>
+<span class="text-[10px] font-label-code bg-secondary-fixed/10 border border-secondary-fixed/40 text-secondary-fixed px-1 font-mono">VERIFIED V12.4</span>
+</div>
+<p class="text-[11px] text-metric-dim mt-0.5">Eliminates global memory roundtrips inside candidate permutation loops.</p>
+</div>
+</div>
+<!-- Toggle 2: Checked -->
+<div class="p-2.5 flex items-start gap-2.5">
+<div class="mt-0.5 w-3.5 h-3.5 border border-primary-container bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-surface-obsidian text-xs font-bold">check</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-body-sm font-body-sm text-editorial-cream font-medium">Zero-Copy Unified Virtual Memory + GPU-Direct RDMA</span>
+<span class="text-[10px] font-label-code bg-secondary-fixed/10 border border-secondary-fixed/40 text-secondary-fixed px-1 font-mono">VERIFIED</span>
+</div>
+<p class="text-[11px] text-metric-dim mt-0.5">Direct peer-to-peer DMA over PCIe Gen5 fabric across all 8 nodes.</p>
+</div>
+</div>
+<!-- Toggle 3: Checked -->
+<div class="p-2.5 flex items-start gap-2.5">
+<div class="mt-0.5 w-3.5 h-3.5 border border-primary-container bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-surface-obsidian text-xs font-bold">check</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-body-sm font-body-sm text-editorial-cream font-medium">FP8 Tensor MMA Cores (sm_90 Hopper)</span>
+<span class="text-[10px] font-label-code bg-secondary-fixed/10 border border-secondary-fixed/40 text-secondary-fixed px-1 font-mono">VERIFIED</span>
+</div>
+<p class="text-[11px] text-metric-dim mt-0.5">Dual-issue matrix multiply-accumulate utilizing 4th-Gen Tensor Units.</p>
+</div>
+</div>
+<!-- Toggle 4: Unchecked & Guarded (Requirement: Never suggest unconfirmed features) -->
+<div class="p-2.5 flex items-start gap-2.5 bg-surface-raised/40">
+<div class="mt-0.5 w-3.5 h-3.5 border border-alert-critical bg-transparent shrink-0"></div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-body-sm font-body-sm text-outline font-medium line-through">Dynamic Load-Balancing Warp Work-Stealing</span>
+<span class="text-[10px] font-label-code bg-alert-critical/10 border border-alert-critical text-alert-critical px-1 font-mono">BACKEND UNCONFIRMED // COMPILE GUARD DISABLED</span>
+</div>
+<p class="text-[11px] text-metric-dim mt-0.5">Disabled by architectural guardrail. PTX compilation flag `-Xptxas -dlb-warp` rejected by test suite.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Action Bar for Configuration -->
+<div class="p-space-md border-t border-border-hairline bg-surface-obsidian mt-auto space-y-2">
+<button class="w-full py-2.5 px-4 bg-primary-container hover:bg-secondary-fixed text-surface-obsidian font-bold text-label-code font-label-code uppercase tracking-wider flex items-center justify-center gap-2 transition-none active:scale-[0.99] glow-cyan-rim">
+<span class="material-symbols-outlined text-base">bolt</span>
+              DISPATCH EXPERIMENT (H100 SXM5 CLUSTER)
+            </button>
+<div class="grid grid-cols-4 gap-1 text-label-code font-label-code">
+<button class="py-1 px-2 border border-border-hairline text-metric-dim bg-transparent cursor-not-allowed opacity-50 uppercase text-[10px]" disabled="">
+                Cancel Run
+              </button>
+<button class="py-1 px-2 border border-border-hairline text-on-surface hover:border-editorial-cream bg-surface-raised uppercase text-[10px] transition-none">
+                Duplicate
+              </button>
+<button class="py-1 px-2 border border-border-hairline text-on-surface hover:border-editorial-cream bg-surface-raised uppercase text-[10px] transition-none">
+                Save Draft
+              </button>
+<button class="py-1 px-2 border border-border-hairline text-primary-container hover:border-primary-container bg-surface-raised uppercase text-[10px] transition-none">
+                Validate
+              </button>
+</div>
+</div>
+</div>
+<!-- ================= RIGHT PANE: RUN INSPECTOR & REPRODUCIBILITY DOSSIER (55% -> 7 cols xl) ================= -->
+<div class="xl:col-span-7 bg-surface-obsidian flex flex-col min-w-0">
+<!-- Pane Header & Controls -->
+<div class="px-space-md py-2.5 border-b border-border-hairline bg-surface-graphite flex flex-wrap items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-secondary-fixed"></span>
+<h2 class="text-headline-sm font-headline-sm text-editorial-cream uppercase tracking-tight text-base">Historical Experiments &amp; Reproducibility Dossier</h2>
+</div>
+<div class="flex items-center gap-2 text-label-code font-label-code">
+<span class="text-metric-dim">RUN LEDGER:</span>
+<span class="text-editorial-cream font-mono">148 ATTESTED</span>
+</div>
+</div>
+<!-- Search & Filter Controls -->
+<div class="p-space-sm border-b border-border-hairline bg-surface-obsidian flex flex-wrap items-center gap-2">
+<div class="flex-1 min-w-[200px] relative">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-metric-dim text-sm">search</span>
+<input class="w-full bg-surface-raised border border-border-hairline pl-8 pr-3 py-1 text-label-code font-label-code text-editorial-cream placeholder:text-metric-dim focus:border-border-active focus:ring-0" placeholder="Search Run ID, Archetype, Hash or Operator..." type="text" value="EXP-411"/>
+</div>
+<!-- Filter Badges -->
+<div class="flex items-center gap-1 text-[11px] font-label-code">
+<button class="px-2 py-1 bg-surface-raised border border-border-hairline text-on-surface hover:border-editorial-cream">ALL (148)</button>
+<button class="px-2 py-1 bg-surface-raised border border-amber-400/40 text-amber-300">RUNNING (1)</button>
+<button class="px-2 py-1 bg-surface-raised border border-border-hairline text-secondary-fixed">COMPLETED (142)</button>
+<button class="px-2 py-1 bg-surface-raised border border-border-hairline text-alert-critical">FAILED (5)</button>
+</div>
+<div class="relative">
+<select class="bg-surface-raised border border-border-hairline text-editorial-cream text-[11px] font-label-code px-2 py-1 pr-6 focus:border-border-active focus:ring-0 appearance-none">
+<option>Target: All Architectures</option>
+<option>Target: CUDA Hopper (H100)</option>
+<option>Target: CPU Reference</option>
+</select>
+<span class="material-symbols-outlined absolute right-1 top-1.5 pointer-events-none text-metric-dim text-xs">expand_more</span>
+</div>
+</div>
+<!-- Historical Experiments Table -->
+<div class="overflow-x-auto border-b border-border-hairline">
+<table class="w-full text-left border-collapse text-label-code font-label-code">
+<thead>
+<tr class="border-b border-border-hairline bg-surface-graphite text-metric-dim text-[10px] uppercase tracking-wider">
+<th class="p-2 pl-3">RUN ID</th>
+<th class="p-2">NAME &amp; ARCHETYPE</th>
+<th class="p-2">IMPLEMENTATION</th>
+<th class="p-2">WARM/REPS</th>
+<th class="p-2">LATENCY (MEAN ± STD)</th>
+<th class="p-2">SPEEDUP</th>
+<th class="p-2">PROOF</th>
+<th class="p-2 pr-3 text-right">ACTION</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-hairline/60 bg-surface-obsidian">
+<!-- Row 1: EXP-4112 (Running / Inspected) -->
+<tr class="bg-surface-raised/60 hover:bg-surface-raised transition-none border-l-2 border-l-border-active cursor-pointer">
+<td class="p-2 pl-3 font-mono text-primary-container font-semibold">EXP-4112</td>
+<td class="p-2">
+<div class="text-editorial-cream font-medium truncate max-w-[150px]">FP8-Bitonic-Iso-Warp16</div>
+<div class="text-[9px] text-amber-400 font-mono">STATUS: RUNNING (74%)</div>
+</td>
+<td class="p-2">
+<span class="px-1.5 py-0.5 bg-primary-container/10 border border-primary-container/30 text-primary-container text-[10px]">
+                      Optimized CUDA (FP8)
+                    </span>
+</td>
+<td class="p-2 text-metric-dim font-mono">5 / 50</td>
+<td class="p-2 font-mono text-editorial-cream font-semibold">
+                    4.62ms <span class="text-metric-dim font-normal">± 0.08ms</span>
+</td>
+<td class="p-2 font-mono text-secondary-fixed font-bold">182.4x</td>
+<td class="p-2">
+<span class="inline-flex items-center gap-1 text-[10px] text-primary-container font-mono border border-primary-container/30 px-1 bg-surface-obsidian">
+<span class="w-1.5 h-1.5 bg-primary-container"></span>
+                      zk-SNARK
+                    </span>
+</td>
+<td class="p-2 pr-3 text-right">
+<button class="px-1.5 py-0.5 border border-alert-critical text-alert-critical hover:bg-alert-critical/10 text-[10px] uppercase font-mono">
+                      Cancel
+                    </button>
+</td>
+</tr>
+<!-- Row 2: EXP-4111 (Completed) -->
+<tr class="hover:bg-surface-raised transition-none cursor-pointer">
+<td class="p-2 pl-3 font-mono text-on-surface">EXP-4111</td>
+<td class="p-2">
+<div class="text-editorial-cream truncate max-w-[150px]">cuGraph-Sparse-GCN-v4</div>
+<div class="text-[9px] text-secondary-fixed font-mono">STATUS: COMPLETED</div>
+</td>
+<td class="p-2">
+<span class="px-1.5 py-0.5 bg-surface-raised border border-border-hairline text-outline text-[10px]">
+                      Baseline CUDA
+                    </span>
+</td>
+<td class="p-2 text-metric-dim font-mono">5 / 50</td>
+<td class="p-2 font-mono text-editorial-cream">
+                    48.60ms <span class="text-metric-dim">± 1.24ms</span>
+</td>
+<td class="p-2 font-mono text-on-surface">17.3x</td>
+<td class="p-2">
+<span class="text-[10px] text-secondary-fixed font-mono border border-secondary-fixed/30 px-1 bg-surface-obsidian">
+                      BIT-EXACT
+                    </span>
+</td>
+<td class="p-2 pr-3 text-right">
+<button class="px-1.5 py-0.5 border border-border-hairline text-metric-dim hover:text-editorial-cream text-[10px] uppercase font-mono">
+                      Dossier
+                    </button>
+</td>
+</tr>
+<!-- Row 3: EXP-4110 (CPU Reference) -->
+<tr class="hover:bg-surface-raised transition-none cursor-pointer">
+<td class="p-2 pl-3 font-mono text-on-surface">EXP-4110</td>
+<td class="p-2">
+<div class="text-editorial-cream truncate max-w-[150px]">DualXeon-OpenMP-64Th</div>
+<div class="text-[9px] text-secondary-fixed font-mono">STATUS: COMPLETED</div>
+</td>
+<td class="p-2">
+<span class="px-1.5 py-0.5 bg-surface-raised border border-border-hairline text-metric-dim text-[10px]">
+                      CPU Reference
+                    </span>
+</td>
+<td class="p-2 text-metric-dim font-mono">2 / 10</td>
+<td class="p-2 font-mono text-editorial-cream">
+                    842.10ms <span class="text-metric-dim">± 14.2ms</span>
+</td>
+<td class="p-2 font-mono text-metric-dim">1.0x (Base)</td>
+<td class="p-2">
+<span class="text-[10px] text-outline font-mono border border-border-hairline px-1 bg-surface-obsidian">
+                      MATCHED [Ref]
+                    </span>
+</td>
+<td class="p-2 pr-3 text-right">
+<button class="px-1.5 py-0.5 border border-border-hairline text-metric-dim hover:text-editorial-cream text-[10px] uppercase font-mono">
+                      Dossier
+                    </button>
+</td>
+</tr>
+<!-- Row 4: EXP-4109 (Failed) -->
+<tr class="hover:bg-surface-raised transition-none cursor-pointer">
+<td class="p-2 pl-3 font-mono text-alert-critical">EXP-4109</td>
+<td class="p-2">
+<div class="text-editorial-cream truncate max-w-[150px]">FP8-Dense-Adjacency-50M</div>
+<div class="text-[9px] text-alert-critical font-mono">STATUS: FAILED (OOM)</div>
+</td>
+<td class="p-2">
+<span class="px-1.5 py-0.5 bg-alert-critical/10 border border-alert-critical/30 text-alert-critical text-[10px]">
+                      Optimized CUDA
+                    </span>
+</td>
+<td class="p-2 text-metric-dim font-mono">5 / 50</td>
+<td class="p-2 font-mono text-metric-dim">-- (OOM Error)</td>
+<td class="p-2 font-mono text-metric-dim">--</td>
+<td class="p-2">
+<span class="text-[10px] text-alert-critical font-mono border border-alert-critical/30 px-1 bg-surface-obsidian">
+                      cudaErrorMem
+                    </span>
+</td>
+<td class="p-2 pr-3 text-right">
+<button class="px-1.5 py-0.5 border border-alert-critical/50 text-alert-critical hover:bg-alert-critical/10 text-[10px] uppercase font-mono">
+                      Log
+                    </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- ================= DETAILED RUN INSPECTION SUB-PANEL (EXP-4112) ================= -->
+<div class="p-space-md space-y-4 bg-surface-graphite/60 flex-1 overflow-y-auto">
+<div class="flex items-center justify-between border-b border-border-hairline pb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-base">troubleshoot</span>
+<span class="text-headline-sm font-headline-sm text-editorial-cream uppercase tracking-tight text-sm">Detailed Run Inspection: EXP-4112</span>
+<span class="text-[10px] font-label-code bg-amber-400/10 text-amber-300 border border-amber-400/30 px-1.5">SAMPLING ACTIVE (RUN 38/50)</span>
+</div>
+<div class="flex items-center gap-2 text-label-code font-label-code">
+<a class="text-primary-container hover:underline text-[11px] flex items-center gap-0.5" href="#">
+                  View in CUDA Lab <span class="material-symbols-outlined text-xs">open_in_new</span>
+</a>
+<span class="text-metric-dim">|</span>
+<a class="text-outline hover:text-on-surface text-[11px]" href="#">Evaluation Metrics</a>
+</div>
+</div>
+<!-- Distribution & Latency Histogram Sparkline -->
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm space-y-2">
+<div class="flex items-center justify-between text-label-code font-label-code">
+<span class="text-metric-dim uppercase">Raw Timing Observations (50 Benchmark Repetitions)</span>
+<div class="flex items-center gap-3 font-mono text-[11px]">
+<span>Mean: <strong class="text-primary-container">4.62ms</strong></span>
+<span>Min: <strong class="text-editorial-cream">4.54ms</strong></span>
+<span>Max: <strong class="text-editorial-cream">4.79ms</strong></span>
+<span>Std: <strong class="text-secondary-fixed">±0.08ms</strong></span>
+<span class="bg-surface-raised border border-border-hairline px-1">P99: 4.76ms</span>
+</div>
+</div>
+<!-- CSS Precision Histogram / Sparkline Bar Layout -->
+<div class="h-16 flex items-end gap-1 pt-2 pb-1 px-1 bg-surface-graphite/40 border border-border-hairline">
+<!-- 25 buckets representing 50 runs -->
+<div class="flex-1 bg-metric-dim/40 h-[15%]" title="4.54ms - 2 runs"></div>
+<div class="flex-1 bg-metric-dim/40 h-[25%]" title="4.55ms - 3 runs"></div>
+<div class="flex-1 bg-primary-container/60 h-[40%]" title="4.58ms - 5 runs"></div>
+<div class="flex-1 bg-primary-container/80 h-[65%]" title="4.60ms - 8 runs"></div>
+<div class="flex-1 bg-primary-container h-[95%]" title="4.62ms - 14 runs (MODE)"></div>
+<div class="flex-1 bg-primary-container/80 h-[70%]" title="4.63ms - 9 runs"></div>
+<div class="flex-1 bg-primary-container/60 h-[45%]" title="4.65ms - 5 runs"></div>
+<div class="flex-1 bg-metric-dim/50 h-[30%]" title="4.68ms - 3 runs"></div>
+<div class="flex-1 bg-metric-dim/40 h-[20%]" title="4.71ms - 2 runs"></div>
+<div class="flex-1 bg-amber-400/80 h-[10%]" title="4.76ms (P99) - 1 run"></div>
+<div class="flex-1 bg-amber-400/50 h-[5%]" title="4.79ms (Max) - 1 run"></div>
+</div>
+<div class="flex justify-between text-[9px] font-label-code text-metric-dim">
+<span>4.54ms (Fastest Iteration)</span>
+<span>Normal Gaussian Kernel Curve (Kernel Jitter &lt; 1.7%)</span>
+<span>4.79ms (P99 Outlier)</span>
+</div>
+</div>
+<!-- Variability & Hardware Telemetry Matrix -->
+<div class="grid grid-cols-3 gap-2 text-label-code font-label-code">
+<div class="p-2.5 bg-surface-obsidian border border-border-hairline">
+<div class="text-[10px] text-metric-dim uppercase">SM ACTIVE OCCUPANCY</div>
+<div class="text-headline-sm font-metric-display text-editorial-cream text-lg mt-0.5">96.8%</div>
+<div class="w-full bg-surface-raised h-1 border border-border-hairline mt-1.5 overflow-hidden">
+<div class="bg-secondary-fixed h-full w-[96.8%]"></div>
+</div>
+<div class="text-[9px] text-secondary-fixed mt-1">WARP UTILIZATION PEAK</div>
+</div>
+<div class="p-2.5 bg-surface-obsidian border border-border-hairline">
+<div class="text-[10px] text-metric-dim uppercase">HBM3 BANDWIDTH</div>
+<div class="text-headline-sm font-metric-display text-primary-container text-lg mt-0.5">2.84 TB/s</div>
+<div class="w-full bg-surface-raised h-1 border border-border-hairline mt-1.5 overflow-hidden">
+<div class="bg-primary-container h-full w-[85%]"></div>
+</div>
+<div class="text-[9px] text-metric-dim mt-1">85% of 3.35 TB/s Peak</div>
+</div>
+<div class="p-2.5 bg-surface-obsidian border border-border-hairline">
+<div class="text-[10px] text-metric-dim uppercase">CORE CLOCK FREQUENCY</div>
+<div class="text-headline-sm font-metric-display text-editorial-cream text-lg mt-0.5">1,980 MHz</div>
+<div class="w-full bg-surface-raised h-1 border border-border-hairline mt-1.5 overflow-hidden">
+<div class="bg-on-surface h-full w-[99%]"></div>
+</div>
+<div class="text-[9px] text-secondary-fixed mt-1">Sustained Boost // No Throttling</div>
+</div>
+</div>
+<!-- Reproducibility & Artifact Proof Links -->
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm space-y-2">
+<div class="flex items-center justify-between text-label-code font-label-code">
+<span class="text-metric-dim uppercase">Attestation Artifacts &amp; Cryptographic Signatures</span>
+<span class="text-secondary-fixed font-mono text-[10px]">ECDSA-P256 SIGNED</span>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-2 text-label-code font-label-code bg-surface-raised p-2 border border-border-hairline font-mono text-[11px]">
+<div class="flex items-center gap-2">
+<span class="text-metric-dim">HASH:</span>
+<span class="text-primary-container">0x89f41b2c4d9a5b6e7f80123456789abcdef0123456789abcdef01234ee09</span>
+</div>
+<button class="px-2 py-0.5 bg-surface-obsidian border border-border-hairline text-on-surface hover:text-primary-container text-[10px]">
+                  Copy Hash
+                </button>
+</div>
+<div class="grid grid-cols-3 gap-2 text-label-code font-label-code">
+<a class="p-2 bg-surface-raised border border-border-hairline hover:border-editorial-cream flex items-center justify-between text-on-surface transition-none" href="#">
+<span class="flex items-center gap-1.5 truncate">
+<span class="material-symbols-outlined text-sm text-primary-container">code</span>
+                    Compiled PTX
+                  </span>
+<span class="text-[10px] text-metric-dim font-mono">[48KB]</span>
+</a>
+<a class="p-2 bg-surface-raised border border-border-hairline hover:border-editorial-cream flex items-center justify-between text-on-surface transition-none" href="#">
+<span class="flex items-center gap-1.5 truncate">
+<span class="material-symbols-outlined text-sm text-secondary-fixed">data_object</span>
+                    Metrics JSON
+                  </span>
+<span class="text-[10px] text-metric-dim font-mono">[1.2MB]</span>
+</a>
+<a class="p-2 bg-surface-raised border border-border-hairline hover:border-editorial-cream flex items-center justify-between text-on-surface transition-none" href="#">
+<span class="flex items-center gap-1.5 truncate">
+<span class="material-symbols-outlined text-sm text-outline">table_view</span>
+                    Raw CSV Runs
+                  </span>
+<span class="text-[10px] text-metric-dim font-mono">[84KB]</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ================= SECTION 3: BOTTOM COMPARATOR TRAY ================= -->
+<section class="bg-surface-graphite border-b border-border-hairline">
+<div class="px-space-md py-2 bg-surface-obsidian border-b border-border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-base">compare_arrows</span>
+<h3 class="text-label-code font-label-code uppercase tracking-wider text-editorial-cream font-bold">
+              Side-By-Side Reproducibility Comparator // EXP-4112 vs EXP-4110 Baseline
+            </h3>
+</div>
+<div class="flex items-center gap-3 text-label-code font-label-code text-[11px]">
+<span class="text-secondary-fixed flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">verified</span>
+              Output Equivalence: 100.00% Isomorphism Match (Bit-Exact)
+            </span>
+<button class="text-metric-dim hover:text-on-surface flex items-center">
+<span class="material-symbols-outlined text-sm">unfold_less</span>
+</button>
+</div>
+</div>
+<div class="p-space-md grid grid-cols-1 md:grid-cols-4 gap-4">
+<!-- Delta 1: Execution Time -->
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm space-y-1">
+<div class="text-[10px] font-label-code text-metric-dim uppercase flex justify-between">
+<span>Execution Time</span>
+<span class="text-secondary-fixed font-mono">182.4x FASTER</span>
+</div>
+<div class="flex items-baseline justify-between mt-1">
+<div>
+<div class="text-headline-sm font-metric-display text-primary-container">4.62 ms</div>
+<div class="text-[10px] font-label-code text-metric-dim">EXP-4112 (H100 FP8)</div>
+</div>
+<div class="text-right">
+<div class="text-body-md font-metric-display text-outline">842.10 ms</div>
+<div class="text-[10px] font-label-code text-metric-dim">EXP-4110 (Xeon Base)</div>
+</div>
+</div>
+<div class="w-full bg-surface-raised h-1 border border-border-hairline mt-2 overflow-hidden flex">
+<div class="bg-primary-container h-full w-[2%]"></div>
+<div class="bg-metric-dim/40 h-full w-[98%]"></div>
+</div>
+</div>
+<!-- Delta 2: Memory Footprint -->
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm space-y-1">
+<div class="text-[10px] font-label-code text-metric-dim uppercase flex justify-between">
+<span>Memory Footprint</span>
+<span class="text-secondary-fixed font-mono">3.48x REDUCTION</span>
+</div>
+<div class="flex items-baseline justify-between mt-1">
+<div>
+<div class="text-headline-sm font-metric-display text-editorial-cream">18.4 GB</div>
+<div class="text-[10px] font-label-code text-metric-dim">HBM3 GPU Memory</div>
+</div>
+<div class="text-right">
+<div class="text-body-md font-metric-display text-outline">64.2 GB</div>
+<div class="text-[10px] font-label-code text-metric-dim">DDR5 System RAM</div>
+</div>
+</div>
+<div class="w-full bg-surface-raised h-1 border border-border-hairline mt-2 overflow-hidden flex">
+<div class="bg-secondary-fixed h-full w-[28%]"></div>
+<div class="bg-metric-dim/40 h-full w-[72%]"></div>
+</div>
+</div>
+<!-- Delta 3: Energy Efficiency -->
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm space-y-1">
+<div class="text-[10px] font-label-code text-metric-dim uppercase flex justify-between">
+<span>Energy Efficiency</span>
+<span class="text-secondary-fixed font-mono">173.9x LESS POWER</span>
+</div>
+<div class="flex items-baseline justify-between mt-1">
+<div>
+<div class="text-headline-sm font-metric-display text-secondary-fixed">0.82 J</div>
+<div class="text-[10px] font-label-code text-metric-dim">Joules per Wire Query</div>
+</div>
+<div class="text-right">
+<div class="text-body-md font-metric-display text-outline">142.6 J</div>
+<div class="text-[10px] font-label-code text-metric-dim">Joules per Wire Query</div>
+</div>
+</div>
+<div class="w-full bg-surface-raised h-1 border border-border-hairline mt-2 overflow-hidden flex">
+<div class="bg-secondary-fixed h-full w-[1%]"></div>
+<div class="bg-metric-dim/40 h-full w-[99%]"></div>
+</div>
+</div>
+<!-- Delta 4: Topology Match Matrix -->
+<div class="border border-border-hairline bg-surface-obsidian p-space-sm space-y-1">
+<div class="text-[10px] font-label-code text-metric-dim uppercase flex justify-between">
+<span>Topology Bit-Exactness</span>
+<span class="text-primary-container font-mono">100.00% MATCH</span>
+</div>
+<div class="flex items-baseline justify-between mt-1">
+<div>
+<div class="text-headline-sm font-metric-display text-editorial-cream">0 DRIFT</div>
+<div class="text-[10px] font-label-code text-metric-dim">Cycle Subgraph Count</div>
+</div>
+<div class="text-right">
+<div class="text-body-md font-mono text-secondary-fixed">482,910 MATCH</div>
+<div class="text-[10px] font-label-code text-metric-dim">Isomorphism Cycle Nodes</div>
+</div>
+</div>
+<div class="w-full bg-surface-raised h-1 border border-border-hairline mt-2 overflow-hidden">
+<div class="bg-secondary-fixed h-full w-full"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- ================= SYSTEM TELEMETRY TICKER BAR ================= -->
+<footer class="mt-auto px-space-lg py-1.5 bg-surface-obsidian border-t border-border-hairline flex flex-wrap items-center justify-between text-[11px] font-label-code text-metric-dim">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5 text-editorial-cream">
+<span class="w-1.5 h-1.5 bg-secondary-fixed"></span>
+            CLUSTER RUNTIME: 34d 18h 22m (Zero Drops)
+          </span>
+<span class="text-border-hairline">|</span>
+<span>RDMA Latency: <strong class="text-on-surface">0.12ms</strong></span>
+<span class="text-border-hairline">|</span>
+<span>PCIe Gen5 Bandwidth: <strong class="text-on-surface">128 GB/s Duplex</strong></span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-metric-dim">REPRODUCIBILITY LEDGER ID:</span>
+<span class="text-editorial-cream font-mono">FG-LEDGER-202503-SXM5-89F4</span>
+<span class="text-border-hairline">|</span>
+<span class="text-primary-container font-mono">SEC-FININT COMPLIANT</span>
+</div>
+</footer>
+</main>
+</div>
+</body></html>
