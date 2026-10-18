@@ -7,10 +7,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-### Planned for Phase 4: CPU Reference Implementation
-- NumPy and SciPy reference parallel neighbor aggregation engine (`mean`, `sum`, `max`).
-- Baseline graph-augmented fraud classification pipeline using scikit-learn.
-- End-to-end CPU performance timing harness and numerical verification ground truth.
+### Planned for Phase 5: Baseline CUDA Implementation
+- Native baseline CUDA C++ kernel (`1 thread per node`) in `backend/gpu_engine/cuda/src/`.
+- CUDA host orchestrator and memory allocation (`cudaMalloc`, `cudaMemcpy`).
+- Google Colab execution adapter and benchmark packaging utility.
+- Numerical equivalence verification harness comparing GPU output against Phase 4 CPU reference.
+
+---
+
+## [0.4.0] - 2026-10-18 — Phase 4: CPU Reference Aggregation Engine
+
+### Added
+- **CPU Reference Aggregation Engine (`backend/cpu_engine/aggregators.py`):**
+  - Implemented Sum, Mean, and Max neighbor aggregation functions accepting validated `CSRGraph`.
+  - Implemented dual execution architectures: straightforward node-iterative reference (`method="reference"`) and high-performance SciPy SpMM sparse-dense multiplication (`method="vectorized"`).
+  - Explicit zero-sentinel handling: empty neighborhoods ($d_i = 0$) strictly return a zero vector ($\vec{0} \in \mathbb{R}^D$) across all operators, preventing division-by-zero or $-\infty$ propagation in Max aggregation.
+  - Guaranteed single-precision floating-point arithmetic (`np.float32`) and input array immutability.
+- **CPU Benchmark Harness (`backend/cpu_engine/benchmark_cpu.py`):**
+  - High-precision benchmarking using monotonic nanosecond timer (`time.perf_counter_ns`).
+  - Warm-up and repeated trials measuring mean, standard deviation, median (p50), 95th percentile, min, and max latencies.
+  - Throughput calculations (nodes/sec and directed CSR adjacency entries/sec).
+  - Cross-verification between reference and vectorized outputs with maximum absolute error checking ($\text{atol} \le 10^{-5}$).
+  - Automatic JSON export under `experiments/results/` marked with state `MEASURED`.
+- **Comprehensive Unit & Correctness Test Suite (`backend/tests/test_aggregators.py`):**
+  - 22 dedicated test cases covering all 18 core verification requirements from the specification.
+  - Verified hand-calculated 5-node toy fixture across Sum, Mean, and Max.
+  - Verified isolated nodes, empty graphs, single-node graphs, asymmetric directed edges, symmetric undirected edges, and star graphs with 500 peripheral nodes.
+  - Total backend test suite now passes 44/44 tests cleanly in 2.36s.
+- **Comprehensive Architecture Documentation (`docs/CPU_REFERENCE_ENGINE.md`):** Complete mathematical definitions, algorithmic details, tolerance standards, and benchmark results.
+
+### Fixed
+- **Resolved Phase 3 Fixture Inconsistencies (`data/fixtures/`):**
+  - Corrected `toy_graph_5nodes.npz`: explicitly verified that Node 4 is the isolated node (out-degree 0), while Node 0 has degree 2 (connected to 1 and 2).
+  - Clarified edge count semantics: 8 directed CSR adjacency entries representing 4 undirected edge pairs.
+  - Populated `toy_graph_5nodes.npz` with distinct, non-zero `float32` features (positive, negative, and zero values) to enable meaningful numerical verification.
+  - Corrected `synthetic_tier_a_10k.npz` feature dimension documentation from $D=16$ to $D=32$ (1.62 MB compressed archive).
+
 
 ---
 

@@ -134,3 +134,30 @@ All benchmark results are automatically written to `experiments/results/{experim
   }
 }
 ```
+
+---
+
+## 6. Phase 4 CPU Benchmark Harness Implementation
+
+### 6.1 Harness Module (`backend/cpu_engine/benchmark_cpu.py`)
+- **Module Path:** [`backend/cpu_engine/benchmark_cpu.py`](file:///D:/FraudGraph%20Intelligence/backend/cpu_engine/benchmark_cpu.py)
+- **Invocation:**
+  ```powershell
+  .\.venv\Scripts\python.exe backend/cpu_engine/benchmark_cpu.py --warmup 3 --repeat 10
+  ```
+- **Measurement Protocol:**
+  - Timer: `time.perf_counter_ns` (monotonic nanosecond clock).
+  - Graph loading isolated from aggregation timing.
+  - Metrics collected: `mean`, `std`, `median_p50`, `p95`, `min`, `max`, `nodes_per_second`, `edges_per_second`.
+  - Automated output export to `experiments/results/{experiment_id}.json` with status `MEASURED`.
+- **Baseline Measurements Recorded (Host: Intel Core i5-1135G7 @ 2.40GHz, 8 Cores):**
+  - `toy_graph_5nodes.npz`:
+    - Mean Reference: $0.033 \text{ ms}$ ($245,927 \text{ edges/s}$) | Status: `PASSED`
+    - Mean Vectorized: $0.036 \text{ ms}$ ($219,118 \text{ edges/s}$) | Status: `PASSED`
+  - `synthetic_tier_a_10k.npz` ($N=10,000, M=94,945, D=32$):
+    - Mean Reference: $133.177 \text{ ms}$ ($712,923 \text{ edges/s}$) | Status: `PASSED`
+    - Mean Vectorized (SpMM): $6.325 \text{ ms}$ ($15,011,945 \text{ edges/s}$) | Status: `PASSED`
+    - Sum Reference: $166.877 \text{ ms}$ ($568,953 \text{ edges/s}$) | Status: `PASSED`
+    - Sum Vectorized (SpMM): $3.624 \text{ ms}$ ($26,196,494 \text{ edges/s}$) | Status: `PASSED`
+    - Max Reference: $167.173 \text{ ms}$ ($567,945 \text{ edges/s}$) | Status: `PASSED`
+

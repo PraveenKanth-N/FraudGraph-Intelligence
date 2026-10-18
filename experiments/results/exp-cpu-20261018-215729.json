@@ -1,0 +1,494 @@
+{
+  "schema_version": "1.0.0",
+  "experiment_id": "EXP-CPU-20261018-215729",
+  "measurement_state": "MEASURED",
+  "timestamp": "2026-10-18T21:57:29.350327",
+  "hardware": {
+    "cpu_model": "11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz",
+    "machine": "AMD64",
+    "architecture": "64bit",
+    "logical_cores": 8,
+    "os": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.14.3",
+    "numpy_version": "2.5.4"
+  },
+  "benchmark_parameters": {
+    "warmup_iterations": 3,
+    "recorded_repetitions": 10,
+    "operators": [
+      "mean",
+      "sum",
+      "max"
+    ],
+    "methods": [
+      "reference",
+      "vectorized"
+    ],
+    "fixtures": [
+      "toy_graph_5nodes.npz",
+      "synthetic_tier_a_10k.npz"
+    ]
+  },
+  "observations": [
+    {
+      "graph_name": "toy_graph_5nodes.npz",
+      "num_nodes": 5,
+      "num_edges": 8,
+      "feature_dim": 4,
+      "is_directed": true,
+      "operator": "mean",
+      "method": "reference",
+      "warmup_iterations": 3,
+      "recorded_repetitions": 10,
+      "trial_times_ms": [
+        0.0331,
+        0.0338,
+        0.0333,
+        0.0332,
+        0.0322,
+        0.0322,
+        0.0328,
+        0.0313,
+        0.0321,
+        0.0313
+      ],
+      "latency_stats_ms": {
+        "mean": 0.0325,
+        "std": 0.0008,
+        "median_p50": 0.0325,
+        "p95": 0.0336,
+        "min": 0.0313,
+        "max": 0.0338
+      },
+      "throughput": {
+        "nodes_per_second": 153704.27,
+        "edges_per_second": 245926.84
+      },
+      "memory_footprint_mb": {
+        "graph": 0.0001,
+        "output": 0.0001,
+        "total": 0.0002
+      },
+      "numerical_verification": {
+        "status": "PASSED",
+        "max_absolute_error": 0.0,
+        "tolerance_threshold": 1e-05,
+        "nan_detected": false
+      }
+    },
+    {
+      "graph_name": "toy_graph_5nodes.npz",
+      "num_nodes": 5,
+      "num_edges": 8,
+      "feature_dim": 4,
+      "is_directed": true,
+      "operator": "mean",
+      "method": "vectorized",
+      "warmup_iterations": 3,
+      "recorded_repetitions": 10,
+      "trial_times_ms": [
+        0.0393,
+        0.0398,
+        0.0366,
+        0.0363,
+        0.0357,
+        0.035,
+        0.0345,
+        0.0347,
+        0.0375,
+        0.0357
+      ],
+      "latency_stats_ms": {
+        "mean": 0.0365,
+        "std": 0.0018,
+        "median_p50": 0.036,
+        "p95": 0.0396,
+        "min": 0.0345,
+        "max": 0.0398
+      },
+      "throughput": {
+        "nodes_per_second": 136948.78,
+        "edges_per_second": 219118.05
+      },
+      "memory_footprint_mb": {
+        "graph": 0.0001,
+        "output": 0.0001,
+        "total": 0.0002
+      },
+      "numerical_verification": {
+        "status": "PASSED",
+        "max_absolute_error": 2.384185791015625e-07,
+        "tolerance_threshold": 1e-05,
+        "nan_detected": false
+      }
+    },
+    {
+      "graph_name": "toy_graph_5nodes.npz",
+      "num_nodes": 5,
+      "num_edges": 8,
+      "feature_dim": 4,
+      "is_directed": true,
+      "operator": "sum",
+      "method": "reference",
+      "warmup_iterations": 3,
+      "recorded_repetitions": 10,
+      "trial_times_ms": [
+        0.0227,
+        0.0229,
+        0.0226,
+        0.0229,
+        0.0228,
+        0.0224,
+        0.0224,
+        0.0223,
+        0.0227,
+        0.0231
+      ],
+      "latency_stats_ms": {
+        "mean": 0.0227,
+        "std": 0.0003,
+        "median_p50": 0.0227,
+        "p95": 0.023,
+        "min": 0.0223,
+        "max": 0.0231
+      },
+      "throughput": {
+        "nodes_per_second": 220458.55,
+        "edges_per_second": 352733.69
+      },
+      "memory_footprint_mb": {
+        "graph": 0.0001,
+        "output": 0.0001,
+        "total": 0.0002
+      },
+      "numerical_verification": {
+        "status": "PASSED",
+        "max_absolute_error": 0.0,
+        "tolerance_threshold": 1e-05,
+        "nan_detected": false
+      }
+    },
+    {
+      "graph_name": "toy_graph_5nodes.npz",
+      "num_nodes": 5,
+      "num_edges": 8,
+      "feature_dim": 4,
+      "is_directed": true,
+      "operator": "sum",
+      "method": "vectorized",
+      "warmup_iterations": 3,
+      "recorded_repetitions": 10,
+      "trial_times_ms": [
+        0.0296,
+        0.0289,
+        0.0279,
+        0.0277,
+        0.0272,
+        0.0271,
+        0.0268,
+        0.0271,
+        0.0279,
+        0.0272
+      ],
+      "latency_stats_ms": {
+        "mean": 0.0277,
+        "std": 0.0009,
+        "median_p50": 0.0274,
+        "p95": 0.0293,
+        "min": 0.0268,
+        "max": 0.0296
+      },
+      "throughput": {
+        "nodes_per_second": 180245.13,
+        "edges_per_second": 288392.21
+      },
+      "memory_footprint_mb": {
+        "graph": 0.0001,
+        "output": 0.0001,
+        "total": 0.0002
+      },
+      "numerical_verification": {
+        "status": "PASSED",
+        "max_absolute_error": 0.0,
+        "tolerance_threshold": 1e-05,
+        "nan_detected": false
+      }
+    },
+    {
+      "graph_name": "toy_graph_5nodes.npz",
+      "num_nodes": 5,
+      "num_edges": 8,
+      "feature_dim": 4,
+      "is_directed": true,
+      "operator": "max",
+      "method": "reference",
+      "warmup_iterations": 3,
+      "recorded_repetitions": 10,
+      "trial_times_ms": [
+        0.0228,
+        0.0231,
+        0.0228,
+        0.0227,
+        0.0227,
+        0.0226,
+        0.0226,
+        0.0226,
+        0.0228,
+        0.0226
+      ],
+      "latency_stats_ms": {
+        "mean": 0.0227,
+        "std": 0.0002,
+        "median_p50": 0.0227,
+        "p95": 0.023,
+        "min": 0.0226,
+        "max": 0.0231
+      },
+      "throughput": {
+        "nodes_per_second": 219973.6,
+        "edges_per_second": 351957.77
+      },
+      "memory_footprint_mb": {
+        "graph": 0.0001,
+        "output": 0.0001,
+        "total": 0.0002
+      },
+      "numerical_verification": {
+        "status": "PASSED",
+        "max_absolute_error": 0.0,
+        "tolerance_threshold": 1e-05,
+        "nan_detected": false
+      }
+    },
+    {
+      "graph_name": "synthetic_tier_a_10k.npz",
+      "num_nodes": 10000,
+      "num_edges": 94945,
+      "feature_dim": 32,
+      "is_directed": true,
+      "operator": "mean",
+      "method": "reference",
+      "warmup_iterations": 3,
+      "recorded_repetitions": 10,
+      "trial_times_ms": [
+        64.7765,
+        78.552,
+        69.8453,
+        72.4839,
+        63.1954,
+        81.9034,
+        216.2672,
+        256.0721,
+        207.77,
+        220.9045
+      ],
+      "latency_stats_ms": {
+        "mean": 133.177,
+        "std": 80.3817,
+        "median_p50": 80.2277,
+        "p95": 240.2467,
+        "min": 63.1954,
+        "max": 256.0721
+      },
+      "throughput": {
+        "nodes_per_second": 75088.02,
+        "edges_per_second": 712923.24
+      },
+      "memory_footprint_mb": {
+        "graph": 1.621,
+        "output": 1.2207,
+        "total": 2.8417
+      },
+      "numerical_verification": {
+        "status": "PASSED",
+        "max_absolute_error": 0.0,
+        "tolerance_threshold": 1e-05,
+        "nan_detected": false
+      }
+    },
+    {
+      "graph_name": "synthetic_tier_a_10k.npz",
+      "num_nodes": 10000,
+      "num_edges": 94945,
+      "feature_dim": 32,
+      "is_directed": true,
+      "operator": "mean",
+      "method": "vectorized",
+      "warmup_iterations": 3,
+      "recorded_repetitions": 10,
+      "trial_times_ms": [
+        4.6631,
+        4.2393,
+        4.9095,
+        10.8469,
+        5.652,
+        7.3008,
+        5.0577,
+        6.542,
+        7.0526,
+        6.9824
+      ],
+      "latency_stats_ms": {
+        "mean": 6.3246,
+        "std": 1.9317,
+        "median_p50": 6.097,
+        "p95": 9.2512,
+        "min": 4.2393,
+        "max": 10.8469
+      },
+      "throughput": {
+        "nodes_per_second": 1581120.16,
+        "edges_per_second": 15011945.36
+      },
+      "memory_footprint_mb": {
+        "graph": 1.621,
+        "output": 1.2207,
+        "total": 2.8417
+      },
+      "numerical_verification": {
+        "status": "PASSED",
+        "max_absolute_error": 3.5762786865234375e-07,
+        "tolerance_threshold": 1e-05,
+        "nan_detected": false
+      }
+    },
+    {
+      "graph_name": "synthetic_tier_a_10k.npz",
+      "num_nodes": 10000,
+      "num_edges": 94945,
+      "feature_dim": 32,
+      "is_directed": true,
+      "operator": "sum",
+      "method": "reference",
+      "warmup_iterations": 3,
+      "recorded_repetitions": 10,
+      "trial_times_ms": [
+        172.8482,
+        166.6056,
+        165.4917,
+        170.1152,
+        165.8943,
+        154.0662,
+        160.845,
+        165.2335,
+        175.1517,
+        172.5151
+      ],
+      "latency_stats_ms": {
+        "mean": 166.8767,
+        "std": 6.2589,
+        "median_p50": 166.25,
+        "p95": 174.1151,
+        "min": 154.0662,
+        "max": 175.1517
+      },
+      "throughput": {
+        "nodes_per_second": 59924.5,
+        "edges_per_second": 568953.18
+      },
+      "memory_footprint_mb": {
+        "graph": 1.621,
+        "output": 1.2207,
+        "total": 2.8417
+      },
+      "numerical_verification": {
+        "status": "PASSED",
+        "max_absolute_error": 0.0,
+        "tolerance_threshold": 1e-05,
+        "nan_detected": false
+      }
+    },
+    {
+      "graph_name": "synthetic_tier_a_10k.npz",
+      "num_nodes": 10000,
+      "num_edges": 94945,
+      "feature_dim": 32,
+      "is_directed": true,
+      "operator": "sum",
+      "method": "vectorized",
+      "warmup_iterations": 3,
+      "recorded_repetitions": 10,
+      "trial_times_ms": [
+        3.4295,
+        3.5959,
+        3.9797,
+        3.6111,
+        3.5695,
+        3.5417,
+        3.8114,
+        3.5916,
+        3.5555,
+        3.5575
+      ],
+      "latency_stats_ms": {
+        "mean": 3.6243,
+        "std": 0.1565,
+        "median_p50": 3.5806,
+        "p95": 3.904,
+        "min": 3.4295,
+        "max": 3.9797
+      },
+      "throughput": {
+        "nodes_per_second": 2759123.04,
+        "edges_per_second": 26196493.71
+      },
+      "memory_footprint_mb": {
+        "graph": 1.621,
+        "output": 1.2207,
+        "total": 2.8417
+      },
+      "numerical_verification": {
+        "status": "PASSED",
+        "max_absolute_error": 0.0,
+        "tolerance_threshold": 1e-05,
+        "nan_detected": false
+      }
+    },
+    {
+      "graph_name": "synthetic_tier_a_10k.npz",
+      "num_nodes": 10000,
+      "num_edges": 94945,
+      "feature_dim": 32,
+      "is_directed": true,
+      "operator": "max",
+      "method": "reference",
+      "warmup_iterations": 3,
+      "recorded_repetitions": 10,
+      "trial_times_ms": [
+        168.0838,
+        174.4674,
+        164.2805,
+        157.8949,
+        176.1117,
+        163.9801,
+        177.5014,
+        168.4368,
+        167.0811,
+        153.8901
+      ],
+      "latency_stats_ms": {
+        "mean": 167.1728,
+        "std": 7.6252,
+        "median_p50": 167.5824,
+        "p95": 176.876,
+        "min": 153.8901,
+        "max": 177.5014
+      },
+      "throughput": {
+        "nodes_per_second": 59818.35,
+        "edges_per_second": 567945.33
+      },
+      "memory_footprint_mb": {
+        "graph": 1.621,
+        "output": 1.2207,
+        "total": 2.8417
+      },
+      "numerical_verification": {
+        "status": "PASSED",
+        "max_absolute_error": 0.0,
+        "tolerance_threshold": 1e-05,
+        "nan_detected": false
+      }
+    }
+  ]
+}

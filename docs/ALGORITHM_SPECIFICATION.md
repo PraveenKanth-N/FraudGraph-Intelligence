@@ -55,10 +55,14 @@ $$Y_{\text{max}}[i, k] = \begin{cases}
 
 ## 3. Algorithm Architectures & Kernel Designs
 
-### 3.1 Architecture A: CPU Reference Engine (`neighbor_aggregator.py`)
-- **Execution Model:** Vectorized NumPy / SciPy sparse linear algebra using BLAS/SIMD primitives.
-- **Computation:** Computes $Y_{\text{sum}} = A \cdot X$ using sparse matrix-dense matrix multiplication, followed by row-wise normalization by the in-degree vector $\vec{d} = \max(\vec{d}, 1)$.
-- **Role:** Deterministic gold standard for numerical tolerance and baseline latency.
+### 3.1 Architecture A: CPU Reference Engine (`aggregators.py`)
+- **Implemented Module:** [`backend/cpu_engine/aggregators.py`](file:///D:/FraudGraph%20Intelligence/backend/cpu_engine/aggregators.py)
+- **Execution Models:**
+  1. *Reference Node-Iterative (`method="reference"`):* Direct element-wise and feature-vector accumulation over sliced neighbor indices. Unambiguous, fully auditable implementation of mathematical definitions with explicit zero-degree guards.
+  2. *Vectorized SpMM (`method="vectorized"`):* High-performance sparse-dense matrix multiplication using SciPy CSR representations and BLAS primitives ($Y = A \cdot X$ for sum, $Y = \tilde{A} \cdot X$ for mean).
+- **Zero-Degree Handling:** Explicitly guards isolated nodes ($d_i = 0$), producing zero vectors ($\vec{0} \in \mathbb{R}^D$) for all operators (including max).
+- **Role:** Deterministic gold standard for numerical tolerance ($\text{atol} \le 10^{-5}$) and honest baseline latency.
+
 
 ### 3.2 Architecture B: Baseline CUDA Kernel (`fgi_aggregator_baseline.cu`)
 - **Mapping:** 1 CUDA thread assigned per node $i$.

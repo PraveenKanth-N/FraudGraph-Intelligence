@@ -17,7 +17,7 @@
 | **Phase 1** | Project Foundation & Dependency Setup | FGI-MOD-01 | **PASSED (Complete)** | Git repository initialized, `.venv` created, baseline directory scaffolding established, complete documentation suite created, health endpoint verified via pytest (2/2 passing), frontend scaffold verified via TypeScript/Vite build (0 errors). |
 | **Phase 2** | **Literature Review & Research Specification** | FGI-MOD-02 | **PASSED (Complete)** | Rigorous review of verified literature (Bell & Garland '09, NVIDIA CUDA Guides, Huang et al. '20, Hu et al. '20, Wang et al. '16, Dou et al. '20, Weber et al. '19, Wang et al. '19); evidence-backed gap analysis (`RESEARCH_GAP.md`); testable hypotheses & variable matrices (`RESEARCH_SPECIFICATION.md`); candidate dataset evaluation & Dual-Dataset strategy (`DATASET_SELECTION.md`); mathematical CSR & zero-degree operator specifications (`ALGORITHM_SPECIFICATION.md`); benchmark protocol & tri-state schema (`EXPERIMENT_PROTOCOL.md`); ADRs 005–007 recorded (`DECISIONS.md`). |
 | **Phase 3** | **Dataset Pipeline & Graph Representation** | FGI-MOD-02, FGI-MOD-03 | **PASSED (Complete)** | Canonical CSR graph implementation (`csr_graph.py`) enforcing 8 invariants; deterministic synthetic power-law/star/uniform generator (`synthetic_generator.py`); temporal transaction graph builder (`transaction_graph_builder.py`) with zero leakage; 20 unit/invariant tests passing (22/22 total suite in 2.03s); `toy_graph_5nodes.npz` and `synthetic_tier_a_10k.npz` (10K nodes, 95K edges) generated; `GRAPH_DATA_CONTRACT.md` authored; ADRs 008-009 recorded. |
-| **Phase 4** | CPU Reference Implementation | FGI-MOD-04 | **PENDING** | NumPy/SciPy parallel neighbor aggregator, deterministic fraud scoring baseline, unit test fixtures passing. |
+| **Phase 4** | **CPU Reference Implementation** | FGI-MOD-04 | **PASSED (Complete)** | Implemented Sum, Mean, Max aggregators in `aggregators.py`; dual reference and vectorized SpMM modes; explicit empty-neighborhood zero sentinel ($d_i = 0 \implies \vec{0}$); 22 tests in `test_aggregators.py` (total 44/44 backend tests passing in 2.36s); high-precision benchmark harness in `benchmark_cpu.py` with JSON output in `experiments/results/`; resolved Phase 3 fixture inconsistencies (toy isolated node 4, non-zero features); `CPU_REFERENCE_ENGINE.md` authored. |
 | **Phase 5** | Baseline CUDA Implementation | FGI-MOD-05 | **PENDING** | Baseline CUDA C++ kernel (1 thread per node), thread/block layout, memory transfers, CPU/GPU tolerance verification (`atol <= 1e-5`). |
 | **Phase 6** | CUDA Optimization Laboratory | FGI-MOD-06 | **PENDING** | Memory coalesced kernel, warp-per-node mapping, shared-memory reuse evaluation, CUDA event timing separation. |
 | **Phase 7** | Fraud Scoring & Evaluation | FGI-MOD-07 | **PENDING** | Feature enrichment with aggregated embeddings, scikit-learn classifier baseline, Precision, Recall, F1, PR-AUC, confusion matrices. |
@@ -81,8 +81,8 @@
 
 ### 4.4 Fixtures & Test Verification
 - **Generated Fixtures:**
-  - `data/fixtures/toy_graph_5nodes.npz` (5 nodes, 4 edges, $D=4$).
-  - `data/fixtures/synthetic_tier_a_10k.npz` (10,000 nodes, 94,945 directed edges, $D=16$, 1.62 MB).
+  - `data/fixtures/toy_graph_5nodes.npz` (5 nodes, 8 directed CSR entries representing 4 undirected pairs, isolated node 4, $D=4$).
+  - `data/fixtures/synthetic_tier_a_10k.npz` (10,000 nodes, 94,945 directed edges, $D=32$, 1.62 MB).
 - **Automated Tests (`backend/tests/test_csr_graph.py`):** 20 comprehensive unit tests covering all 8 invariants, edge cases, round-trips, and leakage rules. All 22/22 tests across the backend suite pass in 2.03s.
 - **Frontend Build:** Clean compilation with 0 TypeScript/Vite errors in 1.85s.
 
@@ -96,5 +96,56 @@
 
 ## 5. Phase 3 Gate Acceptance
 - **Gate Status:** **PASSED (Complete)**
-- **Action Required:** Await User authorization to initiate Phase 4 (CPU Reference Implementation).
+
+---
+
+## 6. Phase 4 Deliverables Summary
+
+### 6.1 Aggregation Engine (`backend/cpu_engine/aggregators.py`)
+- Implemented `aggregate_neighbors`, `aggregate_sum_reference`, `aggregate_mean_reference`, `aggregate_max_reference`, and `aggregate_vectorized`.
+- Mathematical compliance:
+  - Sum: $Y_{i, :} = \sum_{j \in \mathcal{N}(i)} X_{j, :}$ ($0$ if empty).
+  - Mean: $Y_{i, :} = \frac{1}{d_i} \sum_{j \in \mathcal{N}(i)} X_{j, :}$ ($0$ if empty).
+  - Max: $Y_{i, :} = \max_{j \in \mathcal{N}(i)} X_{j, :}$ with strict zero-sentinel policy for empty neighborhoods ($\vec{0} \in \mathbb{R}^D$).
+- Dual execution architectures:
+  - Node-iterative reference loop for direct mathematical clarity.
+  - Vectorized SciPy CSR SpMM matrix multiplication for high-performance CPU baseline.
+- Full type safety and defensive input validation (`TypeError`, `ValueError`).
+
+### 6.2 Fixture Resolution & Accuracy
+- Corrected `toy_graph_5nodes.npz`:
+  - Verified that Node 4 is the isolated node ($d_4 = 0$), while Node 0 has degree 2 (connected to 1 and 2).
+  - Clarified edge count: 8 directed CSR adjacency entries representing 4 undirected edge pairs.
+  - Populated distinct, non-zero float32 features (positive, negative, and zero values) allowing hand-calculated verification.
+- Corrected documentation for `synthetic_tier_a_10k.npz` to reflect exact feature dimension $D = 32$ (1.62 MB compressed archive).
+
+### 6.3 Test Suite Verification (`backend/tests/test_aggregators.py`)
+- 22 comprehensive tests covering all 18 specification requirements (hand calculations, empty neighborhoods, isolated nodes, single nodes, self-loops, directed asymmetry, undirected symmetry, hub nodes, multiple dimensions $D \in \{1, 4, 16, 32, 128\}$, negative features, determinism, immutability, defensive input validation, non-finite input rejection, and cross-verification).
+- Total backend test suite: **44/44 tests passed in 2.36s**.
+
+### 6.4 CPU Benchmark Harness (`backend/cpu_engine/benchmark_cpu.py`)
+- High-precision monotonic timer (`time.perf_counter_ns`).
+- Empirical observations on Intel Core i5-1135G7 (8 cores):
+  - `toy_graph_5nodes.npz`: Mean latency 0.033 ms (245,927 edges/s).
+  - `synthetic_tier_a_10k.npz` (10K nodes, 94.9K edges, $D=32$):
+    - Reference Mean: 133.177 ms (712,923 edges/s).
+    - Vectorized Mean: 6.325 ms (15,011,945 edges/s).
+    - Reference Sum: 166.877 ms (568,953 edges/s).
+    - Vectorized Sum: 3.624 ms (26,196,494 edges/s).
+    - Reference Max: 167.173 ms (567,945 edges/s).
+- Benchmark results stored in `experiments/results/` marked with state `MEASURED`.
+
+### 6.5 Documentation Deliverables
+- **`docs/CPU_REFERENCE_ENGINE.md`:** Authoritative specification of formulas, architectures, numerical tolerance ($\text{atol} \le 10^{-5}$), and benchmark data.
+- **`docs/ALGORITHM_SPECIFICATION.md`:** Updated with reference to `aggregators.py`.
+- **`docs/EXPERIMENT_PROTOCOL.md`:** Updated with CPU benchmark harness usage and baseline metrics.
+- **`docs/TEST_PLAN.md`:** Updated test pyramid and 44-test coverage details.
+- **`docs/CHANGELOG.md`:** Logged release `0.4.0` milestones.
+
+---
+
+## 7. Phase 4 Gate Acceptance
+- **Gate Status:** **PASSED (Complete)**
+- **Action Required:** Await User authorization to initiate Phase 5 (Baseline CUDA Implementation & Google Colab Execution).
+
 

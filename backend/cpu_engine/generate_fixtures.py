@@ -7,6 +7,8 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
+
 # Ensure root directory is in sys.path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -19,11 +21,31 @@ def build_fixtures():
     fixtures_dir.mkdir(parents=True, exist_ok=True)
 
     # 1. Toy 5-node graph fixture
+    # Structure: 5 nodes (0-4), 8 directed CSR entries representing 4 undirected edges.
+    # Connected nodes: 0 (deg 2), 1 (deg 3), 2 (deg 2), 3 (deg 1). Isolated node: 4 (deg 0).
+    toy_features = np.array(
+        [
+            [1.0, 2.0, 3.0, 4.0],          # Node 0
+            [10.0, 20.0, 30.0, 40.0],      # Node 1
+            [5.0, 5.0, 5.0, 5.0],          # Node 2
+            [-2.0, 0.0, 2.0, 4.0],         # Node 3
+            [100.0, 200.0, 300.0, 400.0],  # Node 4 (isolated: degree 0, never aggregated into neighbors)
+        ],
+        dtype=np.float32,
+    )
+
     toy = CSRGraph.from_edge_list(
         num_nodes=5,
         edge_list=[(0, 1), (0, 2), (1, 0), (1, 2), (1, 3), (2, 0), (2, 1), (3, 1)],
+        features=toy_features,
         feature_dim=4,
-        metadata={"name": "toy_graph_5nodes", "description": "5-node graph with 1 isolated node for unit testing"},
+        metadata={
+            "name": "toy_graph_5nodes",
+            "description": "5-node fixture with 8 directed CSR entries (4 undirected pairs). Node 4 is isolated.",
+            "isolated_nodes": [4],
+            "directed_edge_count": 8,
+            "undirected_edge_count": 4,
+        },
     )
     toy_path = toy.save(fixtures_dir / "toy_graph_5nodes.npz")
     print(f"Generated {toy_path.name}: {toy.get_stats()}")

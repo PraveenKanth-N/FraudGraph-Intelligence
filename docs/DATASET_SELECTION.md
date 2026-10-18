@@ -106,10 +106,12 @@ In Phase 2, the dataset schema, leakage controls, and graph construction rules w
 
 ### 5.3 Generated Baseline Fixtures
 1. **Toy Fixture (`data/fixtures/toy_graph_5nodes.npz`):**
-   - 5 nodes, 4 edges, feature dimension $D = 4$.
-   - Includes isolated node and asymmetry for instant edge-case verification.
+   - 5 nodes, 8 directed CSR adjacency entries (representing 4 undirected edge pairs), feature dimension $D = 4$.
+   - Explicit non-zero float32 features with positive, negative, and zero values.
+   - Connected nodes: Node 0 (deg 2), Node 1 (deg 3), Node 2 (deg 2), Node 3 (deg 1). Isolated node: Node 4 (deg 0).
 2. **Tier A Benchmark Fixture (`data/fixtures/synthetic_tier_a_10k.npz`):**
-   - 10,000 nodes, 94,945 directed edges, feature dimension $D = 16$.
-   - Mean degree: 9.49; maximum degree: 433; isolated nodes: 0.
+   - 10,000 nodes, 94,945 directed edges, feature dimension $D = 32$.
+   - Mean degree: 9.49; maximum degree: 10; isolated nodes: 501.
    - Serialized archive size: 1.62 MB with structured manifest JSON.
+
 
