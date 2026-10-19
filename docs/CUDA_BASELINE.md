@@ -128,7 +128,60 @@ Before running benchmarks, the runner executes on `toy_graph_5nodes`:
 
 ---
 
-## 6. Baseline Performance Bottlenecks (Research Baseline for Phase 6)
+## 6. Empirical Tesla T4 GPU Benchmark Results & Speedup Analysis
+
+The baseline CUDA engine was compiled with `nvcc` (CUDA compilation tools release 13.0, V13.0.88; flags: `-O3 -std=c++17`) and executed on a physical cloud GPU runtime via Google Colab.
+
+### 6.1 GPU Hardware Telemetry
+- **Device:** NVIDIA Tesla T4
+- **CUDA Compiler:** CUDA compilation tools release 13.0, V13.0.88
+- **Compute Capability:** 7.5 (Turing architecture)
+- **Total VRAM:** 14,912.7 MB (~14.9 GB GDDR6)
+- **Streaming Multiprocessors (SMs):** 40
+- **Theoretical Peak Bandwidth:** 320.0 GB/s
+
+### 6.2 Stage 1 Correctness Gate (`toy_graph_5nodes`, $N=5, M=8, D=4$)
+Executed with 2 warmup iterations and 5 recorded repetitions:
+| Operator | Status | Max Absolute Error | Tolerance Threshold | Result File |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sum** | **PASSED** | $0.0$ | $1.0 \times 10^{-5}$ | [`val_toy_sum.json`](file:///D:/FraudGraph%20Intelligence/experiments/results/val_toy_sum.json) |
+| **Mean** | **PASSED** | $0.0$ | $1.0 \times 10^{-5}$ | [`val_toy_mean.json`](file:///D:/FraudGraph%20Intelligence/experiments/results/val_toy_mean.json) |
+| **Max** | **PASSED** | $0.0$ | $1.0 \times 10^{-5}$ | [`val_toy_max.json`](file:///D:/FraudGraph%20Intelligence/experiments/results/val_toy_max.json) |
+
+*Observation:* Isolated node 4 strictly evaluated to $\vec{0} \in \mathbb{R}^4$, and negative feature values in Max aggregation matched the CPU reference without numerical divergence.
+
+### 6.3 Stage 2 Scale Benchmarks (`synthetic_tier_a_10k`, $N=10,000, M=94,945, D=32$)
+Executed with 5 warmup iterations and 20 recorded repetitions:
+
+| Operator | $t_{\text{H2D}}$ (ms) | $t_{\text{kernel}}$ Mean $\pm$ Std (ms) | $t_{\text{kernel}}$ p50 (ms) | $t_{\text{D2H}}$ (ms) | $t_{\text{e2e}}$ Mean (ms) | Throughput (edges/sec) | Effective BW (GB/s) | Max Abs Err |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Sum** | 0.539 | **0.0681 $\pm$ 0.0007** | 0.0677 | 0.325 | 0.931 | 1,394,380,000 | 203.44 | $0.0$ (PASSED) |
+| **Mean** | 0.558 | **0.0682 $\pm$ 0.0007** | 0.0676 | 0.329 | 0.955 | 1,393,010,000 | 203.24 | $0.0$ (PASSED) |
+| **Max** | 0.584 | **0.0673 $\pm$ 0.0022** | 0.0670 | 0.354 | 1.005 | 1,410,790,000 | 205.84 | $0.0$ (PASSED) |
+
+### 6.4 Comparative Speedup Analysis vs Phase 4 CPU Reference
+
+Hardware comparison baseline:
+- **CPU Reference:** Intel Core i5-1135G7 @ 2.40GHz (4 cores, 8 threads, AVX-512).
+- **GPU Baseline:** NVIDIA Tesla T4 (40 SMs, 2,560 CUDA cores).
+
+| Aggregation Operator | Phase 4 CPU Node Loop (ms) | Phase 4 CPU Vectorized SpMM (ms) | Phase 5 GPU Kernel Only (ms) | Phase 5 GPU End-to-End (ms) | **Pure Kernel Speedup vs CPU Ref** | **Pure Kernel Speedup vs CPU SpMM** | **End-to-End Speedup vs CPU Ref** | **End-to-End Speedup vs CPU SpMM** |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Sum** | 166.877 | 3.624 | **0.0681** | 0.931 | **2,450.8$\times$** | **53.2$\times$** | **179.2$\times$** | **3.89$\times$** |
+| **Mean** | 133.177 | 6.325 | **0.0682** | 0.955 | **1,953.9$\times$** | **92.8$\times$** | **139.4$\times$** | **6.62$\times$** |
+| **Max** | 167.173 | *N/A (unsupported)* | **0.0673** | 1.005 | **2,484.0$\times$** | *N/A* | **166.3$\times$** | *N/A* |
+
+### 6.5 Architectural Findings from Measured Telemetry
+1. **PCIe Transfer Dominance (Amdahl's Law in Practice):**
+   - For a single one-off aggregation of 10K nodes, pure CUDA kernel execution ($t_{\text{kernel}} \approx 0.068\text{ ms}$) represents only **7.1%** of total end-to-end latency ($t_{\text{e2e}} \approx 0.955\text{ ms}$). The remaining **92.9%** is consumed by host-to-device ($0.55\text{ ms}$) and device-to-host ($0.33\text{ ms}$) PCIe transfers.
+   - This validates the requirement in `docs/EXPERIMENT_PROTOCOL.md` and `ADR-007` to decouple kernel latency from PCIe transfer latency, as in iterative GNN training or multi-hop aggregation the graph resides persistently in GPU VRAM across layers.
+2. **Effective Memory Bandwidth Utilization:**
+   - The baseline 1-thread-per-node kernel achieves an estimated **203.4–205.8 GB/s** effective memory bandwidth on synthetic Tier A based on the analytical data movement model, which represents **63.6–64.3%** of the Tesla T4's theoretical peak bandwidth of 320.0 GB/s.
+   - While degree skew and uncoalesced memory reads are present, launching 10,000 threads provides sufficient memory-level parallelism to achieve substantial bus utilization; however, this does not imply full hardware, compute, or memory saturation.
+
+---
+
+## 7. Baseline Performance Bottlenecks (Research Baseline for Phase 6)
 
 The baseline kernel exposes fundamental GPU architectural bottlenecks:
 1. **Uncoalesced Memory Reads:** Each thread iterates through its node's neighbor list sequentially. Adjacent threads within a warp read features of unrelated neighbor nodes located at non-contiguous global memory addresses, causing severe memory bus underutilization.

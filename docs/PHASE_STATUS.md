@@ -18,7 +18,7 @@
 | **Phase 2** | **Literature Review & Research Specification** | FGI-MOD-02 | **PASSED (Complete)** | Rigorous review of verified literature (Bell & Garland '09, NVIDIA CUDA Guides, Huang et al. '20, Hu et al. '20, Wang et al. '16, Dou et al. '20, Weber et al. '19, Wang et al. '19); evidence-backed gap analysis (`RESEARCH_GAP.md`); testable hypotheses & variable matrices (`RESEARCH_SPECIFICATION.md`); candidate dataset evaluation & Dual-Dataset strategy (`DATASET_SELECTION.md`); mathematical CSR & zero-degree operator specifications (`ALGORITHM_SPECIFICATION.md`); benchmark protocol & tri-state schema (`EXPERIMENT_PROTOCOL.md`); ADRs 005–007 recorded (`DECISIONS.md`). |
 | **Phase 3** | **Dataset Pipeline & Graph Representation** | FGI-MOD-02, FGI-MOD-03 | **PASSED (Complete)** | Canonical CSR graph implementation (`csr_graph.py`) enforcing 8 invariants; deterministic synthetic power-law/star/uniform generator (`synthetic_generator.py`); temporal transaction graph builder (`transaction_graph_builder.py`) with zero leakage; 20 unit/invariant tests passing (22/22 total suite in 2.03s); `toy_graph_5nodes.npz` and `synthetic_tier_a_10k.npz` (10K nodes, 95K edges) generated; `GRAPH_DATA_CONTRACT.md` authored; ADRs 008-009 recorded. |
 | **Phase 4** | **CPU Reference Implementation** | FGI-MOD-04 | **PASSED (Complete)** | Implemented Sum, Mean, Max aggregators in `aggregators.py`; dual reference and vectorized SpMM modes; explicit empty-neighborhood zero sentinel ($d_i = 0 \implies \vec{0}$); 22 tests in `test_aggregators.py` (total 44/44 backend tests passing in 2.36s); high-precision benchmark harness in `benchmark_cpu.py` with JSON output in `experiments/results/`; resolved Phase 3 fixture inconsistencies (toy isolated node 4, non-zero features); `CPU_REFERENCE_ENGINE.md` authored. |
-| **Phase 5** | **Baseline CUDA Implementation** | FGI-MOD-05 | **IMPLEMENTED — GPU VALIDATION PENDING** | Baseline 1-thread-per-node CUDA C++ kernel in `fgi_baseline_kernels.cu`; standalone CLI driver in `main_baseline.cu`; Colab runner package in `colab_bundle_fgi_phase5.zip` (3.55 MB); automated `run_colab_benchmarks.py`; turnkey notebook in `fgi_colab_workflow.ipynb`; `ingest_colab_results.py` validator; 11 CPU-only tests passed (1 live GPU test skipped, 55 total suite passing); `CUDA_BASELINE.md` and `ADR-010` authored. Awaiting Colab cloud execution for final MEASURED telemetry. |
+| **Phase 5** | **Baseline CUDA Implementation** | FGI-MOD-05 | **PASSED (Complete)** | Baseline 1-thread-per-node CUDA C++ kernel in `fgi_baseline_kernels.cu`; standalone CLI driver in `main_baseline.cu`; Colab runner package in `colab_bundle_fgi_phase5.zip` (3.55 MB); executed on physical NVIDIA Tesla T4 GPU (40 SMs, 14.9 GB VRAM); correctness gate PASSED across Sum, Mean, Max (error = 0.0, tol <= 1e-5); synthetic Tier A (10K nodes, 95K edges, D=32) achieved 1.39B edges/sec throughput (kernel latency 0.068 ms); all 6 results ingested into `experiments/results/`; regression suite 55 passed; `CUDA_BASELINE.md` and `ADR-010` updated. |
 | **Phase 6** | CUDA Optimization Laboratory | FGI-MOD-06 | **PENDING** | Memory coalesced kernel, warp-per-node mapping, shared-memory reuse evaluation, CUDA event timing separation. |
 | **Phase 7** | Fraud Scoring & Evaluation | FGI-MOD-07 | **PENDING** | Feature enrichment with aggregated embeddings, scikit-learn classifier baseline, Precision, Recall, F1, PR-AUC, confusion matrices. |
 | **Phase 8** | Benchmark Automation & Experiment Management | FGI-MOD-08 | **PENDING** | Multi-run automated harness, graph-scaling experiments, latency/throughput speedup metrics, machine-readable JSON/CSV storage. |
@@ -182,12 +182,36 @@
 - **`docs/TEST_PLAN.md`:** Updated test matrix with Phase 5 coverage.
 - **`docs/CHANGELOG.md`:** Documented release `0.5.0`.
 
+### 8.5 Empirical Tesla T4 GPU Benchmark Results & Ingestion
+- **Hardware Telemetry Verified:** NVIDIA Tesla T4 (Compute Capability 7.5, 14,912.7 MB VRAM, 40 SMs, 320.0 GB/s peak bandwidth).
+- **CUDA Compiler:** CUDA compilation tools release 13.0, V13.0.88 (flags: `-O3 -std=c++17`).
+- **Stage 1 Correctness Gate (`toy_graph_5nodes`, $N=5, M=8, D=4$):**
+  - Sum: Max absolute error = $0.0$, status `PASSED` ([`val_toy_sum.json`](file:///D:/FraudGraph%20Intelligence/experiments/results/val_toy_sum.json)).
+  - Mean: Max absolute error = $0.0$, status `PASSED` ([`val_toy_mean.json`](file:///D:/FraudGraph%20Intelligence/experiments/results/val_toy_mean.json)).
+  - Max: Max absolute error = $0.0$, status `PASSED` ([`val_toy_max.json`](file:///D:/FraudGraph%20Intelligence/experiments/results/val_toy_max.json)).
+- **Stage 2 Scale Benchmarks (`synthetic_tier_a_10k`, $N=10,000, M=94,945, D=32$):**
+  - Sum: $t_{\text{kernel}} = 0.0681 \pm 0.0007\text{ ms}$, $1.394\text{ B edges/s}$, $203.44\text{ GB/s}$ effective BW, error = $0.0$ ([`exp_gpu_baseline_tier_a_sum_20261018_173315.json`](file:///D:/FraudGraph%20Intelligence/experiments/results/exp_gpu_baseline_tier_a_sum_20261018_173315.json)).
+  - Mean: $t_{\text{kernel}} = 0.0682 \pm 0.0007\text{ ms}$, $1.393\text{ B edges/s}$, $203.24\text{ GB/s}$ effective BW, error = $0.0$ ([`exp_gpu_baseline_tier_a_mean_20261018_173315.json`](file:///D:/FraudGraph%20Intelligence/experiments/results/exp_gpu_baseline_tier_a_mean_20261018_173315.json)).
+  - Max: $t_{\text{kernel}} = 0.0673 \pm 0.0022\text{ ms}$, $1.411\text{ B edges/s}$, $205.84\text{ GB/s}$ effective BW, error = $0.0$ ([`exp_gpu_baseline_tier_a_max_20261018_173315.json`](file:///D:/FraudGraph%20Intelligence/experiments/results/exp_gpu_baseline_tier_a_max_20261018_173315.json)).
+- **Speedup vs Phase 4 CPU Reference (Intel i5-1135G7):**
+  - Pure Kernel Speedup: $2,450.8\times$ (Sum), $1,953.9\times$ (Mean), $2,484.0\times$ (Max).
+  - Pure Kernel Speedup vs CPU Vectorized SpMM: $53.2\times$ (Sum), $92.8\times$ (Mean).
+  - End-to-End Speedup (including PCIe): $179.2\times$ (Sum), $139.4\times$ (Mean), $166.3\times$ (Max) vs CPU Reference; $3.89\times$ (Sum), $6.62\times$ (Mean) vs CPU SpMM.
+- **Ingestion & Archive:** All 6 result JSON files validated with strict schema conformity and archived into `experiments/results/`.
+
 ---
 
-## 9. Phase 5 Gate Status
-- **Gate Status:** **IMPLEMENTED — GPU VALIDATION PENDING**
-- **Explanation:** In strict adherence to the Master Engineering Directive, Phase 5 is marked as `IMPLEMENTED — GPU VALIDATION PENDING` because all CUDA C++ kernels, host orchestration, Colab runners, and test suites are fully implemented and verified locally, but final physical GPU execution is awaiting the user's run of `colab_bundle_fgi_phase5.zip` on Google Colab. We never fabricate GPU benchmarks or claim a kernel ran on physical GPU hardware when it has not yet executed.
-- **Action Required:** Await User authorization / Colab run to ingest GPU benchmark results and initiate Phase 6 (CUDA Optimization Laboratory).
+## 9. Phase 5 Gate Acceptance
+- **Gate Status:** **PASSED (Complete)**
+- **Verification Evidence:**
+  1. Baseline CUDA C++ kernel and host CLI driver compiled without warnings using CUDA compilation tools release 13.0, V13.0.88.
+  2. Numerical correctness validated on both toy and 10K node graphs with max absolute error equal to $0.0$, strictly satisfying the $\text{atol} \le 10^{-5}$ tolerance standard.
+  3. Decoupled PCIe transfer and pure kernel event timing verified on physical Tesla T4 hardware.
+  4. Ingested result files conform strictly to the `MEASURED` state schema in `docs/EXPERIMENT_PROTOCOL.md`.
+  5. Full backend regression test suite passes 55/55 tests in 2.96s (1 live GPU test appropriately skipped on local host).
+  6. Frontend builds cleanly with 0 TypeScript/Vite errors in 1.70s.
+- **Next Phase:** Phase 6 (CUDA Optimization Laboratory) unlocked.
+
 
 
 

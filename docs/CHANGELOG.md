@@ -38,9 +38,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Automated Verification Test Suite (`backend/tests/test_cuda_baseline.py`):**
   - 12 comprehensive unit tests covering source completeness, Colab bundle packaging, notebook JSON structure, JSON schema validation, numerical comparison logic with tolerance ($\text{atol} \le 10^{-5}$), and graceful missing-binary handling.
   - Total backend test suite now passes 55 tests (with 1 live GPU test appropriately skipped).
-- **Architecture Documentation & Decisions:**
-  - Authored [`docs/CUDA_BASELINE.md`](file:///D:/FraudGraph%20Intelligence/docs/CUDA_BASELINE.md) detailing kernel design, memory mapping, and identified baseline bottlenecks (divergence, uncoalesced global reads).
-  - Recorded `ADR-010` in [`docs/DECISIONS.md`](file:///D:/FraudGraph%20Intelligence/docs/DECISIONS.md).
+- **Empirical GPU Benchmarking & Verification on NVIDIA Tesla T4:**
+  - Validated baseline 1-thread-per-node CUDA kernel on physical Tesla T4 GPU (40 SMs, 14.9 GB VRAM) compiled with CUDA compilation tools release 13.0, V13.0.88.
+  - Correctness verification on `toy_graph_5nodes` achieved zero absolute error ($\text{atol} = 0.0 \le 10^{-5}$) across Sum, Mean, and Max.
+  - Scale benchmark on `synthetic_tier_a_10k` ($N=10,000, M=94,945, D=32$) demonstrated $1.39\text{B edges/sec}$ throughput at $\sim 0.068\text{ ms}$ kernel latency ($203.4\text{ GB/s}$ effective bandwidth).
+  - Ingested 6 verified JSON telemetry archives into `experiments/results/` meeting all schema criteria. Phase 5 gate successfully passed.
 
 
 ---
