@@ -1,6 +1,7 @@
 #include <cuda_runtime.h>
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -23,6 +24,16 @@ struct HostCSRGraph {
     std::vector<int> col_idx;
     std::vector<float> features;
 };
+
+static std::string format_with_commas(std::uint64_t value) {
+    std::string s = std::to_string(value);
+    int insert_pos = (int)s.length() - 3;
+    while (insert_pos > 0) {
+        s.insert(insert_pos, ",");
+        insert_pos -= 3;
+    }
+    return s;
+}
 
 // Reads raw binary files dumped by the python preprocessor
 bool load_raw_csr(const std::string& dir_path, HostCSRGraph& graph) {
@@ -220,9 +231,13 @@ int main(int argc, char** argv) {
     float e2e_ms = h2d_ms + mean_kernel_ms + d2h_ms;
     float edges_per_sec = (mean_kernel_ms > 0.0f) ? ((float)graph.num_edges / (mean_kernel_ms * 1e-3f)) : 0.0f;
 
-    // Effective bandwidth formula: Read row_ptr + col_idx + (M * D * 4) + Write (N * D * 4)
-    size_t bytes_transferred = bytes_row + bytes_col + ((size_t)graph.num_edges * (size_t)graph.feature_dim * sizeof(float)) + bytes_out;
-    float bw_eff_gbps = (mean_kernel_ms > 0.0f) ? ((float)bytes_transferred / (mean_kernel_ms * 1e-3f * 1e9f)) : 0.0f;
+    // Compulsory physical DRAM traffic: Reading row_ptr, col_idx, unique node features once + writing output once
+    size_t bytes_compulsory = bytes_row + bytes_col + ((size_t)graph.num_nodes * (size_t)graph.feature_dim * sizeof(float)) + bytes_out;
+    float bw_compulsory_gbps = (mean_kernel_ms > 0.0f) ? ((float)bytes_compulsory / (mean_kernel_ms * 1e-3f * 1e9f)) : 0.0f;
+
+    // Algorithmic memory traffic: Counts repeated feature reads for every directed edge (assuming zero cache reuse)
+    size_t bytes_algorithmic = bytes_row + bytes_col + ((size_t)graph.num_edges * (size_t)graph.feature_dim * sizeof(float)) + bytes_out;
+    float bw_algo_gbps = (mean_kernel_ms > 0.0f) ? ((float)bytes_algorithmic / (mean_kernel_ms * 1e-3f * 1e9f)) : 0.0f;
 
     std::printf("[+] Benchmarks Recorded:\n");
     std::printf("    H2D Transfer:      %8.3f ms\n", h2d_ms);
@@ -230,8 +245,9 @@ int main(int argc, char** argv) {
                 mean_kernel_ms, std_kernel_ms, p50_kernel_ms, p95_kernel_ms);
     std::printf("    D2H Transfer:      %8.3f ms\n", d2h_ms);
     std::printf("    End-to-End Mean:   %8.3f ms\n", e2e_ms);
-    std::printf("    Kernel Throughput: %12,.0f edges/sec\n", edges_per_sec);
-    std::printf("    Effective BW:      %8.2f GB/s\n", bw_eff_gbps);
+    std::printf("    Kernel Throughput: %15s edges/sec\n", format_with_commas((std::uint64_t)edges_per_sec).c_str());
+    std::printf("    Est. Compulsory BW:%8.2f GB/s (analytical unique footprint: %.2f MB)\n", bw_compulsory_gbps, (float)bytes_compulsory / 1.0e6f);
+    std::printf("    Est. Algorithmic BW:%7.2f GB/s (analytical un-cached traffic: %.2f MB)\n", bw_algo_gbps, (float)bytes_algorithmic / 1.0e6f);
 
     // 10. Numerical Correctness Verification
     std::string verif_status = "NOT_VALIDATED";
@@ -319,7 +335,9 @@ int main(int argc, char** argv) {
             json_file << "  },\n";
             json_file << "  \"performance_metrics\": {\n";
             json_file << "    \"edges_per_second\": " << edges_per_sec << ",\n";
-            json_file << "    \"effective_bandwidth_gbps\": " << bw_eff_gbps << "\n";
+            json_file << "    \"estimated_compulsory_bandwidth_gbps\": " << bw_compulsory_gbps << ",\n";
+            json_file << "    \"estimated_algorithmic_bandwidth_gbps\": " << bw_algo_gbps << ",\n";
+            json_file << "    \"effective_bandwidth_gbps\": " << bw_compulsory_gbps << "\n";
             json_file << "  },\n";
             json_file << "  \"numerical_verification\": {\n";
             json_file << "    \"status\": \"" << verif_status << "\",\n";

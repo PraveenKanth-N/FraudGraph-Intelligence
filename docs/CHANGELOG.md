@@ -7,11 +7,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-### Planned for Phase 6: CUDA Optimization Laboratory
-- Warp-per-node parallelization (`fgi_aggregator_coalesced_kernel.cu`) for coalesced memory transactions.
-- Shared-memory caching and reduction tiles (`__shared__`) for high-degree hub nodes.
-- Degree-aware load balancing separating isolated/leaf nodes from dense fraud rings.
-- Direct benchmark comparisons against Phase 5 baseline kernel.
+### Planned for Phase 6 (Remaining Experiments)
+- Shared-memory caching and reduction tiles (`__shared__`) for high-degree hub nodes (Candidate 2/3).
+- Degree-aware load balancing separating isolated/leaf nodes from dense fraud rings (Candidate 4).
+- Pinned DMA host memory and asynchronous CUDA multi-stream overlap (Candidate 7).
+
+---
+
+## [0.6.0] - 2026-10-19 — Phase 6, Experiment 6.1: Warp-Coalesced Neighbor Aggregation
+
+### Added
+- **Optimized Warp-Coalesced CUDA Engine (`backend/gpu_engine/cuda/`):**
+  - Implemented `aggregate_coalesced_warp_kernel` in [`fgi_coalesced_kernels.cu`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/src/fgi_coalesced_kernels.cu) mapping 1 warp (32 lanes) per output node, achieving 100% coalesced 128-byte global memory transactions for canonical feature dimension $D=32$.
+  - Column-strided edge loop ensuring generalized compatibility for arbitrary feature dimensions ($D \ne 32$).
+  - Full compliance with FGI zero-sentinel policy for empty neighborhoods and negative-only neighborhoods for Max aggregation.
+  - Implemented standalone CLI driver [`main_coalesced.cu`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/src/main_coalesced.cu) with standard comma formatting and segregated analytical bandwidth calculation reporting.
+  - Updated Makefile to compile both `fgi_baseline_runner` and `fgi_coalesced_runner` targeting Tesla T4 `compute_75,code=sm_75`.
+- **Google Colab Cloud Revalidation & Automation (`backend/gpu_engine/colab_runner/`):**
+  - Updated [`package_colab_bundle.py`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/colab_runner/package_colab_bundle.py) producing `experiments/colab_bundle_fgi_phase6.zip` (3.56 MB).
+  - Turnkey execution and verification script [`run_colab_benchmarks.py`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/colab_runner/run_colab_benchmarks.py) and notebook [`fgi_colab_workflow.ipynb`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/colab_runner/fgi_colab_workflow.ipynb).
+  - `#include <cstdint>` and `std::uint64_t` repair ensuring clean compilation on GCC / CUDA 13.0 (V13.0.88).
+- **Automated Verification Test Suite (`backend/tests/test_cuda_coalesced.py`):**
+  - 9 comprehensive unit and schema tests validating source tokens, Makefile targets, runner interface, bundle packaging, schema validation, canonical Tier A fixture, bandwidth formulas, throughput formatting, and ingested result assertions.
+  - Backend regression test suite passes 64 tests (1 live GPU test appropriately skipped).
+- **Physical GPU Revalidation Results on NVIDIA Tesla T4:**
+  - Revalidation run (`20261019_175441`) confirmed 100% numerical correctness ($\text{err} = 0.00 \le 1.0 \times 10^{-5}$) across toy and 10K node graphs for all operators.
+  - Pure kernel acceleration: Mean $3.72\times$ ($0.0689\text{ ms} \rightarrow 0.0185\text{ ms}$), Sum $4.07\times$ ($0.0686\text{ ms} \rightarrow 0.0168\text{ ms}$), Max $4.03\times$ ($0.0673\text{ ms} \rightarrow 0.0167\text{ ms}$).
+  - End-to-end wall-clock analysis: Sum $1.09\times$, Max $1.07\times$, Mean $0.99\times$ (accounting for PCIe transfer overhead occupying $93\%-98\%$ of execution time).
+  - Disclosed analytical bandwidth estimates ($160.77 - 178.37\text{ GB/s}$ compulsory DRAM traffic, $747 - 829\text{ GB/s}$ algorithmic work rate hitting the 4MB on-chip L2 cache).
+  - Ingested 12 verified JSON files into `experiments/results/` while preserving Run 1 evidence. Phase 6.1 gate passed.
 
 ---
 

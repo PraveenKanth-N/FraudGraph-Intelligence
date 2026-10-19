@@ -1,25 +1,28 @@
-# FraudGraph Intelligence — CUDA Baseline Makefile
-# Targets standard modern GPUs (T4 sm_75, V100 sm_70, A100 sm_80)
+# FraudGraph Intelligence — CUDA Makefile (Baseline & Phase 6 Optimized Kernels)
+# Targets Google Colab NVIDIA Tesla T4 (Turing sm_75, CUDA 13.0 compatible)
 
 NVCC ?= nvcc
 CXX ?= g++
 
-CUDA_ARCH ?= -gencode arch=compute_75,code=sm_75 \
-             -gencode arch=compute_70,code=sm_70 \
-             -gencode arch=compute_80,code=sm_80
+CUDA_ARCH ?= -gencode arch=compute_75,code=sm_75
 
 NVCC_FLAGS ?= -O3 -std=c++17 --expt-relaxed-constexpr -Xcompiler -Wall -I./include $(CUDA_ARCH)
 
 BIN_DIR = bin
 BUILD_DIR = build
-TARGET = $(BIN_DIR)/fgi_baseline_runner
 
-SRCS = src/fgi_baseline_kernels.cu src/main_baseline.cu
-OBJS = $(patsubst src/%.cu, $(BUILD_DIR)/%.o, $(SRCS))
+TARGET_BASELINE = $(BIN_DIR)/fgi_baseline_runner
+TARGET_COALESCED = $(BIN_DIR)/fgi_coalesced_runner
 
-all: $(TARGET)
+OBJS_BASELINE = $(BUILD_DIR)/fgi_baseline_kernels.o $(BUILD_DIR)/main_baseline.o
+OBJS_COALESCED = $(BUILD_DIR)/fgi_coalesced_kernels.o $(BUILD_DIR)/main_coalesced.o
 
-$(TARGET): $(OBJS) | $(BIN_DIR)
+all: $(TARGET_BASELINE) $(TARGET_COALESCED)
+
+$(TARGET_BASELINE): $(OBJS_BASELINE) | $(BIN_DIR)
+	$(NVCC) $(NVCC_FLAGS) -o $@ $^
+
+$(TARGET_COALESCED): $(OBJS_COALESCED) | $(BIN_DIR)
 	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
 $(BUILD_DIR)/%.o: src/%.cu | $(BUILD_DIR)

@@ -58,7 +58,7 @@ def dump_raw_graph_and_references(graph_path: Path, out_dir: Path) -> dict:
     return stats
 
 
-def build_colab_bundle(output_zip: Path = Path("experiments/colab_bundle_fgi_phase5.zip")) -> Path:
+def build_colab_bundle(output_zip: Path = Path("experiments/colab_bundle_fgi_phase6.zip")) -> Path:
     """Builds the complete self-contained Google Colab zip bundle."""
     workspace_root = Path(__file__).resolve().parents[3]
     stage_dir = workspace_root / "build" / "colab_stage"

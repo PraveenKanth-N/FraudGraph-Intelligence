@@ -82,7 +82,7 @@ def ingest_results_archive(archive_or_file: Path, dest_dir: Path = Path("experim
                 dest_file = dest_dir / p.name
                 shutil.copy2(p, dest_file)
                 ingested_files.append(dest_file)
-                print(f"[✓] Validated and ingested: {dest_file.name}")
+                print(f"[OK] Validated and ingested: {dest_file.name}")
     elif archive_or_file.suffix == ".json":
         with open(archive_or_file, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -94,7 +94,7 @@ def ingest_results_archive(archive_or_file: Path, dest_dir: Path = Path("experim
         dest_file = dest_dir / archive_or_file.name
         shutil.copy2(archive_or_file, dest_file)
         ingested_files.append(dest_file)
-        print(f"[✓] Validated and ingested: {dest_file.name}")
+        print(f"[OK] Validated and ingested: {dest_file.name}")
     else:
         raise ValueError(f"Unsupported file format: {archive_or_file.suffix}. Expected .zip or .json")
 

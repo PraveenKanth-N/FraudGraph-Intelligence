@@ -23,10 +23,11 @@ def is_nvcc_available() -> bool:
     return shutil.which("nvcc") is not None
 
 
-def get_cuda_binary_path() -> Path:
-    """Returns the expected path to the compiled CUDA baseline binary."""
+def get_cuda_binary_path(kernel: str = "baseline") -> Path:
+    """Returns the expected path to the compiled CUDA binary for baseline or coalesced engine."""
     workspace_root = Path(__file__).resolve().parents[2]
-    binary_name = "fgi_baseline_runner.exe" if sys.platform == "win32" else "fgi_baseline_runner"
+    binary_base = "fgi_coalesced_runner" if kernel == "coalesced" else "fgi_baseline_runner"
+    binary_name = f"{binary_base}.exe" if sys.platform == "win32" else binary_base
     return workspace_root / "backend" / "gpu_engine" / "cuda" / "bin" / binary_name
 
 
@@ -75,14 +76,16 @@ def validate_gpu_against_cpu(
 def execute_cuda_aggregation(
     graph: CSRGraph,
     operator: str = "mean",
+    kernel: str = "baseline",
     warmup: int = 5,
     repeat: int = 20,
+    block_size: int = 256,
 ) -> Tuple[np.ndarray, Dict[str, Any]]:
     """
     Executes native CUDA aggregation if the compiled binary is present.
     If binary or nvcc is missing, raises RuntimeError detailing Colab workflow instructions.
     """
-    binary_path = get_cuda_binary_path()
+    binary_path = get_cuda_binary_path(kernel=kernel)
     if not binary_path.exists():
         raise RuntimeError(
             f"CUDA binary '{binary_path.name}' not found. "

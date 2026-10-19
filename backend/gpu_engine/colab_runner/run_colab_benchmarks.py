@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Automated Google Colab GPU Benchmark and Validation Runner
-Executes within a Google Colab GPU environment (e.g. NVIDIA T4 / V100 / A100).
+Automated Google Colab GPU Benchmark and Validation Runner — Phase 6 (Experiment 6.1)
+Executes within a Google Colab GPU environment (e.g. NVIDIA Tesla T4 / V100 / A100).
 1. Detects and logs physical GPU hardware, driver, and CUDA compiler versions.
-2. Compiles the baseline CUDA C++ kernels.
-3. Executes correctness verification against CPU reference outputs (tol <= 1e-5).
-4. Runs high-precision multi-repetition benchmark matrix.
-5. Emits machine-readable JSON observation files with 'MEASURED' state.
+2. Compiles both Baseline and Warp-Coalesced (Experiment 6.1) CUDA engines.
+3. Executes correctness verification gates on toy fixtures (tol <= 1e-5).
+4. Runs high-precision multi-repetition benchmark matrices on Tier A (10K nodes, 95K edges, D=32).
+5. Computes speedups of Warp-Coalesced vs Baseline under identical hardware conditions.
+6. Emits machine-readable JSON observation files with 'MEASURED' state.
 """
 
 import datetime
@@ -32,7 +33,7 @@ def run_command(cmd: str, check: bool = True) -> str:
 
 def main():
     print("=" * 80)
-    print(" FRAUDGRAPH INTELLIGENCE — COLAB GPU RUNNER (PHASE 5 BASELINE)")
+    print(" FRAUDGRAPH INTELLIGENCE — COLAB GPU RUNNER (PHASE 6: EXP 6.1 COALESCED)")
     print("=" * 80)
 
     # 1. Environment & Hardware Detection
@@ -45,88 +46,125 @@ def main():
         sys.exit(1)
 
     cuda_dir = Path("cuda")
-    bin_path = cuda_dir / "bin" / "fgi_baseline_runner"
+    baseline_bin = cuda_dir / "bin" / "fgi_baseline_runner"
+    coalesced_bin = cuda_dir / "bin" / "fgi_coalesced_runner"
 
-    # 2. Compile Baseline CUDA Executable
-    print("\n[+] Compiling Baseline CUDA Engine:")
+    # 2. Compile Both CUDA Executables
+    print("\n[+] Compiling Baseline & Warp-Coalesced CUDA Engines:")
     run_command("make -C cuda clean")
     run_command("make -C cuda")
 
-    if not bin_path.exists():
-        print(f"[FATAL] Binary not found after compilation: {bin_path}", file=sys.stderr)
-        sys.exit(1)
+    for b in [baseline_bin, coalesced_bin]:
+        if not b.exists():
+            print(f"[FATAL] Binary not found after compilation: {b}", file=sys.stderr)
+            sys.exit(1)
+        print(f"[✓] Verified compiled binary: {b}")
 
     results_dir = Path("results")
     results_dir.mkdir(parents=True, exist_ok=True)
+
+    toy_dir = Path("data/toy_graph_5nodes")
+    tier_a_dir = Path("data/synthetic_tier_a_10k")
+    operators = ["mean", "sum", "max"]
 
     # 3. Correctness Gate (Toy Graph Fixture)
     print("\n" + "=" * 80)
     print(" STEP 1: CORRECTNESS VERIFICATION GATE (toy_graph_5nodes)")
     print("=" * 80)
 
-    toy_dir = Path("data/toy_graph_5nodes")
-    operators = ["mean", "sum", "max"]
+    for bin_target, label in [(baseline_bin, "baseline"), (coalesced_bin, "coalesced")]:
+        print(f"\n--- Testing Engine: {label.upper()} ({bin_target.name}) ---")
+        for op in operators:
+            ref_bin = toy_dir / f"ref_{op}.bin"
+            json_out = results_dir / f"val_toy_{label}_{op}.json"
 
-    for op in operators:
-        print(f"\n[*] Testing operator '{op}' on toy fixture...")
-        ref_bin = toy_dir / f"ref_{op}.bin"
-        json_out = results_dir / f"val_toy_{op}.json"
+            cmd = (
+                f"./{bin_target} --graph {toy_dir} --op {op} --warmup 2 --repeat 5 "
+                f"--validate {ref_bin} --export-json {json_out}"
+            )
+            run_command(cmd)
 
-        cmd = (
-            f"./{bin_path} --graph {toy_dir} --op {op} --warmup 2 --repeat 5 "
-            f"--validate {ref_bin} --export-json {json_out}"
-        )
-        run_command(cmd)
-
-        with open(json_out, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            verif = data.get("numerical_verification", {})
-            if verif.get("status") != "PASSED":
-                print(f"[FATAL] Correctness gate failed for operator '{op}' on toy fixture: {verif}", file=sys.stderr)
-                sys.exit(2)
-            print(f"[✓] Operator '{op}' PASSED correctness gate (Max Abs Error: {verif.get('max_absolute_error'):.2e})")
+            with open(json_out, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                verif = data.get("numerical_verification", {})
+                if verif.get("status") != "PASSED":
+                    print(f"[FATAL] Correctness gate failed for {label} operator '{op}': {verif}", file=sys.stderr)
+                    sys.exit(2)
+                print(f"[✓] {label.upper()} '{op}' PASSED (Max Abs Error: {verif.get('max_absolute_error'):.2e})")
 
     # 4. Benchmark Matrix (Tier A 10K Node Graph)
     print("\n" + "=" * 80)
     print(" STEP 2: BENCHMARK MATRIX (synthetic_tier_a_10k, N=10,000, M=94,945, D=32)")
     print("=" * 80)
 
-    tier_a_dir = Path("data/synthetic_tier_a_10k")
     timestamp_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    experiment_files = []
+    perf_records = {}
 
+    for bin_target, label in [(baseline_bin, "baseline"), (coalesced_bin, "coalesced")]:
+        print(f"\n--- Benchmarking Engine: {label.upper()} (5 warmups, 20 repetitions) ---")
+        perf_records[label] = {}
+
+        for op in operators:
+            ref_bin = tier_a_dir / f"ref_{op}.bin"
+            exp_id = f"exp_gpu_{label}_tier_a_{op}_{timestamp_str}"
+            json_out = results_dir / f"{exp_id}.json"
+
+            cmd = (
+                f"./{bin_target} --graph {tier_a_dir} --op {op} --warmup 5 --repeat 20 "
+                f"--validate {ref_bin} --export-json {json_out}"
+            )
+            run_command(cmd)
+
+            with open(json_out, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                perf = data.get("performance_metrics", {})
+                timings = data.get("timing_results_ms", {})
+                verif = data.get("numerical_verification", {})
+
+                k_mean = timings.get("kernel_mean", 0.0)
+                e2e_mean = timings.get("end_to_end_mean", 0.0)
+                perf_records[label][op] = {
+                    "kernel_mean": k_mean,
+                    "end_to_end_mean": e2e_mean,
+                    "throughput": perf.get("edges_per_second", 0.0),
+                    "bandwidth": perf.get("effective_bandwidth_gbps", 0.0),
+                    "verif": verif.get("status"),
+                    "error": verif.get("max_absolute_error", 0.0),
+                }
+
+                print(f"    Operator:         {op.upper()} ({label})")
+                print(f"    Kernel Mean:      {k_mean:.3f} ms +/- {timings.get('kernel_std', 0.0):.3f} ms")
+                print(f"    Kernel p50:       {timings.get('kernel_p50', 0.0):.3f} ms")
+                print(f"    H2D Transfer:     {timings.get('h2d_transfer_mean', 0.0):.3f} ms")
+                print(f"    D2H Transfer:     {timings.get('d2h_transfer_mean', 0.0):.3f} ms")
+                print(f"    End-to-End:       {e2e_mean:.3f} ms")
+                print(f"    Throughput:       {perf.get('edges_per_second', 0.0):,.0f} edges/sec")
+                if "estimated_compulsory_bandwidth_gbps" in perf:
+                    print(f"    Est. Comp. BW:    {perf['estimated_compulsory_bandwidth_gbps']:.2f} GB/s (unique footprint)")
+                    print(f"    Est. Algo. BW:    {perf['estimated_algorithmic_bandwidth_gbps']:.2f} GB/s (un-cached traffic)")
+                else:
+                    print(f"    Est. Bandwidth:   {perf.get('effective_bandwidth_gbps', 0.0):.2f} GB/s")
+                print(f"    Validation:       {verif.get('status')} (Max Abs Error: {verif.get('max_absolute_error', 0.0):.2e})")
+
+    # 5. Comparative Speedup Summary
+    print("\n" + "=" * 80)
+    print(" STEP 3: COMPARATIVE SPEEDUP SUMMARY (EXP 6.1 COALESCED VS BASELINE)")
+    print("=" * 80)
+    print(f"{'Operator':<10} | {'Base Kernel':<12} | {'Opt Kernel':<12} | {'Kernel Speedup':<15} | {'E2E Speedup':<12}")
+    print("-" * 70)
     for op in operators:
-        print(f"\n[*] Running Benchmark for operator '{op}' (5 warmups, 20 repetitions)...")
-        ref_bin = tier_a_dir / f"ref_{op}.bin"
-        exp_id = f"exp_gpu_baseline_tier_a_{op}_{timestamp_str}"
-        json_out = results_dir / f"{exp_id}.json"
+        b_k = perf_records["baseline"][op]["kernel_mean"]
+        o_k = perf_records["coalesced"][op]["kernel_mean"]
+        b_e2e = perf_records["baseline"][op]["end_to_end_mean"]
+        o_e2e = perf_records["coalesced"][op]["end_to_end_mean"]
+        k_speedup = (b_k / o_k) if o_k > 0 else 0.0
+        e2e_speedup = (b_e2e / o_e2e) if o_e2e > 0 else 0.0
+        print(f"{op.upper():<10} | {b_k:8.3f} ms | {o_k:8.3f} ms | {k_speedup:12.2f}x | {e2e_speedup:9.2f}x")
 
-        cmd = (
-            f"./{bin_path} --graph {tier_a_dir} --op {op} --warmup 5 --repeat 20 "
-            f"--validate {ref_bin} --export-json {json_out}"
-        )
-        run_command(cmd)
-        experiment_files.append(json_out)
-
-        with open(json_out, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            perf = data.get("performance_metrics", {})
-            timings = data.get("timing_results_ms", {})
-            verif = data.get("numerical_verification", {})
-
-            print(f"    Operator:         {op.upper()}")
-            print(f"    Kernel Mean:      {timings.get('kernel_mean', 0.0):.3f} ms +/- {timings.get('kernel_std', 0.0):.3f} ms")
-            print(f"    Kernel p50:       {timings.get('kernel_p50', 0.0):.3f} ms")
-            print(f"    H2D Transfer:     {timings.get('h2d_transfer_mean', 0.0):.3f} ms")
-            print(f"    D2H Transfer:     {timings.get('d2h_transfer_mean', 0.0):.3f} ms")
-            print(f"    End-to-End:       {timings.get('end_to_end_mean', 0.0):.3f} ms")
-            print(f"    Throughput:       {perf.get('edges_per_second', 0.0):,.0f} edges/sec")
-            print(f"    Validation:       {verif.get('status')} (Max Abs Error: {verif.get('max_absolute_error', 0.0):.2e})")
-
-    # 5. Archive Results for Download
-    zip_out = Path("fgi_phase5_gpu_results.zip")
-    shutil.make_archive("fgi_phase5_gpu_results", "zip", results_dir)
-    print(f"\n[OK] All benchmarks completed successfully. Results archived in: {zip_out.resolve()}")
+    # 6. Archive Results for Download
+    zip_out = Path("fgi_phase6_gpu_results.zip")
+    shutil.make_archive("fgi_phase6_gpu_results", "zip", results_dir)
+    print(f"\n[OK] Benchmarks complete. Archived in: {zip_out.resolve()}")
 
 
 if __name__ == "__main__":
