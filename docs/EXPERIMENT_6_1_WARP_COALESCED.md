@@ -111,7 +111,7 @@ Since the local Windows host lacks `nvcc` and MSVC build tools, execution follow
 
 ### 3.4 Measured Google Colab Tesla T4 Results & Audit
 
-The physical Google Colab revalidation run on an **NVIDIA Tesla T4** (`sm_75`, 40 SMs, 14.9 GB VRAM, Driver 550.54.14, CUDA 13.0, V13.0.88) was executed on October 19, 2026. All 6 toy-graph correctness validations and all 6 Tier A benchmarks completed with 100% numerical accuracy ($\text{max\_abs\_err} = 0.00 \le 1.0 \times 10^{-5}$).
+The physical Google Colab revalidation run on an **NVIDIA Tesla T4** (`sm_75`, 40 SMs, 14.9 GB VRAM, Driver 580.82.07, CUDA 13.0, V13.0.88) was executed on October 19, 2026. All 6 toy-graph correctness validations and all 6 Tier A benchmarks completed with 100% numerical accuracy ($\text{max\_abs\_err} = 0.00 \le 1.0 \times 10^{-5}$).
 
 #### Revalidation Performance Matrix (Tier A: $N=10,000$, $M=94,945$, $D=32$, 20 Repetitions, 5 Warmup)
 *Timestamp: `20261019_175441` on NVIDIA Tesla T4 / CUDA 13.0*

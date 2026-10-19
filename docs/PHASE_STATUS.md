@@ -238,7 +238,7 @@
 
 ### 10.3 Experiment 6.1 GPU Revalidation & Performance Audit
 - **Revalidation Date:** October 19, 2026.
-- **Target Hardware & Environment:** NVIDIA Tesla T4 (`sm_75`, 40 SMs, 14.9 GB VRAM, Driver 550.54.14, CUDA 13.0, V13.0.88).
+- **Target Hardware & Environment:** NVIDIA Tesla T4 (`sm_75`, 40 SMs, 14.9 GB VRAM, Driver 580.82.07, CUDA 13.0, V13.0.88).
 - **Numerical Correctness:** PASSED on `toy_graph_5nodes` and `synthetic_tier_a_10k` ($N=10,000, M=94,945, D=32$) with reported error $0.00 \le 1.0 \times 10^{-5}$ across Mean, Sum, and Max for both Baseline and Coalesced engines.
 - **Pure Kernel Acceleration (Revalidation Run `20261019_175441`):**
   - **Mean:** $0.06892\text{ ms} \rightarrow 0.01853\text{ ms}$ (**$3.72\times$ speedup**, $73.1\%$ latency reduction)

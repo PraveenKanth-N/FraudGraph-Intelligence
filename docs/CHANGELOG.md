@@ -30,7 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Automated Verification Test Suite (`backend/tests/test_cuda_coalesced.py`):**
   - 9 comprehensive unit and schema tests validating source tokens, Makefile targets, runner interface, bundle packaging, schema validation, canonical Tier A fixture, bandwidth formulas, throughput formatting, and ingested result assertions.
   - Backend regression test suite passes 64 tests (1 live GPU test appropriately skipped).
-- **Physical GPU Revalidation Results on NVIDIA Tesla T4:**
+- **Physical GPU Revalidation Results on NVIDIA Tesla T4 (Driver 580.82.07, CUDA 13.0):**
   - Revalidation run (`20261019_175441`) confirmed 100% numerical correctness ($\text{err} = 0.00 \le 1.0 \times 10^{-5}$) across toy and 10K node graphs for all operators.
   - Pure kernel acceleration: Mean $3.72\times$ ($0.0689\text{ ms} \rightarrow 0.0185\text{ ms}$), Sum $4.07\times$ ($0.0686\text{ ms} \rightarrow 0.0168\text{ ms}$), Max $4.03\times$ ($0.0673\text{ ms} \rightarrow 0.0167\text{ ms}$).
   - End-to-end wall-clock analysis: Sum $1.09\times$, Max $1.07\times$, Mean $0.99\times$ (accounting for PCIe transfer overhead occupying $93\%-98\%$ of execution time).
