@@ -14,12 +14,14 @@ BUILD_DIR = build
 TARGET_BASELINE = $(BIN_DIR)/fgi_baseline_runner
 TARGET_COALESCED = $(BIN_DIR)/fgi_coalesced_runner
 TARGET_STREAMS = $(BIN_DIR)/fgi_streams_runner
+TARGET_DEGREE_AWARE = $(BIN_DIR)/fgi_degree_aware_runner
 
 OBJS_BASELINE = $(BUILD_DIR)/fgi_baseline_kernels.o $(BUILD_DIR)/main_baseline.o
 OBJS_COALESCED = $(BUILD_DIR)/fgi_coalesced_kernels.o $(BUILD_DIR)/main_coalesced.o
 OBJS_STREAMS = $(BUILD_DIR)/fgi_coalesced_kernels.o $(BUILD_DIR)/main_streams.o
+OBJS_DEGREE_AWARE = $(BUILD_DIR)/fgi_degree_aware_kernels.o $(BUILD_DIR)/main_degree_aware.o
 
-all: $(TARGET_BASELINE) $(TARGET_COALESCED) $(TARGET_STREAMS)
+all: $(TARGET_BASELINE) $(TARGET_COALESCED) $(TARGET_STREAMS) $(TARGET_DEGREE_AWARE)
 
 $(TARGET_BASELINE): $(OBJS_BASELINE) | $(BIN_DIR)
 	$(NVCC) $(NVCC_FLAGS) -o $@ $^
@@ -28,6 +30,9 @@ $(TARGET_COALESCED): $(OBJS_COALESCED) | $(BIN_DIR)
 	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
 $(TARGET_STREAMS): $(OBJS_STREAMS) | $(BIN_DIR)
+	$(NVCC) $(NVCC_FLAGS) -o $@ $^
+
+$(TARGET_DEGREE_AWARE): $(OBJS_DEGREE_AWARE) | $(BIN_DIR)
 	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
 $(BUILD_DIR)/%.o: src/%.cu | $(BUILD_DIR)

@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0.0",
+  "experiment_id": "EXP-GPU-DEGREE-AWARE-OPT-6.3",
+  "measurement_state": "MEASURED",
+  "hardware": {
+    "device_name": "Tesla T4",
+    "compute_capability": "7.5",
+    "total_vram_mb": 14912.7,
+    "sm_count": 40
+  },
+  "graph_configuration": {
+    "num_nodes": 10000,
+    "num_edges": 94945,
+    "feature_dim": 32
+  },
+  "benchmark_parameters": {
+    "implementation": "cuda_optimized_degree_aware_hybrid",
+    "operator": "max",
+    "warmup_iterations": 5,
+    "recorded_repetitions": 20,
+    "block_size": 256,
+    "degree_threshold": 32,
+    "num_isolated_nodes": 501,
+    "num_standard_nodes": 9499,
+    "num_hub_nodes": 0,
+    "pinned_host_memory": true,
+    "stream_execution": true
+  },
+  "timing_results_ms": {
+    "bucketing_overhead_ms": 0.088886,
+    "h2d_transfer_mean": 0.164448,
+    "kernel_mean": 0.021536,
+    "kernel_std": 0.000894977,
+    "kernel_p50": 0.021472,
+    "kernel_p95": 0.023584,
+    "d2h_transfer_mean": 0.107744,
+    "end_to_end_mean": 0.382614
+  },
+  "performance_metrics": {
+    "edges_per_second": 4.40866e+09,
+    "estimated_compulsory_bandwidth_gbps": 138.363,
+    "effective_bandwidth_gbps": 138.363,
+    "pcie_h2d_bandwidth_gbps": 10.5674,
+    "pcie_d2h_bandwidth_gbps": 11.88
+  },
+  "numerical_verification": {
+    "status": "PASSED",
+    "max_absolute_error": 0,
+    "tolerance_threshold": 1e-05,
+    "nan_detected": false
+  }
+}

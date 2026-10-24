@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0",
+  "experiment_id": "EXP-GPU-STREAMS-OPT-6.2",
+  "measurement_state": "MEASURED",
+  "hardware": {
+    "device_name": "Tesla T4",
+    "compute_capability": "7.5",
+    "total_vram_mb": 14912.7,
+    "sm_count": 40
+  },
+  "graph_configuration": {
+    "num_nodes": 10000,
+    "num_edges": 94970,
+    "feature_dim": 32
+  },
+  "benchmark_parameters": {
+    "implementation": "cuda_optimized_pinned_streams",
+    "operator": "sum",
+    "warmup_iterations": 5,
+    "recorded_repetitions": 20,
+    "block_size": 256,
+    "pinned_host_memory": true,
+    "stream_execution": true
+  },
+  "timing_results_ms": {
+    "h2d_transfer_mean": 0.179744,
+    "kernel_mean": 0.211667,
+    "kernel_std": 0.0101091,
+    "kernel_p50": 0.213248,
+    "kernel_p95": 0.229376,
+    "d2h_transfer_mean": 0.10608,
+    "end_to_end_mean": 0.497491
+  },
+  "performance_metrics": {
+    "edges_per_second": 4.48676e+08,
+    "estimated_compulsory_bandwidth_gbps": 14.0782,
+    "estimated_algorithmic_bandwidth_gbps": 65.4615,
+    "effective_bandwidth_gbps": 14.0782,
+    "pcie_h2d_bandwidth_gbps": 9.45725,
+    "pcie_d2h_bandwidth_gbps": 12.0664
+  },
+  "numerical_verification": {
+    "status": "PASSED",
+    "max_absolute_error": 0,
+    "tolerance_threshold": 1e-05,
+    "nan_detected": false
+  }
+}

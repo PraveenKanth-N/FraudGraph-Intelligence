@@ -24,9 +24,11 @@ def is_nvcc_available() -> bool:
 
 
 def get_cuda_binary_path(kernel: str = "baseline") -> Path:
-    """Returns the expected path to the compiled CUDA binary for baseline, coalesced, or streams engine."""
+    """Returns the expected path to the compiled CUDA binary for baseline, coalesced, streams, or degree-aware engine."""
     workspace_root = Path(__file__).resolve().parents[2]
-    if kernel == "streams":
+    if kernel == "degree_aware":
+        binary_base = "fgi_degree_aware_runner"
+    elif kernel == "streams":
         binary_base = "fgi_streams_runner"
     elif kernel == "coalesced":
         binary_base = "fgi_coalesced_runner"

@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "experiment_id": "EXP-GPU-BASELINE",
+  "measurement_state": "MEASURED",
+  "hardware": {
+    "device_name": "Tesla T4",
+    "compute_capability": "7.5",
+    "total_vram_mb": 14912.7,
+    "sm_count": 40
+  },
+  "graph_configuration": {
+    "num_nodes": 10000,
+    "num_edges": 94945,
+    "feature_dim": 32
+  },
+  "benchmark_parameters": {
+    "implementation": "cuda_baseline_thread_per_node",
+    "operator": "sum",
+    "warmup_iterations": 5,
+    "recorded_repetitions": 20
+  },
+  "timing_results_ms": {
+    "h2d_transfer_mean": 0.600544,
+    "kernel_mean": 0.0685952,
+    "kernel_std": 0.00204806,
+    "kernel_p50": 0.067744,
+    "kernel_p95": 0.074176,
+    "d2h_transfer_mean": 0.322272,
+    "end_to_end_mean": 0.991411
+  },
+  "performance_metrics": {
+    "edges_per_second": 1.38413e+09,
+    "estimated_compulsory_bandwidth_gbps": 43.4401,
+    "estimated_algorithmic_bandwidth_gbps": 201.949,
+    "effective_bandwidth_gbps": 43.4401
+  },
+  "numerical_verification": {
+    "status": "PASSED",
+    "max_absolute_error": 0,
+    "tolerance_threshold": 1e-05,
+    "nan_detected": false
+  }
+}

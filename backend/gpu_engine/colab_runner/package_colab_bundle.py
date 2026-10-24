@@ -76,6 +76,7 @@ def build_colab_bundle(output_zip: Path = Path("experiments/colab_bundle_fgi_pha
     data_dest = stage_dir / "data"
     toy_src = workspace_root / "data" / "fixtures" / "toy_graph_5nodes.npz"
     tier_a_src = workspace_root / "data" / "fixtures" / "synthetic_tier_a_10k.npz"
+    skewed_src = workspace_root / "data" / "fixtures" / "synthetic_skewed_10k.npz"
 
     if toy_src.exists():
         print("    Dumping raw binary arrays for toy_graph_5nodes...")
@@ -85,24 +86,33 @@ def build_colab_bundle(output_zip: Path = Path("experiments/colab_bundle_fgi_pha
         print("    Dumping raw binary arrays for synthetic_tier_a_10k...")
         dump_raw_graph_and_references(tier_a_src, data_dest / "synthetic_tier_a_10k")
 
+    if skewed_src.exists():
+        print("    Dumping raw binary arrays for synthetic_skewed_10k...")
+        dump_raw_graph_and_references(skewed_src, data_dest / "synthetic_skewed_10k")
+
     # 3. Copy execution runner scripts
     colab_runner_src = workspace_root / "backend" / "gpu_engine" / "colab_runner"
     shutil.copy2(colab_runner_src / "run_colab_benchmarks.py", stage_dir / "run_colab_benchmarks.py")
     if (colab_runner_src / "fgi_colab_workflow.ipynb").exists():
         shutil.copy2(colab_runner_src / "fgi_colab_workflow.ipynb", stage_dir / "fgi_colab_workflow.ipynb")
 
-    # 4. Create ZIP archive
+    # 4. Normalize file timestamps and create ZIP archive
     output_zip.parent.mkdir(parents=True, exist_ok=True)
     if output_zip.exists():
         output_zip.unlink()
 
-    print(f"[+] Compressing into archive: {output_zip}")
+    print(f"[+] Compressing into archive with normalized timestamps: {output_zip}")
+    # Normalize timestamp to 2026-01-01 00:00:00 UTC to prevent Makefile clock-skew warnings
+    fixed_time = (2026, 1, 1, 0, 0, 0)
     with zipfile.ZipFile(output_zip, "w", zipfile.ZIP_DEFLATED) as zf:
         for root, _, files in os.walk(stage_dir):
-            for file in files:
+            for file in sorted(files):
                 abs_file = Path(root) / file
                 rel_path = abs_file.relative_to(stage_dir)
-                zf.write(abs_file, rel_path)
+                zinfo = zipfile.ZipInfo(str(rel_path).replace("\\", "/"), date_time=fixed_time)
+                zinfo.compress_type = zipfile.ZIP_DEFLATED
+                with open(abs_file, "rb") as f:
+                    zf.writestr(zinfo, f.read())
 
     # Clean up stage dir
     shutil.rmtree(stage_dir)

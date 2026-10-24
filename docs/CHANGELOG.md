@@ -7,10 +7,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-### Planned for Phase 6 (Remaining Experiments) / Phase 7
-- Shared-memory caching and reduction tiles (`__shared__`) for high-degree hub nodes (Candidate 2/3).
-- Degree-aware load balancing separating isolated/leaf nodes from dense fraud rings (Candidate 4).
+### Planned for Phase 7
 - Graph feature enrichment and downstream machine learning fraud classification baseline (Phase 7).
+- Downstream XGBoost / Random Forest classification on aggregated embeddings vs raw tabular features.
+
+---
+
+## [0.6.2] - 2026-10-24 — Phase 6, Experiment 6.3: Degree-Aware Bucketing & Hybrid CUDA Dispatch
+
+### Added
+- **Degree-Aware Hybrid CUDA Engine (`backend/gpu_engine/cuda/`):**
+  - Implemented `fgi_degree_aware_kernels.cuh` and `fgi_degree_aware_kernels.cu` introducing a 3-way topological dispatch architecture:
+    1. *Zero-Degree Bucket ($d_i = 0$):* Direct zero-initialization via asynchronous `cudaMemsetAsync` on stream, setting exact FGI $\vec{0}$ sentinels with 0 instruction overhead.
+    2. *Standard-Degree Bucket ($1 \le d_i \le 32$):* Dedicated `standard_degree_warp_kernel` mapping 1 warp per node, eliminating intra-block warp retirement stalls across bounded degrees.
+    3. *Hub-Degree Bucket ($d_i > 32$):* Dedicated cooperative block kernel (`hub_degree_block_kernel`, 256 threads = 8 warps) interleaving neighbor lists with shared-memory reduction for `MEAN` and `MAX`, and strictly ordered sequential accumulation for `SUM` to preserve exact bitwise parity ($0.00\text{e}+00$ error) against single-threaded reference arithmetic.
+  - Implemented standalone CLI runner `main_degree_aware.cu` with pinned memory, explicit bucketing timing measurement ($t_{\text{bucketing}}$ included in end-to-end latency), and structured JSON export conforming to `EXP-GPU-DEGREE-AWARE-OPT-6.3`.
+  - Added `fgi_degree_aware_runner` build target to `Makefile` and `kernel="degree_aware"` adapter to `cuda_runner.py`.
+- **Heavy-Tailed Skewed Graph Fixture (`data/fixtures/synthetic_skewed_10k.npz`):**
+  - Generated deterministic heavy-tailed power-law graph ($N=10,000, M=94,970, D=32$) containing a 6,340-edge super-hub and 56 nodes with degree $> 32$.
+- **Automated Verification Test Suite (`backend/tests/test_cuda_degree_aware.py`):**
+  - 8 comprehensive tests validating source tokens, Makefile multi-target build, runner interface, bundle packaging, JSON schema conformity, partition invariants, CPU reference parity, and extreme hub stress testing.
+- **Physical GPU Benchmark Results on NVIDIA Tesla T4 (Driver 580.82.07, CUDA 13.0, Cohort `20261024_142037`):**
+  - 100% numerical verification across all 12 toy checks and all 24 Tier A and Skewed graph benchmark runs ($\text{atol} \le 1.0 \times 10^{-5}$, max absolute error $\le 1.19 \times 10^{-7}$).
+  - **Skewed Graph Acceleration (`synthetic_skewed_10k`, max degree 6,340, 56 hubs):**
+    - `MEAN`: Kernel latency dropped from $0.220\text{ ms} \rightarrow \mathbf{0.065\text{ ms}}$ (**$3.39\times$ faster than Streams**, **$107.71\times$ faster than Baseline**); E2E latency dropped to $\mathbf{0.396\text{ ms}}$ (**$1.22\times$ faster than Streams**, **$19.92\times$ faster than Baseline**).
+    - `MAX`: Kernel latency dropped from $0.234\text{ ms} \rightarrow \mathbf{0.111\text{ ms}}$ (**$2.12\times$ faster than Streams**, **$65.21\times$ faster than Baseline**); E2E latency dropped to $\mathbf{0.443\text{ ms}}$ (**$1.14\times$ faster than Streams**, **$18.37\times$ faster than Baseline**).
+  - **Explicit Empirical Regressions Disclosed (Negative Findings):**
+    - `SUM` on Skewed Graph: Kernel latency regressed from $0.212\text{ ms}$ (Streams) to $0.464\text{ ms}$ ($0.46\times$ speedup / $2.19\times$ slowdown; E2E $0.803\text{ ms}$ vs $0.498\text{ ms}$, $0.62\times$ / $1.61\times$ slowdown) because float32 non-associative parallel tree reordering accumulated $3.97 \times 10^{-4}$ error in Run `141134`, requiring Warp 0 serial accumulation to preserve exact $0.00\text{e}+00$ reference parity, which left 7/8 warps idle in the 256-thread block.
+    - Tier A End-to-End Cases: All 3 operators regressed end to end ($0.343\text{ ms}$ vs $0.281\text{ ms}$ for Mean, $0.396\text{ ms}$ vs $0.283\text{ ms}$ for Sum, $0.383\text{ ms}$ vs $0.278\text{ ms}$ for Max; $22\% - 40\%$ slowdown) due to non-amortizable host degree bucketing overhead ($t_{\text{bucketing}} = 0.053 - 0.109\text{ ms}$) on topologically uniform graphs lacking hub nodes.
+- **Documentation Deliverables:**
+  - Authored comprehensive report [`docs/EXPERIMENT_6_3_DEGREE_AWARE_DISPATCH.md`](file:///D:/FraudGraph%20Intelligence/docs/EXPERIMENT_6_3_DEGREE_AWARE_DISPATCH.md).
+  - Updated [`docs/PHASE_STATUS.md`](file:///D:/FraudGraph%20Intelligence/docs/PHASE_STATUS.md) marking Phase 6 complete.
 
 ---
 

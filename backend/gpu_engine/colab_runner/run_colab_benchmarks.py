@@ -33,7 +33,7 @@ def run_command(cmd: str, check: bool = True) -> str:
 
 def main():
     print("=" * 80)
-    print(" FRAUDGRAPH INTELLIGENCE — COLAB GPU RUNNER (PHASE 6: EXP 6.1 COALESCED)")
+    print(" FRAUDGRAPH INTELLIGENCE — COLAB GPU RUNNER (PHASE 6: EXP 6.1, 6.2 & 6.3)")
     print("=" * 80)
 
     # 1. Environment & Hardware Detection
@@ -49,13 +49,15 @@ def main():
     baseline_bin = cuda_dir / "bin" / "fgi_baseline_runner"
     coalesced_bin = cuda_dir / "bin" / "fgi_coalesced_runner"
     streams_bin = cuda_dir / "bin" / "fgi_streams_runner"
+    degree_aware_bin = cuda_dir / "bin" / "fgi_degree_aware_runner"
 
-    # 2. Compile All Three CUDA Executables
-    print("\n[+] Compiling Baseline, Warp-Coalesced, and Pinned-Streams CUDA Engines:")
+    # 2. Compile All Four CUDA Executables
+    print("\n[+] Compiling Baseline, Warp-Coalesced, Streams, and Degree-Aware CUDA Engines:")
+    run_command("find cuda -exec touch {} +", check=False)
     run_command("make -C cuda clean")
     run_command("make -C cuda")
 
-    for b in [baseline_bin, coalesced_bin, streams_bin]:
+    for b in [baseline_bin, coalesced_bin, streams_bin, degree_aware_bin]:
         if not b.exists():
             print(f"[FATAL] Binary not found after compilation: {b}", file=sys.stderr)
             sys.exit(1)
@@ -66,12 +68,14 @@ def main():
 
     toy_dir = Path("data/toy_graph_5nodes")
     tier_a_dir = Path("data/synthetic_tier_a_10k")
+    skewed_dir = Path("data/synthetic_skewed_10k")
     operators = ["mean", "sum", "max"]
 
     engine_list = [
         (baseline_bin, "baseline"),
         (coalesced_bin, "coalesced"),
         (streams_bin, "streams"),
+        (degree_aware_bin, "degree_aware"),
     ]
 
     # 3. Correctness Gate (Toy Graph Fixture)
@@ -108,7 +112,7 @@ def main():
     perf_records = {}
 
     for bin_target, label in engine_list:
-        print(f"\n--- Benchmarking Engine: {label.upper()} (5 warmups, 20 repetitions) ---")
+        print(f"\n--- Benchmarking Engine: {label.upper()} on Tier A (5 warmups, 20 repetitions) ---")
         perf_records[label] = {}
 
         for op in operators:
@@ -153,36 +157,99 @@ def main():
                 print(f"    Throughput:       {perf.get('edges_per_second', 0.0):,.0f} edges/sec")
                 if "estimated_compulsory_bandwidth_gbps" in perf:
                     print(f"    Est. Comp. BW:    {perf['estimated_compulsory_bandwidth_gbps']:.2f} GB/s (unique footprint)")
-                    print(f"    Est. Algo. BW:    {perf['estimated_algorithmic_bandwidth_gbps']:.2f} GB/s (un-cached traffic)")
-                else:
-                    print(f"    Est. Bandwidth:   {perf.get('effective_bandwidth_gbps', 0.0):.2f} GB/s")
                 if "pcie_h2d_bandwidth_gbps" in perf:
                     print(f"    PCIe H2D BW:      {perf['pcie_h2d_bandwidth_gbps']:.2f} GB/s | D2H: {perf.get('pcie_d2h_bandwidth_gbps', 0.0):.2f} GB/s")
                 print(f"    Validation:       {verif.get('status')} (Max Abs Error: {verif.get('max_absolute_error', 0.0):.2e})")
 
-    # 5. Comparative Speedup Summary
+    # 5. Benchmark Matrix on Skewed Stress Graph (if present)
+    perf_skewed = {}
+    if skewed_dir.exists():
+        print("\n" + "=" * 80)
+        print(" STEP 3: BENCHMARK MATRIX (synthetic_skewed_10k, N=10,000, M=94,970, Max Deg=6,340)")
+        print("=" * 80)
+
+        for bin_target, label in engine_list:
+            print(f"\n--- Benchmarking Engine: {label.upper()} on Skewed Graph (5 warmups, 20 repetitions) ---")
+            perf_skewed[label] = {}
+
+            for op in operators:
+                ref_bin = skewed_dir / f"ref_{op}.bin"
+                exp_id = f"exp_gpu_{label}_skewed_{op}_{timestamp_str}"
+                json_out = results_dir / f"{exp_id}.json"
+
+                cmd = (
+                    f"./{bin_target} --graph {skewed_dir} --op {op} --warmup 5 --repeat 20 "
+                    f"--validate {ref_bin} --export-json {json_out}"
+                )
+                run_command(cmd)
+
+                with open(json_out, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    perf = data.get("performance_metrics", {})
+                    timings = data.get("timing_results_ms", {})
+                    verif = data.get("numerical_verification", {})
+
+                    k_mean = timings.get("kernel_mean", 0.0)
+                    e2e_mean = timings.get("end_to_end_mean", 0.0)
+                    h2d_mean = timings.get("h2d_transfer_mean", 0.0)
+                    d2h_mean = timings.get("d2h_transfer_mean", 0.0)
+
+                    perf_skewed[label][op] = {
+                        "kernel_mean": k_mean,
+                        "end_to_end_mean": e2e_mean,
+                        "h2d_mean": h2d_mean,
+                        "d2h_mean": d2h_mean,
+                        "throughput": perf.get("edges_per_second", 0.0),
+                        "verif": verif.get("status"),
+                        "error": verif.get("max_absolute_error", 0.0),
+                    }
+                    print(f"    Operator:         {op.upper()} ({label})")
+                    print(f"    Kernel Mean:      {k_mean:.3f} ms")
+                    print(f"    End-to-End:       {e2e_mean:.3f} ms")
+                    print(f"    Throughput:       {perf.get('edges_per_second', 0.0):,.0f} edges/sec")
+                    print(f"    Validation:       {verif.get('status')} (Max Abs Error: {verif.get('max_absolute_error', 0.0):.2e})")
+
+    # 6. Comparative Speedup Summary
     print("\n" + "=" * 80)
-    print(" STEP 3: COMPARATIVE SPEEDUP SUMMARY (EXP 6.1 & 6.2 VS BASELINE)")
+    print(" STEP 4: COMPARATIVE SPEEDUP SUMMARY (TIER A CANONICAL GRAPH)")
     print("=" * 80)
-    print(f"{'Operator':<8} | {'Engine':<11} | {'Kernel (ms)':<12} | {'Kernel Spdup':<13} | {'Transfer (ms)':<14} | {'E2E (ms)':<10} | {'E2E Spdup':<10}")
-    print("-" * 88)
+    print(f"{'Operator':<8} | {'Engine':<13} | {'Kernel (ms)':<12} | {'Kernel Spdup':<13} | {'Transfer (ms)':<14} | {'E2E (ms)':<10} | {'E2E Spdup':<10}")
+    print("-" * 92)
     for op in operators:
         b_k = perf_records["baseline"][op]["kernel_mean"]
         b_e2e = perf_records["baseline"][op]["end_to_end_mean"]
         b_xfer = perf_records["baseline"][op]["h2d_mean"] + perf_records["baseline"][op]["d2h_mean"]
 
-        c_k = perf_records["coalesced"][op]["kernel_mean"]
-        c_e2e = perf_records["coalesced"][op]["end_to_end_mean"]
-        c_xfer = perf_records["coalesced"][op]["h2d_mean"] + perf_records["coalesced"][op]["d2h_mean"]
+        for eng in ["baseline", "coalesced", "streams", "degree_aware"]:
+            ek = perf_records[eng][op]["kernel_mean"]
+            ee = perf_records[eng][op]["end_to_end_mean"]
+            ex = perf_records[eng][op]["h2d_mean"] + perf_records[eng][op]["d2h_mean"]
+            k_spdup = f"{(b_k / ek if ek > 0 else 0):.2f}x"
+            e_spdup = f"{(b_e2e / ee if ee > 0 else 0):.2f}x"
+            lbl = eng.replace("_", " ").title()
+            print(f"{op.upper() if eng == 'baseline' else '':<8} | {lbl:<13} | {ek:10.3f}   | {k_spdup:<13} | {ex:12.3f}   | {ee:8.3f} | {e_spdup:<10}")
+        print("-" * 92)
 
-        s_k = perf_records["streams"][op]["kernel_mean"]
-        s_e2e = perf_records["streams"][op]["end_to_end_mean"]
-        s_xfer = perf_records["streams"][op]["h2d_mean"] + perf_records["streams"][op]["d2h_mean"]
+    if perf_skewed:
+        print("\n" + "=" * 80)
+        print(" STEP 5: COMPARATIVE SPEEDUP SUMMARY (SKEWED DEGREE STRESS GRAPH)")
+        print("=" * 80)
+        print(f"{'Operator':<8} | {'Engine':<13} | {'Kernel (ms)':<12} | {'Kernel Spdup':<13} | {'Transfer (ms)':<14} | {'E2E (ms)':<10} | {'E2E Spdup':<10}")
+        print("-" * 92)
+        for op in operators:
+            b_k = perf_skewed["baseline"][op]["kernel_mean"]
+            b_e2e = perf_skewed["baseline"][op]["end_to_end_mean"]
+            b_xfer = perf_skewed["baseline"][op]["h2d_mean"] + perf_skewed["baseline"][op]["d2h_mean"]
 
-        print(f"{op.upper():<8} | {'Baseline':<11} | {b_k:10.3f}   | {'1.00x':<13} | {b_xfer:12.3f}   | {b_e2e:8.3f} | {'1.00x':<10}")
-        print(f"{'':<8} | {'Coalesced':<11} | {c_k:10.3f}   | {(b_k/c_k if c_k>0 else 0):11.2f}x | {c_xfer:12.3f}   | {c_e2e:8.3f} | {(b_e2e/c_e2e if c_e2e>0 else 0):8.2f}x")
-        print(f"{'':<8} | {'Streams':<11} | {s_k:10.3f}   | {(b_k/s_k if s_k>0 else 0):11.2f}x | {s_xfer:12.3f}   | {s_e2e:8.3f} | {(b_e2e/s_e2e if s_e2e>0 else 0):8.2f}x")
-        print("-" * 88)
+            for eng in ["baseline", "coalesced", "streams", "degree_aware"]:
+                ek = perf_skewed[eng][op]["kernel_mean"]
+                ee = perf_skewed[eng][op]["end_to_end_mean"]
+                ex = perf_skewed[eng][op]["h2d_mean"] + perf_skewed[eng][op]["d2h_mean"]
+                k_spdup = f"{(b_k / ek if ek > 0 else 0):.2f}x"
+                e_spdup = f"{(b_e2e / ee if ee > 0 else 0):.2f}x"
+                lbl = eng.replace("_", " ").title()
+                print(f"{op.upper() if eng == 'baseline' else '':<8} | {lbl:<13} | {ek:10.3f}   | {k_spdup:<13} | {ex:12.3f}   | {ee:8.3f} | {e_spdup:<10}")
+            print("-" * 92)
 
     # 6. Archive Results for Download
     zip_out = Path("fgi_phase6_gpu_results.zip")
