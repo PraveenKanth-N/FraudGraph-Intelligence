@@ -8,9 +8,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Planned for Phase 7
-- Phase 7.3: Graph feature enrichment pipeline using CPU reference and GPU optimized aggregators (`sum`, `mean`, `max`).
 - Phase 7.4: Downstream machine learning fraud classification baseline comparing tabular-only vs graph-enriched features (Logistic Regression, Random Forest, LightGBM/XGBoost).
 - Phase 7.5: Evaluation reporting (PR-AUC, ROC-AUC, Precision@K, Recall@K, confusion matrices, and speedup impact).
+
+---
+
+## [0.7.1] - 2026-10-24 — Phase 7.3: Graph Feature Enrichment Pipeline
+
+### Added
+- **Feature Enrichment Module (`backend/ml_engine/feature_enrichment.py`, `backend/ml_engine/__init__.py`):**
+  - Implemented multi-operator feature enrichment engine supporting five representation formats:
+    1. `raw`: Base transaction features $X \in \mathbb{R}^{N \times D}$.
+    2. `mean`: $[X \,\|\, Y_{\text{mean}}] \in \mathbb{R}^{N \times 2D}$.
+    3. `max`: $[X \,\|\, Y_{\text{max}}] \in \mathbb{R}^{N \times 2D}$.
+    4. `sum`: $[X \,\|\, Y_{\text{sum}}] \in \mathbb{R}^{N \times 2D}$.
+    5. `multi_operator` (alias `combined`): $[X \,\|\, Y_{\text{mean}} \,\|\, Y_{\text{max}}] \in \mathbb{R}^{N \times 3D}$.
+  - Explicit graph context policy enforcement:
+    - `causal_history`: Preserves full historical causal lookup ($t_j < t_i, j < i$) for streaming transaction simulation.
+    - `train_only_context`: Prunes all edges pointing to validation or test nodes ($j \ge \text{train\_end}$), ensuring strict historical isolation where validation/test nodes aggregate strictly from training entities.
+  - Backend dispatch interface supporting `cpu_reference`, `cpu_vectorized` (default), and native CUDA runners (`cuda_baseline`, `cuda_coalesced`, `cuda_streams`, `cuda_degree_aware`).
+  - Strict preservation of float32 precision, zero-degree sentinels ($d_i = 0 \implies \vec{0}$), 100% finiteness, and complete label quarantine.
+- **Automated Verification Test Suite (`backend/tests/test_feature_enrichment.py`):**
+  - 16 comprehensive unit and invariant tests covering representation dimensions, concatenation ordering, CPU reference vs vectorized numerical parity ($\text{atol} \le 10^{-5}$), zero-degree sentinels, boundary/empty graph handling, argument validation, float32 finiteness, context policies, train/val/test partition splits, label quarantine, fixture immutability, and conditional live CUDA execution.
+- **Documentation Deliverables:**
+  - Authored comprehensive specification [`docs/FEATURE_ENRICHMENT.md`](file:///D:/FraudGraph%20Intelligence/docs/FEATURE_ENRICHMENT.md).
+  - Updated [`docs/PHASE_STATUS.md`](file:///D:/FraudGraph%20Intelligence/docs/PHASE_STATUS.md) with Section 11.5 marking Phase 7.3 complete.
 
 ---
 
