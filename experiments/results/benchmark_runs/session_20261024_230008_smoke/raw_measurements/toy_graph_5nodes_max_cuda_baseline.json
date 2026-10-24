@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.0.0",
+  "experiment_id": "EXP-20261024_230008_smoke-toy_graph_5nodes_max-cuda_baseline",
+  "session_id": "20261024_230008_smoke",
+  "measurement_state": "SKIPPED_CUDA_UNAVAILABLE",
+  "timestamp": "2026-10-24T23:00:11.710611",
+  "workload_name": "toy_graph_5nodes_max",
+  "engine": "cuda_baseline",
+  "timing_boundary": "gpu_cuda_event",
+  "skip_or_failure_reason": "CUDA execution unavailable on current host. Missing nvcc compiler or precompiled binary 'fgi_baseline_runner.exe'. Dispatched benchmarks must be executed via the Google Colab workflow ('backend/gpu_engine/colab_runner/').",
+  "hardware": {
+    "device_name": "NVIDIA GeForce MX450",
+    "compute_capability": 8.0,
+    "cpu_model": "11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz",
+    "logical_cores": 8,
+    "host_ram_mb": 16149.99,
+    "gpu_vram_mb": 2048.0
+  },
+  "graph_configuration": {
+    "num_nodes": 5,
+    "num_edges": 6,
+    "feature_dim": 16,
+    "operator": "max",
+    "topology": "toy",
+    "is_directed": true,
+    "fixture_path": "data/fixtures/toy_graph_5nodes.npz",
+    "fixture_sha256": "3ea8f702bc1f944d9f164222bad637666307c7be8e4a9767f813e40edc137909"
+  },
+  "benchmark_parameters": {
+    "warmup_iterations": 5,
+    "recorded_repetitions": 20
+  },
+  "timing_results_ms": {
+    "kernel_mean": 0.0,
+    "end_to_end_mean": 0.0,
+    "std": 0.0,
+    "median_p50": 0.0,
+    "p95": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "cv_percent": 0.0,
+    "trial_times_ms": [],
+    "is_stable": true,
+    "stability_label": "STABLE"
+  },
+  "numerical_verification": {
+    "status": "SKIPPED_CUDA_UNAVAILABLE",
+    "details": "CUDA execution unavailable on current host. Missing nvcc compiler or precompiled binary 'fgi_baseline_runner.exe'. Dispatched benchmarks must be executed via the Google Colab workflow ('backend/gpu_engine/colab_runner/')."
+  },
+  "throughput_and_bandwidth": {
+    "nodes_per_sec": 0.0,
+    "edges_per_sec": 0.0,
+    "compulsory_traffic_bytes": 0,
+    "algorithmic_traffic_bytes": 0,
+    "compulsory_bandwidth_gb_s": 0.0,
+    "algorithmic_bandwidth_gb_s": 0.0,
+    "effective_bandwidth_gb_s": 0.0,
+    "bandwidth_nature": "ESTIMATED_ALGORITHMIC_MODEL (Uncached CSR traversal model; not measured hardware DRAM counter)"
+  },
+  "memory_footprint_mb": {
+    "graph_mb": 0.0004,
+    "output_mb": 0.0003,
+    "working_mb": 0.0006,
+    "total_estimated_mb": 0.0013
+  },
+  "provenance": {
+    "git_commit": "e0bd1cbd94057cb2e558fa345324b386a3003f1c",
+    "git_branch": "main",
+    "git_dirty": "true",
+    "python_version": "3.14.3",
+    "numpy_version": "2.5.4"
+  },
+  "memory_guard": {
+    "allowed": false,
+    "guard_status": "SKIPPED_CUDA_UNAVAILABLE",
+    "estimated_mb": 0.0013,
+    "available_mb": 0.0,
+    "total_mb": 0.0,
+    "safety_margin": 0.85,
+    "reason": "CUDA execution unavailable on current host. Missing nvcc compiler or precompiled binary 'fgi_baseline_runner.exe'. Dispatched benchmarks must be executed via the Google Colab workflow ('backend/gpu_engine/colab_runner/')."
+  }
+}

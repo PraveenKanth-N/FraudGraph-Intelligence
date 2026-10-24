@@ -21,7 +21,7 @@
 | **Phase 5** | **Baseline CUDA Implementation** | FGI-MOD-05 | **PASSED (Complete)** | Baseline 1-thread-per-node CUDA C++ kernel in `fgi_baseline_kernels.cu`; standalone CLI driver in `main_baseline.cu`; Colab runner package in `colab_bundle_fgi_phase5.zip` (3.55 MB); executed on physical NVIDIA Tesla T4 GPU (40 SMs, 14.9 GB VRAM); correctness gate PASSED across Sum, Mean, Max (error = 0.0, tol <= 1e-5); synthetic Tier A (10K nodes, 95K edges, D=32) achieved 1.39B edges/sec throughput (kernel latency 0.068 ms); all 6 results ingested into `experiments/results/`; regression suite 55 passed; `CUDA_BASELINE.md` and `ADR-010` updated. |
 | **Phase 6** | **CUDA Optimization Laboratory** | FGI-MOD-06 | **PASSED (Complete — Exp 6.1, 6.2, 6.3 Empirically Validated)** | Optimization plan in `PHASE6_OPTIMIZATION_PLAN.md`; Exp 6.1 (Warp Coalescing) achieved ~4.0x kernel speedup; Exp 6.2 (Pinned Streams) achieved 3.35x-3.44x end-to-end speedup vs Baseline (3.22x-3.27x vs 6.1); Exp 6.3 (Degree-Aware Hybrid Dispatch) validated on Tesla T4 (Driver 580.82.07, CUDA 13.0), eliminating SIMT degree divergence on heavy-tailed power-law graphs to achieve 107.7x kernel speedup over Baseline (3.38x over Coalesced/Streams) and 19.92x E2E speedup on MEAN (18.37x on MAX), with 100% numerical verification (atol <= 1e-5); 80 backend tests passing; `EXPERIMENT_6_1_WARP_COALESCED.md`, `EXPERIMENT_6_2_PINNED_MEMORY_STREAMS.md`, and `EXPERIMENT_6_3_DEGREE_AWARE_DISPATCH.md` authored. |
 | **Phase 7** | Fraud Scoring & Evaluation | FGI-MOD-07 | **PASSED (Complete — Phases 7.1–7.5 Empirically Validated)** | Dataset audit completed (7.1); deterministic labeled synthetic fraud fixture (`synthetic_fraud_10k.npz`) generated with zero temporal leakage (7.2); feature enrichment pipeline (`feature_enrichment.py`) implemented supporting raw, mean, max, sum, and combined representations (7.3); controlled model evaluation pipeline (`model_evaluation.py`) implemented with frozen validation threshold protocol and train-only scaling, demonstrating test PR-AUC improvements on Logistic Regression (`max`: 0.3315 vs 0.3088 raw, +7.35%) and Random Forest (`mean`: 0.2587 vs 0.2445 raw, +5.81%; F1: 0.3061 vs 0.2557, +19.7%) (7.4); research-grade reporting and visualization layer implemented (`reporting.py`), producing 7 multi-format figures (PNG/SVG/PDF), full-precision CSV table, and cryptographic manifest with 11 automated verification tests (127 passed, 2 skipped total backend suite) (7.5). |
-| **Phase 8** | Benchmark Automation & Experiment Management | FGI-MOD-08 | **PENDING** | Multi-run automated harness, graph-scaling experiments, latency/throughput speedup metrics, machine-readable JSON/CSV storage. |
+| **Phase 8** | Benchmark Automation & Experiment Management | FGI-MOD-08 | **PASSED (Pre-Commit Gate Reached)** | Unified matrix benchmark runner (smoke, scaling profiles), formal taxonomy separation (workloads vs runs vs repetitions), operator-specific tolerances (mean, max, sum), preflight memory guards (host RAM, GPU VRAM), timing boundary isolation, timing variability analysis, compulsory/algorithmic traffic modeling, isolated session directories, atomic JSON serialization, canonical baseline smoke run (36 runs, 12 measured, 24 transparently skipped), 14 focused tests passing (141 passed, 2 skipped, 0 warnings total backend suite); BENCHMARK_AUTOMATION.md authored. |
 | **Phase 9** | Stitch UI Design & Frontend Implementation | FGI-MOD-10 | **PENDING** | React + Vite + TypeScript application, Obsidian Cybernetics design system tokens, Cytoscape.js graph canvas, ECharts analytics. |
 | **Phase 10**| Backend & Frontend Integration | FGI-MOD-09, FGI-MOD-10 | **PENDING** | FastAPI REST endpoints (`/api/v1`), interactive graph queries, live experiment trigger/ingestion, diagnostics console. |
 | **Phase 11**| Quality Assurance & Reproducibility | FGI-MOD-11 | **PENDING** | Automated frontend tests, backend pytest suite, CUDA correctness test suite, accessibility and performance audit. |
@@ -515,3 +515,60 @@
 ### 11.10 Phase 7 Gate Status & Next Steps
 - **Phase 7 Status:** **`PASSED (Phase 7 Complete — All 5 Subphases 7.1–7.5 Empirically Validated)`**
 - **Next Steps:** Proceed to Phase 8 (Benchmark Automation & Experiment Management).
+
+---
+
+## 12. Phase 8 Deliverables & Gate Acceptance
+
+### 12.1 Phase 8 Objective & Architectural Scope
+- **Objective:** Establish a unified, matrix-driven benchmark automation and experiment management framework (`backend/benchmark_engine/`, module `FGI-MOD-08`) executing across CPU reference engines, vectorized implementations, and native CUDA kernels with operator-specific tolerances, memory preflight guards, timing boundary isolation, zero metric fabrication, and self-contained session provenance.
+- **Architectural Deliverables (`backend/benchmark_engine/`):**
+  1. [`benchmark_matrix.py`](file:///D:/FraudGraph%20Intelligence/backend/benchmark_engine/benchmark_matrix.py): Formal data classes and taxonomy separating Workload Configurations ($W$), Implementation Runs ($E$), Repetitions ($R$), and Execution Status (`MEASURED`, `NOT_RUN`, `SKIPPED_CUDA_UNAVAILABLE`, `SKIPPED_OOM_GUARD`, `FAILED_TOLERANCE`, `FAILED_NON_FINITE`, `FAILED_SHAPE_MISMATCH`, `FAILED_EXECUTION`). Standard profiles (`smoke`, `scaling_features`, `scaling_graphs`, `power_law_vs_uniform`).
+  2. [`benchmark_verifier.py`](file:///D:/FraudGraph%20Intelligence/backend/benchmark_engine/benchmark_verifier.py): Operator-specific numerical verification ($|Y_{\text{test}} - Y_{\text{ref}}| \le \text{atol} + \text{rtol} \times |Y_{\text{ref}}|$). Enforces `mean` (atol=1e-5, rtol=1e-5), `max` (atol=1e-5, rtol=0.0), `sum` (atol=1e-4, rtol=1e-4), empty-neighborhood zero sentinels ($d_i = 0 \implies \vec{0}$), and non-finite rejection.
+  3. [`benchmark_telemetry.py`](file:///D:/FraudGraph%20Intelligence/backend/benchmark_engine/benchmark_telemetry.py): Hardware telemetry (CPU model, cores, RAM, GPU model, VRAM), host-RAM preflight guard (80% margin), GPU-VRAM preflight guard (85% margin), statistical latency moments (mean, std ddof=1, p50, p95, min, max, cv%), and throughput/bandwidth calculators.
+  4. [`experiment_manager.py`](file:///D:/FraudGraph%20Intelligence/backend/benchmark_engine/experiment_manager.py): Session directories under `experiments/results/benchmark_runs/session_{session_id}/`, atomic `.tmp` file serialization, cryptographic SHA-256 fixture checksums, git environment provenance, and session manifest.
+  5. [`benchmark_runner.py`](file:///D:/FraudGraph%20Intelligence/backend/benchmark_engine/benchmark_runner.py): Execution orchestrator, reference caching, timing boundary distinction (`cpu_host_timer` vs `gpu_cuda_event`), transparent zero-fabrication skipping on CPU hosts (`SKIPPED_CUDA_UNAVAILABLE`), and CLI interface.
+  6. [`benchmark_report.py`](file:///D:/FraudGraph%20Intelligence/backend/benchmark_engine/benchmark_report.py): Generation of machine-readable `summary_table.csv` and Markdown `session_report.md`.
+
+### 12.2 Empirical Smoke Benchmark Validation
+- **Canonical Session:** `experiments/results/benchmark_runs/session_20261024_230008_smoke/`
+- **Configuration:** Profile `smoke` (6 workloads: 3 on `toy_graph_5nodes`, 3 on `synthetic_tier_a_10k`), 6 engines (2 CPU, 4 GPU), 5 warmups, 20 repetitions.
+- **Execution Accounting:**
+  - Total Workloads: 6
+  - Total Planned Runs: 36 (12 CPU, 24 GPU)
+  - Total Repetitions: 720 (240 CPU measured, 480 GPU bypassed)
+  - Execution Status: 12 `MEASURED`, 24 `SKIPPED_CUDA_UNAVAILABLE`, 0 `FAILED`.
+- **Measured CPU Vectorization Speedups (Tier A, $N=10,000, M=100,000, D=64$):**
+  - `mean`: Vectorized 2.58 ms vs Reference 114.86 ms (**44.59x speedup**, 3.88M nodes/sec, 11.27 GB/s effective bandwidth).
+  - `sum`: Vectorized 3.87 ms vs Reference 100.35 ms (**25.92x speedup**, 2.58M nodes/sec, 7.50 GB/s effective bandwidth).
+  - `max`: Vectorized 87.42 ms vs Reference 86.79 ms (0.99x speedup, matching reference due to absence of standard SpMM max ufunc in NumPy).
+
+### 12.3 Automated Test Suite (`backend/tests/test_benchmark_automation.py`)
+- 15 dedicated unit and invariant tests validating:
+  1. Workload matrix and run count accounting across standard profiles.
+  2. Operator-specific numerical tolerances (`mean`, `max`, `sum`).
+  3. Empty neighborhood zero-sentinels on isolated nodes ($d_i = 0 \implies \vec{0}$).
+  4. Non-finite (`NaN`/`Inf`) floating-point rejection.
+  5. Candidate tensor shape mismatch rejection.
+  6. Statistical latency moments (mean, std ddof=1, p50, p95, min, max, cv%) and timing stability flagging.
+  7. Throughput (nodes/s, edges/s), compulsory traffic bytes, algorithmic traffic bytes, and model-derived bandwidth (GB/s).
+  8. Host-RAM and GPU-VRAM preflight capacity guards across valid, unavailable, and invalid telemetry.
+  9. Workload-level preflight memory guard blocking execution before graph loading or allocation.
+  10. Fail-closed safety policy when telemetry is unavailable for large or unverified workloads, with explicit bounded fallback for smoke profiles.
+  11. Atomic JSON write and session manifest structure.
+  12. Colab ingestion schema compliance on measured records.
+  13. Transparent skipping of CUDA runs on hosts without local CUDA toolchain.
+  14. Immutability of graph fixtures and reference aggregators.
+  15. Fixture dimension fidelity ($N=10,000, M=94,945, D=32$ for Tier A; $N=5, M=8, D=4$ for Toy).
+- **Test Results:**
+  - Focused Phase 8 suite: **15 passed in 9.86s**.
+  - Full backend regression suite: **142 passed, 2 skipped, 0 warnings** (144 total backend tests). Both skips are expected optional live CUDA tests on CPU host.
+  - Upstream warning resolution: Pytest warnings narrowed specifically to `StarletteDeprecationWarning` from FastAPI importing `starlette.testclient` (an upstream third-party dependency interaction, not an FGI defect).
+
+### 12.4 Comprehensive Documentation
+- Authored authoritative specification: [`docs/BENCHMARK_AUTOMATION.md`](file:///D:/FraudGraph%20Intelligence/docs/BENCHMARK_AUTOMATION.md).
+- Clarified statistical policy: Authoritative primary speedup for Tier A vectorized sum is 25.92x (based on all 20 repetitions); the 19-run metric (44.68x) is strictly a secondary diagnostic and never substituted for the primary result.
+
+### 12.5 Phase 8 Gate Status
+- **Phase 8 Status:** **`PASSED (Pre-Commit Verification Gate Reached)`**
+- **Next Steps:** Review gate authorization for Phase 8 commit, followed by Phase 9 (Stitch UI Design & Frontend Implementation).

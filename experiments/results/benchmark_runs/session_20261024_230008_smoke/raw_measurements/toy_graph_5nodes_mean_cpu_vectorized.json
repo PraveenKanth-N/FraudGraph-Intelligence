@@ -1,0 +1,114 @@
+{
+  "schema_version": "1.0.0",
+  "experiment_id": "EXP-20261024_230008_smoke-toy_graph_5nodes_mean-cpu_vectorized",
+  "session_id": "20261024_230008_smoke",
+  "measurement_state": "MEASURED",
+  "timestamp": "2026-10-24T23:00:11.599643",
+  "workload_name": "toy_graph_5nodes_mean",
+  "engine": "cpu_vectorized",
+  "timing_boundary": "cpu_host_timer",
+  "skip_or_failure_reason": null,
+  "hardware": {
+    "device_name": "NVIDIA GeForce MX450",
+    "compute_capability": "N/A (CPU)",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz",
+    "logical_cores": 8,
+    "host_ram_mb": 16149.99,
+    "gpu_vram_mb": 2048.0
+  },
+  "graph_configuration": {
+    "num_nodes": 5,
+    "num_edges": 6,
+    "feature_dim": 16,
+    "operator": "mean",
+    "topology": "toy",
+    "is_directed": true,
+    "fixture_path": "data/fixtures/toy_graph_5nodes.npz",
+    "fixture_sha256": "3ea8f702bc1f944d9f164222bad637666307c7be8e4a9767f813e40edc137909"
+  },
+  "benchmark_parameters": {
+    "warmup_iterations": 5,
+    "recorded_repetitions": 20
+  },
+  "timing_results_ms": {
+    "kernel_mean": 0.1384,
+    "end_to_end_mean": 0.1384,
+    "std": 0.0825,
+    "median_p50": 0.0988,
+    "p95": 0.3098,
+    "min": 0.0657,
+    "max": 0.3448,
+    "cv_percent": 59.6,
+    "trial_times_ms": [
+      0.074,
+      0.0823,
+      0.1915,
+      0.2434,
+      0.1594,
+      0.1479,
+      0.1635,
+      0.3448,
+      0.308,
+      0.0901,
+      0.0825,
+      0.0871,
+      0.1291,
+      0.199,
+      0.1076,
+      0.0877,
+      0.0657,
+      0.0686,
+      0.0681,
+      0.0671
+    ],
+    "is_stable": false,
+    "stability_label": "HIGH_VARIABILITY"
+  },
+  "numerical_verification": {
+    "status": "MEASURED",
+    "max_absolute_error": 2.384185791015625e-07,
+    "max_relative_error": 1.0217939205858784e-07,
+    "mean_absolute_error": 2.9802322387695312e-08,
+    "tolerance": {
+      "atol": 1e-05,
+      "rtol": 1e-05
+    },
+    "nan_detected": false,
+    "inf_detected": false,
+    "shape_match": true,
+    "empty_neighborhood_verified": true,
+    "details": "Passed numerical verification for operator 'mean' (max_abs=2.38e-07, max_rel=1.02e-07)"
+  },
+  "throughput_and_bandwidth": {
+    "nodes_per_sec": 36127.17,
+    "edges_per_sec": 43352.6,
+    "compulsory_traffic_bytes": 736,
+    "algorithmic_traffic_bytes": 800,
+    "compulsory_bandwidth_gb_s": 0.0053,
+    "algorithmic_bandwidth_gb_s": 0.0058,
+    "effective_bandwidth_gb_s": 0.0058,
+    "bandwidth_nature": "ESTIMATED_ALGORITHMIC_MODEL (Uncached CSR traversal model; not measured hardware DRAM counter)"
+  },
+  "memory_footprint_mb": {
+    "graph_mb": 0.0004,
+    "output_mb": 0.0003,
+    "working_mb": 0.0006,
+    "total_estimated_mb": 0.0013
+  },
+  "provenance": {
+    "git_commit": "e0bd1cbd94057cb2e558fa345324b386a3003f1c",
+    "git_branch": "main",
+    "git_dirty": "true",
+    "python_version": "3.14.3",
+    "numpy_version": "2.5.4"
+  },
+  "memory_guard": {
+    "allowed": true,
+    "guard_status": "VERIFIED_PASS",
+    "estimated_mb": 0.0,
+    "available_mb": 5100.27,
+    "total_mb": 16149.99,
+    "safety_margin": 0.8,
+    "reason": null
+  }
+}

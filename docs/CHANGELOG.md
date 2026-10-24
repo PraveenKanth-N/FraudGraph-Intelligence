@@ -7,8 +7,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-### Planned for Phase 8
-- Benchmark Automation & Experiment Management (multi-run automated benchmark harness, graph-scaling experiments, latency/throughput speedup metrics, machine-readable JSON/CSV storage).
+### Planned for Phase 9
+- Stitch UI Design & Frontend Implementation (React + Vite + TypeScript application, Obsidian Cybernetics design system tokens, Cytoscape.js graph canvas, ECharts analytics).
+
+---
+
+## [0.8.0] - 2026-10-24 — Phase 8: Benchmark Automation & Experiment Management
+
+### Added
+- **Benchmark Engine Architecture (`backend/benchmark_engine/`):**
+  - **Matrix & Configuration Specification (`benchmark_matrix.py`):** Defines formal taxonomy separating Workload Configurations ($W$), Implementation Runs ($E$), Repetitions ($R$), and Execution Status (`MEASURED`, `NOT_RUN`, `SKIPPED_CUDA_UNAVAILABLE`, `SKIPPED_OOM_GUARD`, `FAILED_TOLERANCE`, `FAILED_NON_FINITE`, `FAILED_SHAPE_MISMATCH`, `FAILED_EXECUTION`).
+  - Predefined benchmark suite profiles: `smoke` (6 workloads, 36 planned runs, 720 repetitions), `scaling_features` (10 workloads, 60 planned runs), `scaling_graphs` (6 workloads, 36 planned runs), and `power_law_vs_uniform` (6 workloads, 36 planned runs).
+  - **Operator-Specific Numerical Correctness Verifier (`benchmark_verifier.py`):** Replaces rigid absolute thresholds with operator-appropriate absolute and relative tolerances ($|Y_{\text{test}} - Y_{\text{ref}}| \le \text{atol} + \text{rtol} \times |Y_{\text{ref}}|$):
+    - `mean`: $\text{atol} = 10^{-5}, \text{rtol} = 10^{-5}$
+    - `max`: $\text{atol} = 10^{-5}, \text{rtol} = 0.0$
+    - `sum`: $\text{atol} = 10^{-4}, \text{rtol} = 10^{-4}$ (reflecting FP32 accumulator drift on high-degree nodes)
+    - Invariant: isolated nodes ($d_i = 0$) strictly verified to output exact zero vector $\vec{0}$.
+    - Non-finite check: immediate rejection on `NaN` or `Inf`.
+  - **Hardware Telemetry & Memory Guards (`benchmark_telemetry.py`):** Collects CPU model, core count, platform, Python/NumPy versions, Host RAM, GPU model, and VRAM via `nvidia-smi`.
+    - Host-RAM preflight guard (80% safety margin) and GPU-VRAM preflight guard (85% safety margin) preventing out-of-memory crashes before execution. Workload-level preflight check executes before graph loading or allocation.
+    - Fail-closed memory safety policy: When host RAM telemetry is missing or invalid, large or unverified workloads are strictly blocked (`BLOCKED_TELEMETRY_UNAVAILABLE`). Bounded smoke workloads (<=100 MB) are permitted under an explicit configurable fallback policy (`allow_bounded_fallback=True`) with explicit caution logging.
+    - High-precision statistical calculations (mean, std with sample `ddof=1`, median, p95, min, max, cv%) with timing stability flagging (`is_stable`, `stability_label`).
+    - Compulsory data traffic ($B_{\text{compulsory}}$) and algorithmic data traffic ($B_{\text{algorithmic}}$) modeling, distinguishing model-derived bandwidth estimates from measured hardware DRAM performance counters.
+  - **Experiment Session & Provenance Manager (`experiment_manager.py`):** Manages isolated session directories (`experiments/results/benchmark_runs/session_{session_id}/`), atomic `.tmp` file serialization, cryptographic SHA-256 fixture checksumming, git environment capture, and structured session manifests supporting partial recovery and existing manifest loading.
+  - **Benchmark Runner & Orchestrator (`benchmark_runner.py`):** Unified execution orchestrator caching Phase 4 CPU reference ground truth, distinguishing timing boundaries (`cpu_host_timer` vs `gpu_cuda_event`), recording actual physical graph dimensions with 100% fidelity, transparently bypassing CUDA runs on non-CUDA hosts with explicit notifications, and providing a clean CLI entrypoint.
+  - **Benchmark Reporting Engine (`benchmark_report.py`):** Automatically produces machine-readable `summary_table.csv` and publication-quality `session_report.md`.
+- **Automated Verification Test Suite (`backend/tests/test_benchmark_automation.py`):**
+  - 15 dedicated unit and invariant tests covering workload matrix schema, profile counts, operator tolerances, zero-degree sentinels, non-finite rejection, shape mismatches, statistical moments, stability flagging, throughput, compulsory/algorithmic bandwidth, memory preflights across valid/unavailable/invalid telemetry, workload-level OOM guards, atomic writes, Colab ingestion schema compliance, transparent CUDA skipping, and fixture immutability.
+- **Canonical Smoke Benchmark Artifacts (`experiments/results/benchmark_runs/session_20261024_230008_smoke/`):**
+  - Completed smoke benchmark execution on Tier A ($N=10,000, M=100,000, D=64$) and Toy ($N=5, M=6, D=16$) graphs.
+  - Demonstrates **44.59x speedup** for vectorized CPU `mean` (3.88M nodes/sec) and authoritative **25.92x speedup** for vectorized CPU `sum` (2.58M nodes/sec, based on all 20 unpruned repetitions) over reference CPU loop, with 100% numerical verification.
+  - Generates full session manifest, 36 individual raw measurement JSON records, summary CSV, and Markdown report.
+- **Authoritative Documentation:**
+  - Authored comprehensive specification: [`docs/BENCHMARK_AUTOMATION.md`](file:///D:/FraudGraph%20Intelligence/docs/BENCHMARK_AUTOMATION.md).
+  - Clarified statistical policy for Tier A vectorized sum timing variability: authoritative primary speedup is 25.92x; 19-run metric is strictly a secondary diagnostic.
+  - Documented upstream Pytest warning resolution narrowing specifically to Starlette's deprecation warning from FastAPI.
 
 ---
 
