@@ -7,8 +7,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-### Planned for Phase 7
-- Phase 7.5: Evaluation reporting (PR-AUC, ROC-AUC, Precision@K, Recall@K, confusion matrices, and speedup impact).
+### Planned for Phase 8
+- Benchmark Automation & Experiment Management (multi-run automated benchmark harness, graph-scaling experiments, latency/throughput speedup metrics, machine-readable JSON/CSV storage).
+
+---
+
+## [0.7.3] - 2026-10-24 — Phase 7.5: Research-Grade Evaluation Reporting & Visualizations
+
+### Added
+- **Evaluation Reporting Engine (`backend/ml_engine/reporting.py`, `backend/ml_engine/__init__.py`):**
+  - Implemented publication-grade evaluation reporting and visualization pipeline translating canonical Phase 7.4 evaluation artifact into multi-format figures, machine-readable CSV table, and cryptographic manifest.
+  - Strict schema and data validation (`validate_evaluation_artifact`): enforces split sample counts, confusion matrix sums ($\text{TP}+\text{FP}+\text{TN}+\text{FN} = N$), and support alignment.
+  - Full-precision CSV summary table generator (`generate_summary_csv`): produces 20-row summary covering all metric columns across `causal_history` and `train_only_context` policies.
+  - Headless rendering engine: generates 7 publication figures in 300 DPI PNG, vector SVG, and vector PDF formats.
+  - Cryptographic provenance tracking (`generate_manifest_and_metadata`): records input and output SHA-256 hashes, runtime environment metadata, and per-figure field mappings and interpretations.
+- **Publication Figures Generated (`experiments/results/evaluation_reporting_7_5/`):**
+  - `fig1_test_pr_auc_comparison`: Grouped bar comparison of test PR-AUC with minority prevalence baseline ($\pi \approx 0.0353$).
+  - `fig2_test_roc_auc_comparison`: Test ROC-AUC comparison highlighting metric compression in class-imbalanced regimes.
+  - `fig3_pr_curve_omission_notice`: Methodological notice documenting why continuous PR curves are omitted in accordance with scientific integrity safeguards (no continuous scores stored in summary artifact).
+  - `fig4_confusion_matrices`: $2 \times 2$ grid of confusion matrix heatmaps at validation-frozen $\tau^*$ thresholds.
+  - `fig5_operating_tradeoffs`: Detection rates (Precision, Recall, F1) and error volume counts (FP, FN).
+  - `fig6_runtime_breakdown`: Three-panel profile of CPU enrichment, model training, and qualified hardware execution boundaries (explicitly non-equivalent host loop vs isolated CUDA kernel).
+  - `fig7_context_policy_sensitivity`: Comparative sensitivity analysis of `causal_history` vs `train_only_context`.
+- **Machine-Readable Experiment Artifacts:**
+  - `summary_evaluation_metrics.csv` (SHA-256: `86523fd6d6f998602124ba101972eba15dc5b27bc97c852b3dee475dd6f77ba4`).
+  - `manifest.json`: Dynamic verification manifest.
+- **Automated Verification Test Suite (`backend/tests/test_reporting.py`):**
+  - 11 dedicated unit and invariant tests verifying artifact parsing, schema error raising, metric reading, confusion matrix arithmetic, split count consistency, CSV fidelity, headless rendering, artifact immutability, checksum recording, omission notice compliance, and output determinism.
+- **Comprehensive Documentation:**
+  - Authored comprehensive evaluation report [`docs/PHASE_7_5_EVALUATION_REPORT.md`](file:///D:/FraudGraph%20Intelligence/docs/PHASE_7_5_EVALUATION_REPORT.md).
+  - Updated [`docs/PHASE_STATUS.md`](file:///D:/FraudGraph%20Intelligence/docs/PHASE_STATUS.md) with Section 11.9 marking Phase 7.5 and overall Phase 7 complete.
 
 ---
 

@@ -1,0 +1,115 @@
+{
+  "report_id": "REPORT-FGI-7.5-1792860843",
+  "created_at": "2026-10-24T22:24:03+0530",
+  "source_artifact": {
+    "path": "experiments\\results\\fraud_model_evaluation_20261024_212032.json",
+    "sha256": "155304b7453b15dda1f103817e32471a2ffb2357de9cb298cc7b470d8d0efc90",
+    "experiment_id": "EXP-FRAUD-EVAL-7.4-20261024_212032",
+    "dataset_sha256": "aecafe3b1fd608c18d62aa1586d0ab6f88b867bd92b20e0f6bd133606c7c4430"
+  },
+  "environment": {
+    "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+    "matplotlib_version": "3.11.2",
+    "pandas_version": "3.0.6",
+    "numpy_version": "2.5.4"
+  },
+  "summary_csv": {
+    "path": "summary_evaluation_metrics.csv",
+    "sha256": "86523fd6d6f998602124ba101972eba15dc5b27bc97c852b3dee475dd6f77ba4",
+    "rows_count": 20
+  },
+  "figures": [
+    {
+      "figure_id": "fig1_test_pr_auc_comparison",
+      "title": "Test PR-AUC Comparison Across Representations",
+      "png": "fig1_test_pr_auc_comparison.png",
+      "svg": "fig1_test_pr_auc_comparison.svg",
+      "pdf": "fig1_test_pr_auc_comparison.pdf",
+      "sha256_png": "5fbb76e4f11cf31c40d8836722f47c11bc7e6509a94036c3ff3b38f469227c38",
+      "source_fields": [
+        "primary_results_causal_history[*].test_metrics.pr_auc",
+        "dataset_split.test_prevalence"
+      ],
+      "interpretation": "Evaluates precision-recall AUC across raw and enriched representations. Highlights positive gains on Max for LR and Mean for RF, alongside degradation on unnormalized Sum."
+    },
+    {
+      "figure_id": "fig2_test_roc_auc_comparison",
+      "title": "Test ROC-AUC Comparison Across Representations",
+      "png": "fig2_test_roc_auc_comparison.png",
+      "svg": "fig2_test_roc_auc_comparison.svg",
+      "pdf": "fig2_test_roc_auc_comparison.pdf",
+      "sha256_png": "768c14079ab84d73df4b22664e3a6c246723c1482a2d591d4bea31bdf0014d90",
+      "source_fields": [
+        "primary_results_causal_history[*].test_metrics.roc_auc"
+      ],
+      "interpretation": "Evaluates area under ROC curve across representations. Demonstrates compression of ROC-AUC in class-imbalanced regimes due to large true negative support."
+    },
+    {
+      "figure_id": "fig3_pr_curve_omission_notice",
+      "title": "Precision\u2013Recall Curve Availability & Protocol Notice",
+      "png": "fig3_pr_curve_omission_notice.png",
+      "svg": "fig3_pr_curve_omission_notice.svg",
+      "pdf": "fig3_pr_curve_omission_notice.pdf",
+      "sha256_png": "20fcc00ac3453c141dc6bbb3898a39492348a0d550e9d4b065e42c9679b56089",
+      "source_fields": [
+        "evaluation_protocol.threshold_selection_protocol"
+      ],
+      "interpretation": "Explains that continuous PR curves are omitted in accordance with scientific integrity safeguards because per-example continuous score vectors are not stored in the canonical summary artifact."
+    },
+    {
+      "figure_id": "fig4_confusion_matrices",
+      "title": "Test Confusion Matrices at Validation-Selected Thresholds",
+      "png": "fig4_confusion_matrices.png",
+      "svg": "fig4_confusion_matrices.svg",
+      "pdf": "fig4_confusion_matrices.pdf",
+      "sha256_png": "3d6c24676fc031ab26b3d3a0684bc6bb5d177ac99375044254cc313841a3a14d",
+      "source_fields": [
+        "primary_results_causal_history[*].test_metrics.optimal_f1_evaluation.confusion_matrix"
+      ],
+      "interpretation": "Visualizes true/predicted classification counts for key models (LR raw, LR max, RF raw, RF mean) under frozen validation-optimal decision thresholds."
+    },
+    {
+      "figure_id": "fig5_operating_tradeoffs",
+      "title": "Fraud Detection Operating Trade-off Comparison",
+      "png": "fig5_operating_tradeoffs.png",
+      "svg": "fig5_operating_tradeoffs.svg",
+      "pdf": "fig5_operating_tradeoffs.pdf",
+      "sha256_png": "44a0d915612cfcc5cc0941675ab63cc67e70389ecd8806c16eae90c9aa9dcde1",
+      "source_fields": [
+        "optimal_f1_evaluation.precision",
+        "optimal_f1_evaluation.recall",
+        "optimal_f1_evaluation.f1_score",
+        "confusion_matrix.false_positive",
+        "confusion_matrix.false_negative"
+      ],
+      "interpretation": "Illustrates trade-offs between precision, recall, and false alert volume when transitioning from raw tabular features to graph-enriched representations."
+    },
+    {
+      "figure_id": "fig6_runtime_breakdown",
+      "title": "Computational Timing Profile & Hardware Boundary Qualification",
+      "png": "fig6_runtime_breakdown.png",
+      "svg": "fig6_runtime_breakdown.svg",
+      "pdf": "fig6_runtime_breakdown.pdf",
+      "sha256_png": "b680a68802950287551f91cf4bdcfa266c2046986bf2be31d4ee5735ca697023",
+      "source_fields": [
+        "timing_ms.feature_enrichment_ms",
+        "timing_ms.model_training_ms",
+        "timing_ms.test_inference_ms"
+      ],
+      "interpretation": "Breaks down CPU feature enrichment, model fitting, and scoring latency while explicitly separating host Python process boundaries from isolated CUDA GPU kernel execution times."
+    },
+    {
+      "figure_id": "fig7_context_policy_sensitivity",
+      "title": "Context-Policy Sensitivity Analysis",
+      "png": "fig7_context_policy_sensitivity.png",
+      "svg": "fig7_context_policy_sensitivity.svg",
+      "pdf": "fig7_context_policy_sensitivity.pdf",
+      "sha256_png": "cfdcd1372f26067912d9ff4490820ae83ad2be61f287eaaeac6786108fe82cf1",
+      "source_fields": [
+        "primary_results_causal_history[*].test_metrics.pr_auc",
+        "sensitivity_results_train_only[*].test_metrics.pr_auc"
+      ],
+      "interpretation": "Quantifies empirical sensitivity of test PR-AUC when restricting neighbor context strictly to historical training transactions across a 15-day validation buffer."
+    }
+  ]
+}

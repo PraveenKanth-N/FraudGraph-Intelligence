@@ -20,7 +20,7 @@
 | **Phase 4** | **CPU Reference Implementation** | FGI-MOD-04 | **PASSED (Complete)** | Implemented Sum, Mean, Max aggregators in `aggregators.py`; dual reference and vectorized SpMM modes; explicit empty-neighborhood zero sentinel ($d_i = 0 \implies \vec{0}$); 22 tests in `test_aggregators.py` (total 44/44 backend tests passing in 2.36s); high-precision benchmark harness in `benchmark_cpu.py` with JSON output in `experiments/results/`; resolved Phase 3 fixture inconsistencies (toy isolated node 4, non-zero features); `CPU_REFERENCE_ENGINE.md` authored. |
 | **Phase 5** | **Baseline CUDA Implementation** | FGI-MOD-05 | **PASSED (Complete)** | Baseline 1-thread-per-node CUDA C++ kernel in `fgi_baseline_kernels.cu`; standalone CLI driver in `main_baseline.cu`; Colab runner package in `colab_bundle_fgi_phase5.zip` (3.55 MB); executed on physical NVIDIA Tesla T4 GPU (40 SMs, 14.9 GB VRAM); correctness gate PASSED across Sum, Mean, Max (error = 0.0, tol <= 1e-5); synthetic Tier A (10K nodes, 95K edges, D=32) achieved 1.39B edges/sec throughput (kernel latency 0.068 ms); all 6 results ingested into `experiments/results/`; regression suite 55 passed; `CUDA_BASELINE.md` and `ADR-010` updated. |
 | **Phase 6** | **CUDA Optimization Laboratory** | FGI-MOD-06 | **PASSED (Complete — Exp 6.1, 6.2, 6.3 Empirically Validated)** | Optimization plan in `PHASE6_OPTIMIZATION_PLAN.md`; Exp 6.1 (Warp Coalescing) achieved ~4.0x kernel speedup; Exp 6.2 (Pinned Streams) achieved 3.35x-3.44x end-to-end speedup vs Baseline (3.22x-3.27x vs 6.1); Exp 6.3 (Degree-Aware Hybrid Dispatch) validated on Tesla T4 (Driver 580.82.07, CUDA 13.0), eliminating SIMT degree divergence on heavy-tailed power-law graphs to achieve 107.7x kernel speedup over Baseline (3.38x over Coalesced/Streams) and 19.92x E2E speedup on MEAN (18.37x on MAX), with 100% numerical verification (atol <= 1e-5); 80 backend tests passing; `EXPERIMENT_6_1_WARP_COALESCED.md`, `EXPERIMENT_6_2_PINNED_MEMORY_STREAMS.md`, and `EXPERIMENT_6_3_DEGREE_AWARE_DISPATCH.md` authored. |
-| **Phase 7** | Fraud Scoring & Evaluation | FGI-MOD-07 | **IN PROGRESS (Phases 7.1, 7.2, 7.3, 7.4 Complete)** | Dataset audit completed (7.1); deterministic labeled synthetic fraud fixture (`synthetic_fraud_10k.npz`) generated with zero temporal leakage (7.2); feature enrichment pipeline (`feature_enrichment.py`) implemented supporting raw, mean, max, sum, and combined representations (7.3); controlled model evaluation pipeline (`model_evaluation.py`) implemented with frozen validation threshold protocol and train-only scaling, demonstrating test PR-AUC improvements on Logistic Regression (`max`: 0.3315 vs 0.3088 raw, +7.35%) and Random Forest (`mean`: 0.2587 vs 0.2445 raw, +5.81%; F1: 0.3061 vs 0.2557, +19.7%) (7.4); 35 unit tests passing across Phase 7 (116 total backend suite). Phase 7.5 pending. |
+| **Phase 7** | Fraud Scoring & Evaluation | FGI-MOD-07 | **PASSED (Complete — Phases 7.1–7.5 Empirically Validated)** | Dataset audit completed (7.1); deterministic labeled synthetic fraud fixture (`synthetic_fraud_10k.npz`) generated with zero temporal leakage (7.2); feature enrichment pipeline (`feature_enrichment.py`) implemented supporting raw, mean, max, sum, and combined representations (7.3); controlled model evaluation pipeline (`model_evaluation.py`) implemented with frozen validation threshold protocol and train-only scaling, demonstrating test PR-AUC improvements on Logistic Regression (`max`: 0.3315 vs 0.3088 raw, +7.35%) and Random Forest (`mean`: 0.2587 vs 0.2445 raw, +5.81%; F1: 0.3061 vs 0.2557, +19.7%) (7.4); research-grade reporting and visualization layer implemented (`reporting.py`), producing 7 multi-format figures (PNG/SVG/PDF), full-precision CSV table, and cryptographic manifest with 11 automated verification tests (127 passed, 2 skipped total backend suite) (7.5). |
 | **Phase 8** | Benchmark Automation & Experiment Management | FGI-MOD-08 | **PENDING** | Multi-run automated harness, graph-scaling experiments, latency/throughput speedup metrics, machine-readable JSON/CSV storage. |
 | **Phase 9** | Stitch UI Design & Frontend Implementation | FGI-MOD-10 | **PENDING** | React + Vite + TypeScript application, Obsidian Cybernetics design system tokens, Cytoscape.js graph canvas, ECharts analytics. |
 | **Phase 10**| Backend & Frontend Integration | FGI-MOD-09, FGI-MOD-10 | **PENDING** | FastAPI REST endpoints (`/api/v1`), interactive graph queries, live experiment trigger/ingestion, diagnostics console. |
@@ -472,6 +472,46 @@
   - Canonical JSON report saved at [`experiments/results/fraud_model_evaluation_20261024_212032.json`](file:///D:/FraudGraph%20Intelligence/experiments/results/fraud_model_evaluation_20261024_212032.json) (SHA-256: `155304b7453b15dda1f103817e32471a2ffb2357de9cb298cc7b470d8d0efc90`).
   - Authored comprehensive evaluation report [`docs/PHASE_7_4_EVALUATION.md`](file:///D:/FraudGraph%20Intelligence/docs/PHASE_7_4_EVALUATION.md).
 
-### 11.8 Phase 7 Gate Status & Next Steps
+### 11.8 Phase 7.4 Gate Status
 - **Phase 7.4 Status:** **`PASSED (Controlled Fraud Model Evaluation Complete & Empirically Verified)`**
-- **Next Steps:** Proceed to Phase 7.5 (Evaluation Reporting & Visualizations) or Phase 8 (Automated Benchmark Harness).
+
+---
+
+### 11.9 Phase 7.5 Research-Grade Evaluation Reporting & Visualizations
+- **Objective:** Construct a fully reproducible, publication-grade reporting and visualization layer converting the canonical Phase 7.4 evaluation artifact into multi-format publication figures (PNG at 300 DPI, vector SVG, vector PDF), an exhaustive machine-readable CSV summary table, and a cryptographic verification manifest with zero metric fabrication.
+- **Reporting Engine Implementation:** Authored in [`backend/ml_engine/reporting.py`](file:///D:/FraudGraph%20Intelligence/backend/ml_engine/reporting.py) and exported via [`backend/ml_engine/__init__.py`](file:///D:/FraudGraph%20Intelligence/backend/ml_engine/__init__.py).
+  - *Automated Pipeline (`run_full_reporting_pipeline`):*
+    1. Schema and consistency verification via `validate_evaluation_artifact` (enforces split counts, confusion matrix sums, and support alignment).
+    2. Generation of 20-row full-precision CSV summary table (`generate_summary_csv`) across both `causal_history` and `train_only_context` policies.
+    3. Headless rendering (`matplotlib.use("Agg")`) of 7 publication figures in PNG, SVG, and PDF formats.
+    4. Cryptographic provenance hashing via `generate_manifest_and_metadata` (records SHA-256 hashes of input artifacts, summary CSV, and all 7 generated figures).
+- **Publication Figures Generated (`experiments/results/evaluation_reporting_7_5/`):**
+  1. `fig1_test_pr_auc_comparison`: Test PR-AUC across representations with minority prevalence baseline ($\pi \approx 0.0353$).
+  2. `fig2_test_roc_auc_comparison`: Test ROC-AUC across representations with metric compression analysis.
+  3. `fig3_pr_curve_omission_notice`: Methodological card documenting why continuous PR curves are omitted in accordance with scientific integrity safeguards (no continuous scores in JSON artifact).
+  4. `fig4_confusion_matrices`: $2 \times 2$ grid of confusion matrix heatmaps at validation-frozen $\tau^*$ thresholds ($N=1,500$, $53$ frauds).
+  5. `fig5_operating_tradeoffs`: Dual-panel display of detection rates (Precision, Recall, F1) and error volume counts (FP, FN).
+  6. `fig6_runtime_breakdown`: Three-panel breakdown of CPU feature enrichment, model training, and qualified hardware timing boundaries (explicitly non-equivalent host loop vs isolated CUDA kernel).
+  7. `fig7_context_policy_sensitivity`: Sensitivity comparison of `causal_history` vs `train_only_context`.
+- **Machine-Readable Deliverables:**
+  - `summary_evaluation_metrics.csv` (SHA-256: `86523fd6d6f998602124ba101972eba15dc5b27bc97c852b3dee475dd6f77ba4`).
+  - `manifest.json`: Dynamic SHA-256 verification manifest recording runtime environment and source fields for each figure.
+- **Automated Verification Test Suite (`backend/tests/test_reporting.py`):**
+  - 11 dedicated unit and invariant tests verifying:
+    1. Valid artifact parsing.
+    2. Missing required fields raise `KeyError` or `ValueError`.
+    3. Dynamic reading of metrics from artifact (not hardcoded).
+    4. Confusion matrix arithmetic ($\text{TP}+\text{FP}+\text{TN}+\text{FN} = 1500$, $\text{TP}+\text{FN}=53$, $\text{TN}+\text{FP}=1447$).
+    5. Test sample counts and positive support match metadata.
+    6. Summary CSV values match source JSON across all 20 rows.
+    7. Figure generation headlessly produces PNG, SVG, and PDF formats.
+    8. Source evaluation artifact immutability before and after report generation.
+    9. Manifest input checksum matches canonical JSON SHA-256 (`155304b...`).
+    10. Methodological notice produced for continuous PR curve omission.
+    11. Deterministic figure filenames, manifest entries, and CSV outputs.
+  - Tests pass: **11 passed in 70.04s**. Full backend test suite passes: **127 passed, 2 skipped** in 104.49s.
+- **Comprehensive Documentation:** Authored [`docs/PHASE_7_5_EVALUATION_REPORT.md`](file:///D:/FraudGraph%20Intelligence/docs/PHASE_7_5_EVALUATION_REPORT.md).
+
+### 11.10 Phase 7 Gate Status & Next Steps
+- **Phase 7 Status:** **`PASSED (Phase 7 Complete — All 5 Subphases 7.1–7.5 Empirically Validated)`**
+- **Next Steps:** Proceed to Phase 8 (Benchmark Automation & Experiment Management).

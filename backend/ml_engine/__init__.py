@@ -21,6 +21,12 @@ from backend.ml_engine.model_evaluation import (
     select_optimal_f1_threshold,
     select_recall_target_threshold,
 )
+from backend.ml_engine.reporting import (
+    generate_manifest_and_metadata,
+    generate_summary_csv,
+    run_full_reporting_pipeline,
+    validate_evaluation_artifact,
+)
 
 __all__ = [
     "AggregationBackend",
@@ -32,8 +38,12 @@ __all__ = [
     "enrich_features",
     "enrich_features_with_split",
     "evaluate_single_model",
+    "generate_manifest_and_metadata",
+    "generate_summary_csv",
     "get_feature_dimension",
     "run_comprehensive_evaluation",
+    "run_full_reporting_pipeline",
     "select_optimal_f1_threshold",
     "select_recall_target_threshold",
+    "validate_evaluation_artifact",
 ]
