@@ -8,8 +8,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Planned for Phase 7
-- Phase 7.4: Downstream machine learning fraud classification baseline comparing tabular-only vs graph-enriched features (Logistic Regression, Random Forest, LightGBM/XGBoost).
 - Phase 7.5: Evaluation reporting (PR-AUC, ROC-AUC, Precision@K, Recall@K, confusion matrices, and speedup impact).
+
+---
+
+## [0.7.2] - 2026-10-24 — Phase 7.4: Controlled Fraud Model Evaluation
+
+### Added
+- **Model Evaluation Engine (`backend/ml_engine/model_evaluation.py`, `backend/ml_engine/__init__.py`):**
+  - Implemented reproducible downstream fraud classification evaluation pipeline comparing raw tabular features against graph-enriched representations (`mean`, `max`, `sum`, `multi_operator`).
+  - Validation-only threshold selection protocol (`select_optimal_f1_threshold`, `select_recall_target_threshold`): freezes decision thresholds on validation partition predictions via a 100-step grid search, preventing test-set overfitting.
+  - Strict leakage controls: `StandardScaler` fitted exclusively on training partition features ($X_{\text{train}}$), enforcing strict train-only preprocessing isolation; zero label leakage.
+  - Comprehensive metric computation (`compute_metrics`): evaluates PR-AUC, ROC-AUC, threshold precision/recall/F1, confusion matrices, and precision at target recall (0.50), guarded against zero-division errors.
+  - Timing instrumentation: captures microsecond-level timing breakdowns for feature enrichment ($t_{\text{enrich}}$), preprocessing ($t_{\text{prep}}$), training ($t_{\text{train}}$), and inference ($t_{\text{infer}}$).
+  - Multi-cohort execution (`run_comprehensive_evaluation`): evaluates complete $2\text{ models} \times 5\text{ representations}$ matrix across both primary streaming (`causal_history`) and sensitivity (`train_only_context`) regimes.
+- **Automated Verification Test Suite (`backend/tests/test_model_evaluation.py`):**
+  - 8 dedicated unit and invariant tests verifying threshold optimization, zero-division handling, metric bounds, confusion matrix arithmetic, train-only scaler isolation, evaluation record schema, context policy invariance, and multi-model matrix execution.
+- **Empirical Experiment Artifacts & Documentation:**
+  - Machine-readable benchmark report saved at [`experiments/results/fraud_model_evaluation_20261024_212032.json`](file:///D:/FraudGraph%20Intelligence/experiments/results/fraud_model_evaluation_20261024_212032.json) (SHA-256: `155304b7453b15dda1f103817e32471a2ffb2357de9cb298cc7b470d8d0efc90`).
+  - Authored comprehensive evaluation report [`docs/PHASE_7_4_EVALUATION.md`](file:///D:/FraudGraph%20Intelligence/docs/PHASE_7_4_EVALUATION.md).
+  - Updated [`docs/PHASE_STATUS.md`](file:///D:/FraudGraph%20Intelligence/docs/PHASE_STATUS.md) with Section 11.7 detailing Phase 7.4 metrics.
 
 ---
 

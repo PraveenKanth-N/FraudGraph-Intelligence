@@ -14,14 +14,26 @@ from backend.ml_engine.feature_enrichment import (
     enrich_features_with_split,
     get_feature_dimension,
 )
+from backend.ml_engine.model_evaluation import (
+    compute_metrics,
+    evaluate_single_model,
+    run_comprehensive_evaluation,
+    select_optimal_f1_threshold,
+    select_recall_target_threshold,
+)
 
 __all__ = [
     "AggregationBackend",
     "ContextPolicy",
     "RepresentationType",
     "apply_context_policy",
+    "compute_metrics",
     "compute_neighbor_aggregation",
     "enrich_features",
     "enrich_features_with_split",
+    "evaluate_single_model",
     "get_feature_dimension",
+    "run_comprehensive_evaluation",
+    "select_optimal_f1_threshold",
+    "select_recall_target_threshold",
 ]

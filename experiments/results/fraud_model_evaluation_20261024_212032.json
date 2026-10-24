@@ -1,0 +1,2154 @@
+{
+  "experiment_id": "EXP-FRAUD-EVAL-7.4-20261024_212032",
+  "phase": "Phase 7.4 (Controlled Fraud Model Evaluation)",
+  "created_at": "2026-10-24T21:20:54+05:30",
+  "provenance": {
+    "dataset_name": "synthetic_fraud_10k",
+    "dataset_provenance": "SYNTHETIC",
+    "dataset_path": "data\\fixtures\\synthetic_fraud_10k.npz",
+    "dataset_sha256": "aecafe3b1fd608c18d62aa1586d0ab6f88b867bd92b20e0f6bd133606c7c4430",
+    "disclaimer": "Controlled synthetic benchmark fixture for evaluating graph-based neighbor aggregation. The 3.5% fraud prevalence reflects real-world class imbalance, but does NOT represent live banking fraud distributions or empirical records."
+  },
+  "environment": {
+    "python_version": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+    "sklearn_version": "1.9.1",
+    "numpy_version": "2.5.4",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 140 Stepping 1, GenuineIntel"
+  },
+  "dataset_split": {
+    "train_nodes": 7000,
+    "train_frauds": 239,
+    "train_prevalence": 0.034143,
+    "val_nodes": 1500,
+    "val_frauds": 58,
+    "val_prevalence": 0.038667,
+    "test_nodes": 1500,
+    "test_frauds": 53,
+    "test_prevalence": 0.035333,
+    "total_nodes": 10000,
+    "total_edges": 231984,
+    "total_frauds": 350
+  },
+  "evaluation_protocol": {
+    "primary_context_policy": "causal_history",
+    "sensitivity_context_policy": "train_only_context",
+    "target_recall_spec": 0.5,
+    "threshold_selection_protocol": "Validation-only grid search over 100 thresholds between 0.01 and 0.99. Optimal F1 threshold chosen to maximize binary F1 on validation predictions. Target recall threshold chosen as highest threshold with validation recall >= target_recall. Thresholds are frozen prior to test set evaluation.",
+    "preprocessing_protocol": "StandardScaler fitted strictly on training partition features (X_train). Validation and test sets transformed using training statistics. Zero transductive feature leakage."
+  },
+  "primary_results_causal_history": [
+    {
+      "model_name": "logistic_regression",
+      "representation": "raw",
+      "context_policy": "causal_history",
+      "feature_dim": 32,
+      "validation_metrics": {
+        "pr_auc": 0.258955,
+        "roc_auc": 0.821261,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1684,
+          "precision": 0.297872,
+          "recall": 0.241379,
+          "f1_score": 0.266667,
+          "predicted_positive_count": 47,
+          "confusion_matrix": {
+            "true_negative": 1409,
+            "false_positive": 33,
+            "false_negative": 44,
+            "true_positive": 14
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.517241,
+          "precision_at_target_recall": 0.166667,
+          "f1_score": 0.252101,
+          "predicted_positive_count": 180,
+          "confusion_matrix": {
+            "true_negative": 1292,
+            "false_positive": 150,
+            "false_negative": 28,
+            "true_positive": 30
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.308794,
+        "roc_auc": 0.785503,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1684,
+          "precision": 0.31746,
+          "recall": 0.377358,
+          "f1_score": 0.344828,
+          "predicted_positive_count": 63,
+          "confusion_matrix": {
+            "true_negative": 1404,
+            "false_positive": 43,
+            "false_negative": 33,
+            "true_positive": 20
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.641509,
+          "precision_at_target_recall": 0.172589,
+          "f1_score": 0.272,
+          "predicted_positive_count": 197,
+          "confusion_matrix": {
+            "true_negative": 1284,
+            "false_positive": 163,
+            "false_negative": 19,
+            "true_positive": 34
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 0.748,
+        "preprocessing_ms": 8.101,
+        "model_training_ms": 7.177,
+        "val_inference_ms": 0.269,
+        "test_inference_ms": 0.188,
+        "total_inference_ms": 0.456,
+        "total_runtime_ms": 16.481
+      },
+      "model_parameters": {
+        "C": 1.0,
+        "class_weight": null,
+        "dual": false,
+        "fit_intercept": true,
+        "intercept_scaling": 1,
+        "l1_ratio": 0.0,
+        "max_iter": 1000,
+        "n_jobs": null,
+        "penalty": "deprecated",
+        "random_state": 42,
+        "solver": "lbfgs",
+        "tol": 0.0001,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "logistic_regression",
+      "representation": "mean",
+      "context_policy": "causal_history",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.201578,
+        "roc_auc": 0.823892,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.109,
+          "precision": 0.228571,
+          "recall": 0.413793,
+          "f1_score": 0.294479,
+          "predicted_positive_count": 105,
+          "confusion_matrix": {
+            "true_negative": 1361,
+            "false_positive": 81,
+            "false_negative": 34,
+            "true_positive": 24
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0595,
+          "achieved_recall": 0.568966,
+          "precision_at_target_recall": 0.15493,
+          "f1_score": 0.243542,
+          "predicted_positive_count": 213,
+          "confusion_matrix": {
+            "true_negative": 1262,
+            "false_positive": 180,
+            "false_negative": 25,
+            "true_positive": 33
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.300959,
+        "roc_auc": 0.776284,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.109,
+          "precision": 0.247423,
+          "recall": 0.45283,
+          "f1_score": 0.32,
+          "predicted_positive_count": 97,
+          "confusion_matrix": {
+            "true_negative": 1374,
+            "false_positive": 73,
+            "false_negative": 29,
+            "true_positive": 24
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0595,
+          "achieved_recall": 0.622642,
+          "precision_at_target_recall": 0.162562,
+          "f1_score": 0.257812,
+          "predicted_positive_count": 203,
+          "confusion_matrix": {
+            "true_negative": 1277,
+            "false_positive": 170,
+            "false_negative": 20,
+            "true_positive": 33
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 6.415,
+        "preprocessing_ms": 8.848,
+        "model_training_ms": 7.206,
+        "val_inference_ms": 0.294,
+        "test_inference_ms": 0.215,
+        "total_inference_ms": 0.509,
+        "total_runtime_ms": 22.978
+      },
+      "model_parameters": {
+        "C": 1.0,
+        "class_weight": null,
+        "dual": false,
+        "fit_intercept": true,
+        "intercept_scaling": 1,
+        "l1_ratio": 0.0,
+        "max_iter": 1000,
+        "n_jobs": null,
+        "penalty": "deprecated",
+        "random_state": 42,
+        "solver": "lbfgs",
+        "tol": 0.0001,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "logistic_regression",
+      "representation": "max",
+      "context_policy": "causal_history",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.240515,
+        "roc_auc": 0.820879,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.109,
+          "precision": 0.216981,
+          "recall": 0.396552,
+          "f1_score": 0.280488,
+          "predicted_positive_count": 106,
+          "confusion_matrix": {
+            "true_negative": 1359,
+            "false_positive": 83,
+            "false_negative": 35,
+            "true_positive": 23
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0595,
+          "achieved_recall": 0.517241,
+          "precision_at_target_recall": 0.157895,
+          "f1_score": 0.241935,
+          "predicted_positive_count": 190,
+          "confusion_matrix": {
+            "true_negative": 1282,
+            "false_positive": 160,
+            "false_negative": 28,
+            "true_positive": 30
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.331471,
+        "roc_auc": 0.786481,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.109,
+          "precision": 0.255319,
+          "recall": 0.45283,
+          "f1_score": 0.326531,
+          "predicted_positive_count": 94,
+          "confusion_matrix": {
+            "true_negative": 1377,
+            "false_positive": 70,
+            "false_negative": 29,
+            "true_positive": 24
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0595,
+          "achieved_recall": 0.603774,
+          "precision_at_target_recall": 0.165803,
+          "f1_score": 0.260163,
+          "predicted_positive_count": 193,
+          "confusion_matrix": {
+            "true_negative": 1286,
+            "false_positive": 161,
+            "false_negative": 21,
+            "true_positive": 32
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 60.047,
+        "preprocessing_ms": 6.492,
+        "model_training_ms": 10.549,
+        "val_inference_ms": 0.286,
+        "test_inference_ms": 0.182,
+        "total_inference_ms": 0.468,
+        "total_runtime_ms": 77.556
+      },
+      "model_parameters": {
+        "C": 1.0,
+        "class_weight": null,
+        "dual": false,
+        "fit_intercept": true,
+        "intercept_scaling": 1,
+        "l1_ratio": 0.0,
+        "max_iter": 1000,
+        "n_jobs": null,
+        "penalty": "deprecated",
+        "random_state": 42,
+        "solver": "lbfgs",
+        "tol": 0.0001,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "logistic_regression",
+      "representation": "multi_operator",
+      "context_policy": "causal_history",
+      "feature_dim": 96,
+      "validation_metrics": {
+        "pr_auc": 0.207013,
+        "roc_auc": 0.808408,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1387,
+          "precision": 0.260274,
+          "recall": 0.327586,
+          "f1_score": 0.290076,
+          "predicted_positive_count": 73,
+          "confusion_matrix": {
+            "true_negative": 1388,
+            "false_positive": 54,
+            "false_negative": 39,
+            "true_positive": 19
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0496,
+          "achieved_recall": 0.534483,
+          "precision_at_target_recall": 0.134199,
+          "f1_score": 0.214533,
+          "predicted_positive_count": 231,
+          "confusion_matrix": {
+            "true_negative": 1242,
+            "false_positive": 200,
+            "false_negative": 27,
+            "true_positive": 31
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.247094,
+        "roc_auc": 0.78,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1387,
+          "precision": 0.295775,
+          "recall": 0.396226,
+          "f1_score": 0.33871,
+          "predicted_positive_count": 71,
+          "confusion_matrix": {
+            "true_negative": 1397,
+            "false_positive": 50,
+            "false_negative": 32,
+            "true_positive": 21
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0496,
+          "achieved_recall": 0.622642,
+          "precision_at_target_recall": 0.141631,
+          "f1_score": 0.230769,
+          "predicted_positive_count": 233,
+          "confusion_matrix": {
+            "true_negative": 1247,
+            "false_positive": 200,
+            "false_negative": 20,
+            "true_positive": 33
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 69.78,
+        "preprocessing_ms": 10.469,
+        "model_training_ms": 24.533,
+        "val_inference_ms": 0.349,
+        "test_inference_ms": 0.274,
+        "total_inference_ms": 0.623,
+        "total_runtime_ms": 105.405
+      },
+      "model_parameters": {
+        "C": 1.0,
+        "class_weight": null,
+        "dual": false,
+        "fit_intercept": true,
+        "intercept_scaling": 1,
+        "l1_ratio": 0.0,
+        "max_iter": 1000,
+        "n_jobs": null,
+        "penalty": "deprecated",
+        "random_state": 42,
+        "solver": "lbfgs",
+        "tol": 0.0001,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "logistic_regression",
+      "representation": "sum",
+      "context_policy": "causal_history",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.30544,
+        "roc_auc": 0.810034,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.2278,
+          "precision": 0.421053,
+          "recall": 0.275862,
+          "f1_score": 0.333333,
+          "predicted_positive_count": 38,
+          "confusion_matrix": {
+            "true_negative": 1420,
+            "false_positive": 22,
+            "false_negative": 42,
+            "true_positive": 16
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.551724,
+          "precision_at_target_recall": 0.176796,
+          "f1_score": 0.267782,
+          "predicted_positive_count": 181,
+          "confusion_matrix": {
+            "true_negative": 1293,
+            "false_positive": 149,
+            "false_negative": 26,
+            "true_positive": 32
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.148773,
+        "roc_auc": 0.749932,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.2278,
+          "precision": 0.217391,
+          "recall": 0.377358,
+          "f1_score": 0.275862,
+          "predicted_positive_count": 92,
+          "confusion_matrix": {
+            "true_negative": 1375,
+            "false_positive": 72,
+            "false_negative": 33,
+            "true_positive": 20
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.584906,
+          "precision_at_target_recall": 0.140909,
+          "f1_score": 0.227106,
+          "predicted_positive_count": 220,
+          "confusion_matrix": {
+            "true_negative": 1258,
+            "false_positive": 189,
+            "false_negative": 22,
+            "true_positive": 31
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 6.424,
+        "preprocessing_ms": 5.843,
+        "model_training_ms": 9.228,
+        "val_inference_ms": 0.455,
+        "test_inference_ms": 0.286,
+        "total_inference_ms": 0.741,
+        "total_runtime_ms": 22.236
+      },
+      "model_parameters": {
+        "C": 1.0,
+        "class_weight": null,
+        "dual": false,
+        "fit_intercept": true,
+        "intercept_scaling": 1,
+        "l1_ratio": 0.0,
+        "max_iter": 1000,
+        "n_jobs": null,
+        "penalty": "deprecated",
+        "random_state": 42,
+        "solver": "lbfgs",
+        "tol": 0.0001,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "random_forest",
+      "representation": "raw",
+      "context_policy": "causal_history",
+      "feature_dim": 32,
+      "validation_metrics": {
+        "pr_auc": 0.196711,
+        "roc_auc": 0.749498,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.0991,
+          "precision": 0.193548,
+          "recall": 0.517241,
+          "f1_score": 0.28169,
+          "predicted_positive_count": 155,
+          "confusion_matrix": {
+            "true_negative": 1317,
+            "false_positive": 125,
+            "false_negative": 28,
+            "true_positive": 30
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0991,
+          "achieved_recall": 0.517241,
+          "precision_at_target_recall": 0.193548,
+          "f1_score": 0.28169,
+          "predicted_positive_count": 155,
+          "confusion_matrix": {
+            "true_negative": 1317,
+            "false_positive": 125,
+            "false_negative": 28,
+            "true_positive": 30
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.244511,
+        "roc_auc": 0.778605,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.0991,
+          "precision": 0.168675,
+          "recall": 0.528302,
+          "f1_score": 0.255708,
+          "predicted_positive_count": 166,
+          "confusion_matrix": {
+            "true_negative": 1309,
+            "false_positive": 138,
+            "false_negative": 25,
+            "true_positive": 28
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0991,
+          "achieved_recall": 0.528302,
+          "precision_at_target_recall": 0.168675,
+          "f1_score": 0.255708,
+          "predicted_positive_count": 166,
+          "confusion_matrix": {
+            "true_negative": 1309,
+            "false_positive": 138,
+            "false_negative": 25,
+            "true_positive": 28
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 0.707,
+        "preprocessing_ms": 0.006,
+        "model_training_ms": 852.122,
+        "val_inference_ms": 26.34,
+        "test_inference_ms": 26.337,
+        "total_inference_ms": 52.677,
+        "total_runtime_ms": 905.512
+      },
+      "model_parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": -1,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "random_forest",
+      "representation": "mean",
+      "context_policy": "causal_history",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.225926,
+        "roc_auc": 0.748386,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1882,
+          "precision": 0.3,
+          "recall": 0.258621,
+          "f1_score": 0.277778,
+          "predicted_positive_count": 50,
+          "confusion_matrix": {
+            "true_negative": 1407,
+            "false_positive": 35,
+            "false_negative": 43,
+            "true_positive": 15
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0793,
+          "achieved_recall": 0.5,
+          "precision_at_target_recall": 0.109023,
+          "f1_score": 0.179012,
+          "predicted_positive_count": 266,
+          "confusion_matrix": {
+            "true_negative": 1205,
+            "false_positive": 237,
+            "false_negative": 29,
+            "true_positive": 29
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.258714,
+        "roc_auc": 0.779185,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1882,
+          "precision": 0.333333,
+          "recall": 0.283019,
+          "f1_score": 0.306122,
+          "predicted_positive_count": 45,
+          "confusion_matrix": {
+            "true_negative": 1417,
+            "false_positive": 30,
+            "false_negative": 38,
+            "true_positive": 15
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0793,
+          "achieved_recall": 0.584906,
+          "precision_at_target_recall": 0.118321,
+          "f1_score": 0.196825,
+          "predicted_positive_count": 262,
+          "confusion_matrix": {
+            "true_negative": 1216,
+            "false_positive": 231,
+            "false_negative": 22,
+            "true_positive": 31
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 6.031,
+        "preprocessing_ms": 0.004,
+        "model_training_ms": 1507.652,
+        "val_inference_ms": 26.433,
+        "test_inference_ms": 26.612,
+        "total_inference_ms": 53.046,
+        "total_runtime_ms": 1566.733
+      },
+      "model_parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": -1,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "random_forest",
+      "representation": "max",
+      "context_policy": "causal_history",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.194083,
+        "roc_auc": 0.764802,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1189,
+          "precision": 0.195876,
+          "recall": 0.327586,
+          "f1_score": 0.245161,
+          "predicted_positive_count": 97,
+          "confusion_matrix": {
+            "true_negative": 1364,
+            "false_positive": 78,
+            "false_negative": 39,
+            "true_positive": 19
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.551724,
+          "precision_at_target_recall": 0.121673,
+          "f1_score": 0.199377,
+          "predicted_positive_count": 263,
+          "confusion_matrix": {
+            "true_negative": 1211,
+            "false_positive": 231,
+            "false_negative": 26,
+            "true_positive": 32
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.18652,
+        "roc_auc": 0.734636,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1189,
+          "precision": 0.153846,
+          "recall": 0.377358,
+          "f1_score": 0.218579,
+          "predicted_positive_count": 130,
+          "confusion_matrix": {
+            "true_negative": 1337,
+            "false_positive": 110,
+            "false_negative": 33,
+            "true_positive": 20
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.566038,
+          "precision_at_target_recall": 0.10453,
+          "f1_score": 0.176471,
+          "predicted_positive_count": 287,
+          "confusion_matrix": {
+            "true_negative": 1190,
+            "false_positive": 257,
+            "false_negative": 23,
+            "true_positive": 30
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 67.245,
+        "preprocessing_ms": 0.006,
+        "model_training_ms": 1343.342,
+        "val_inference_ms": 26.235,
+        "test_inference_ms": 26.173,
+        "total_inference_ms": 52.408,
+        "total_runtime_ms": 1463.001
+      },
+      "model_parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": -1,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "random_forest",
+      "representation": "multi_operator",
+      "context_policy": "causal_history",
+      "feature_dim": 96,
+      "validation_metrics": {
+        "pr_auc": 0.175132,
+        "roc_auc": 0.758645,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1684,
+          "precision": 0.302326,
+          "recall": 0.224138,
+          "f1_score": 0.257426,
+          "predicted_positive_count": 43,
+          "confusion_matrix": {
+            "true_negative": 1412,
+            "false_positive": 30,
+            "false_negative": 45,
+            "true_positive": 13
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0595,
+          "achieved_recall": 0.534483,
+          "precision_at_target_recall": 0.090909,
+          "f1_score": 0.155388,
+          "predicted_positive_count": 341,
+          "confusion_matrix": {
+            "true_negative": 1132,
+            "false_positive": 310,
+            "false_negative": 27,
+            "true_positive": 31
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.217212,
+        "roc_auc": 0.772353,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1684,
+          "precision": 0.341463,
+          "recall": 0.264151,
+          "f1_score": 0.297872,
+          "predicted_positive_count": 41,
+          "confusion_matrix": {
+            "true_negative": 1420,
+            "false_positive": 27,
+            "false_negative": 39,
+            "true_positive": 14
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0595,
+          "achieved_recall": 0.660377,
+          "precision_at_target_recall": 0.102041,
+          "f1_score": 0.176768,
+          "predicted_positive_count": 343,
+          "confusion_matrix": {
+            "true_negative": 1139,
+            "false_positive": 308,
+            "false_negative": 18,
+            "true_positive": 35
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 66.972,
+        "preprocessing_ms": 0.005,
+        "model_training_ms": 1760.416,
+        "val_inference_ms": 26.607,
+        "test_inference_ms": 25.266,
+        "total_inference_ms": 51.873,
+        "total_runtime_ms": 1879.266
+      },
+      "model_parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": -1,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "random_forest",
+      "representation": "sum",
+      "context_policy": "causal_history",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.151855,
+        "roc_auc": 0.764832,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1387,
+          "precision": 0.177966,
+          "recall": 0.362069,
+          "f1_score": 0.238636,
+          "predicted_positive_count": 118,
+          "confusion_matrix": {
+            "true_negative": 1345,
+            "false_positive": 97,
+            "false_negative": 37,
+            "true_positive": 21
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0892,
+          "achieved_recall": 0.534483,
+          "precision_at_target_recall": 0.118321,
+          "f1_score": 0.19375,
+          "predicted_positive_count": 262,
+          "confusion_matrix": {
+            "true_negative": 1211,
+            "false_positive": 231,
+            "false_negative": 27,
+            "true_positive": 31
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.12362,
+        "roc_auc": 0.742375,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1387,
+          "precision": 0.112821,
+          "recall": 0.415094,
+          "f1_score": 0.177419,
+          "predicted_positive_count": 195,
+          "confusion_matrix": {
+            "true_negative": 1274,
+            "false_positive": 173,
+            "false_negative": 31,
+            "true_positive": 22
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0892,
+          "achieved_recall": 0.622642,
+          "precision_at_target_recall": 0.094286,
+          "f1_score": 0.163772,
+          "predicted_positive_count": 350,
+          "confusion_matrix": {
+            "true_negative": 1130,
+            "false_positive": 317,
+            "false_negative": 20,
+            "true_positive": 33
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 4.64,
+        "preprocessing_ms": 0.004,
+        "model_training_ms": 1392.833,
+        "val_inference_ms": 26.819,
+        "test_inference_ms": 25.632,
+        "total_inference_ms": 52.451,
+        "total_runtime_ms": 1449.928
+      },
+      "model_parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": -1,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      }
+    }
+  ],
+  "sensitivity_results_train_only": [
+    {
+      "model_name": "logistic_regression",
+      "representation": "raw",
+      "context_policy": "train_only_context",
+      "feature_dim": 32,
+      "validation_metrics": {
+        "pr_auc": 0.258955,
+        "roc_auc": 0.821261,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1684,
+          "precision": 0.297872,
+          "recall": 0.241379,
+          "f1_score": 0.266667,
+          "predicted_positive_count": 47,
+          "confusion_matrix": {
+            "true_negative": 1409,
+            "false_positive": 33,
+            "false_negative": 44,
+            "true_positive": 14
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.517241,
+          "precision_at_target_recall": 0.166667,
+          "f1_score": 0.252101,
+          "predicted_positive_count": 180,
+          "confusion_matrix": {
+            "true_negative": 1292,
+            "false_positive": 150,
+            "false_negative": 28,
+            "true_positive": 30
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.308794,
+        "roc_auc": 0.785503,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1684,
+          "precision": 0.31746,
+          "recall": 0.377358,
+          "f1_score": 0.344828,
+          "predicted_positive_count": 63,
+          "confusion_matrix": {
+            "true_negative": 1404,
+            "false_positive": 43,
+            "false_negative": 33,
+            "true_positive": 20
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.641509,
+          "precision_at_target_recall": 0.172589,
+          "f1_score": 0.272,
+          "predicted_positive_count": 197,
+          "confusion_matrix": {
+            "true_negative": 1284,
+            "false_positive": 163,
+            "false_negative": 19,
+            "true_positive": 34
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 0.868,
+        "preprocessing_ms": 3.546,
+        "model_training_ms": 7.755,
+        "val_inference_ms": 0.247,
+        "test_inference_ms": 0.153,
+        "total_inference_ms": 0.399,
+        "total_runtime_ms": 12.568
+      },
+      "model_parameters": {
+        "C": 1.0,
+        "class_weight": null,
+        "dual": false,
+        "fit_intercept": true,
+        "intercept_scaling": 1,
+        "l1_ratio": 0.0,
+        "max_iter": 1000,
+        "n_jobs": null,
+        "penalty": "deprecated",
+        "random_state": 42,
+        "solver": "lbfgs",
+        "tol": 0.0001,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "logistic_regression",
+      "representation": "mean",
+      "context_policy": "train_only_context",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.20686,
+        "roc_auc": 0.818392,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.109,
+          "precision": 0.194915,
+          "recall": 0.396552,
+          "f1_score": 0.261364,
+          "predicted_positive_count": 118,
+          "confusion_matrix": {
+            "true_negative": 1347,
+            "false_positive": 95,
+            "false_negative": 35,
+            "true_positive": 23
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0595,
+          "achieved_recall": 0.586207,
+          "precision_at_target_recall": 0.153153,
+          "f1_score": 0.242857,
+          "predicted_positive_count": 222,
+          "confusion_matrix": {
+            "true_negative": 1254,
+            "false_positive": 188,
+            "false_negative": 24,
+            "true_positive": 34
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.279344,
+        "roc_auc": 0.778149,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.109,
+          "precision": 0.232323,
+          "recall": 0.433962,
+          "f1_score": 0.302632,
+          "predicted_positive_count": 99,
+          "confusion_matrix": {
+            "true_negative": 1371,
+            "false_positive": 76,
+            "false_negative": 30,
+            "true_positive": 23
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0595,
+          "achieved_recall": 0.641509,
+          "precision_at_target_recall": 0.160377,
+          "f1_score": 0.256604,
+          "predicted_positive_count": 212,
+          "confusion_matrix": {
+            "true_negative": 1269,
+            "false_positive": 178,
+            "false_negative": 19,
+            "true_positive": 34
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 8.505,
+        "preprocessing_ms": 6.613,
+        "model_training_ms": 6.649,
+        "val_inference_ms": 0.396,
+        "test_inference_ms": 0.294,
+        "total_inference_ms": 0.689,
+        "total_runtime_ms": 22.456
+      },
+      "model_parameters": {
+        "C": 1.0,
+        "class_weight": null,
+        "dual": false,
+        "fit_intercept": true,
+        "intercept_scaling": 1,
+        "l1_ratio": 0.0,
+        "max_iter": 1000,
+        "n_jobs": null,
+        "penalty": "deprecated",
+        "random_state": 42,
+        "solver": "lbfgs",
+        "tol": 0.0001,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "logistic_regression",
+      "representation": "max",
+      "context_policy": "train_only_context",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.23604,
+        "roc_auc": 0.815151,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1684,
+          "precision": 0.293103,
+          "recall": 0.293103,
+          "f1_score": 0.293103,
+          "predicted_positive_count": 58,
+          "confusion_matrix": {
+            "true_negative": 1401,
+            "false_positive": 41,
+            "false_negative": 41,
+            "true_positive": 17
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.5,
+          "precision_at_target_recall": 0.166667,
+          "f1_score": 0.25,
+          "predicted_positive_count": 174,
+          "confusion_matrix": {
+            "true_negative": 1297,
+            "false_positive": 145,
+            "false_negative": 29,
+            "true_positive": 29
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.28173,
+        "roc_auc": 0.793652,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1684,
+          "precision": 0.333333,
+          "recall": 0.320755,
+          "f1_score": 0.326923,
+          "predicted_positive_count": 51,
+          "confusion_matrix": {
+            "true_negative": 1413,
+            "false_positive": 34,
+            "false_negative": 36,
+            "true_positive": 17
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.603774,
+          "precision_at_target_recall": 0.187135,
+          "f1_score": 0.285714,
+          "predicted_positive_count": 171,
+          "confusion_matrix": {
+            "true_negative": 1308,
+            "false_positive": 139,
+            "false_negative": 21,
+            "true_positive": 32
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 57.995,
+        "preprocessing_ms": 7.635,
+        "model_training_ms": 9.48,
+        "val_inference_ms": 0.289,
+        "test_inference_ms": 0.199,
+        "total_inference_ms": 0.488,
+        "total_runtime_ms": 75.599
+      },
+      "model_parameters": {
+        "C": 1.0,
+        "class_weight": null,
+        "dual": false,
+        "fit_intercept": true,
+        "intercept_scaling": 1,
+        "l1_ratio": 0.0,
+        "max_iter": 1000,
+        "n_jobs": null,
+        "penalty": "deprecated",
+        "random_state": 42,
+        "solver": "lbfgs",
+        "tol": 0.0001,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "logistic_regression",
+      "representation": "multi_operator",
+      "context_policy": "train_only_context",
+      "feature_dim": 96,
+      "validation_metrics": {
+        "pr_auc": 0.235368,
+        "roc_auc": 0.799309,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.208,
+          "precision": 0.375,
+          "recall": 0.258621,
+          "f1_score": 0.306122,
+          "predicted_positive_count": 40,
+          "confusion_matrix": {
+            "true_negative": 1417,
+            "false_positive": 25,
+            "false_negative": 43,
+            "true_positive": 15
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0595,
+          "achieved_recall": 0.517241,
+          "precision_at_target_recall": 0.142857,
+          "f1_score": 0.223881,
+          "predicted_positive_count": 210,
+          "confusion_matrix": {
+            "true_negative": 1262,
+            "false_positive": 180,
+            "false_negative": 28,
+            "true_positive": 30
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.264377,
+        "roc_auc": 0.78326,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.208,
+          "precision": 0.358974,
+          "recall": 0.264151,
+          "f1_score": 0.304348,
+          "predicted_positive_count": 39,
+          "confusion_matrix": {
+            "true_negative": 1422,
+            "false_positive": 25,
+            "false_negative": 39,
+            "true_positive": 14
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0595,
+          "achieved_recall": 0.641509,
+          "precision_at_target_recall": 0.180851,
+          "f1_score": 0.282158,
+          "predicted_positive_count": 188,
+          "confusion_matrix": {
+            "true_negative": 1293,
+            "false_positive": 154,
+            "false_negative": 19,
+            "true_positive": 34
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 64.157,
+        "preprocessing_ms": 9.418,
+        "model_training_ms": 63.52,
+        "val_inference_ms": 0.537,
+        "test_inference_ms": 0.423,
+        "total_inference_ms": 0.96,
+        "total_runtime_ms": 138.055
+      },
+      "model_parameters": {
+        "C": 1.0,
+        "class_weight": null,
+        "dual": false,
+        "fit_intercept": true,
+        "intercept_scaling": 1,
+        "l1_ratio": 0.0,
+        "max_iter": 1000,
+        "n_jobs": null,
+        "penalty": "deprecated",
+        "random_state": 42,
+        "solver": "lbfgs",
+        "tol": 0.0001,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "logistic_regression",
+      "representation": "sum",
+      "context_policy": "train_only_context",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.242115,
+        "roc_auc": 0.824226,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1288,
+          "precision": 0.244444,
+          "recall": 0.37931,
+          "f1_score": 0.297297,
+          "predicted_positive_count": 90,
+          "confusion_matrix": {
+            "true_negative": 1374,
+            "false_positive": 68,
+            "false_negative": 36,
+            "true_positive": 22
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.534483,
+          "precision_at_target_recall": 0.173184,
+          "f1_score": 0.261603,
+          "predicted_positive_count": 179,
+          "confusion_matrix": {
+            "true_negative": 1294,
+            "false_positive": 148,
+            "false_negative": 27,
+            "true_positive": 31
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.284532,
+        "roc_auc": 0.776858,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1288,
+          "precision": 0.261905,
+          "recall": 0.415094,
+          "f1_score": 0.321168,
+          "predicted_positive_count": 84,
+          "confusion_matrix": {
+            "true_negative": 1385,
+            "false_positive": 62,
+            "false_negative": 31,
+            "true_positive": 22
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.584906,
+          "precision_at_target_recall": 0.178161,
+          "f1_score": 0.273128,
+          "predicted_positive_count": 174,
+          "confusion_matrix": {
+            "true_negative": 1304,
+            "false_positive": 143,
+            "false_negative": 22,
+            "true_positive": 31
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 8.13,
+        "preprocessing_ms": 6.435,
+        "model_training_ms": 9.175,
+        "val_inference_ms": 0.339,
+        "test_inference_ms": 0.193,
+        "total_inference_ms": 0.531,
+        "total_runtime_ms": 24.271
+      },
+      "model_parameters": {
+        "C": 1.0,
+        "class_weight": null,
+        "dual": false,
+        "fit_intercept": true,
+        "intercept_scaling": 1,
+        "l1_ratio": 0.0,
+        "max_iter": 1000,
+        "n_jobs": null,
+        "penalty": "deprecated",
+        "random_state": 42,
+        "solver": "lbfgs",
+        "tol": 0.0001,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "random_forest",
+      "representation": "raw",
+      "context_policy": "train_only_context",
+      "feature_dim": 32,
+      "validation_metrics": {
+        "pr_auc": 0.196711,
+        "roc_auc": 0.749498,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.0991,
+          "precision": 0.193548,
+          "recall": 0.517241,
+          "f1_score": 0.28169,
+          "predicted_positive_count": 155,
+          "confusion_matrix": {
+            "true_negative": 1317,
+            "false_positive": 125,
+            "false_negative": 28,
+            "true_positive": 30
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0991,
+          "achieved_recall": 0.517241,
+          "precision_at_target_recall": 0.193548,
+          "f1_score": 0.28169,
+          "predicted_positive_count": 155,
+          "confusion_matrix": {
+            "true_negative": 1317,
+            "false_positive": 125,
+            "false_negative": 28,
+            "true_positive": 30
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.244511,
+        "roc_auc": 0.778605,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.0991,
+          "precision": 0.168675,
+          "recall": 0.528302,
+          "f1_score": 0.255708,
+          "predicted_positive_count": 166,
+          "confusion_matrix": {
+            "true_negative": 1309,
+            "false_positive": 138,
+            "false_negative": 25,
+            "true_positive": 28
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0991,
+          "achieved_recall": 0.528302,
+          "precision_at_target_recall": 0.168675,
+          "f1_score": 0.255708,
+          "predicted_positive_count": 166,
+          "confusion_matrix": {
+            "true_negative": 1309,
+            "false_positive": 138,
+            "false_negative": 25,
+            "true_positive": 28
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 0.669,
+        "preprocessing_ms": 0.002,
+        "model_training_ms": 917.791,
+        "val_inference_ms": 25.998,
+        "test_inference_ms": 25.387,
+        "total_inference_ms": 51.385,
+        "total_runtime_ms": 969.847
+      },
+      "model_parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": -1,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "random_forest",
+      "representation": "mean",
+      "context_policy": "train_only_context",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.207569,
+        "roc_auc": 0.748553,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1783,
+          "precision": 0.293103,
+          "recall": 0.293103,
+          "f1_score": 0.293103,
+          "predicted_positive_count": 58,
+          "confusion_matrix": {
+            "true_negative": 1401,
+            "false_positive": 41,
+            "false_negative": 41,
+            "true_positive": 17
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0892,
+          "achieved_recall": 0.5,
+          "precision_at_target_recall": 0.124464,
+          "f1_score": 0.199313,
+          "predicted_positive_count": 233,
+          "confusion_matrix": {
+            "true_negative": 1238,
+            "false_positive": 204,
+            "false_negative": 29,
+            "true_positive": 29
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.202093,
+        "roc_auc": 0.759744,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1783,
+          "precision": 0.288462,
+          "recall": 0.283019,
+          "f1_score": 0.285714,
+          "predicted_positive_count": 52,
+          "confusion_matrix": {
+            "true_negative": 1410,
+            "false_positive": 37,
+            "false_negative": 38,
+            "true_positive": 15
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0892,
+          "achieved_recall": 0.490566,
+          "precision_at_target_recall": 0.139785,
+          "f1_score": 0.217573,
+          "predicted_positive_count": 186,
+          "confusion_matrix": {
+            "true_negative": 1287,
+            "false_positive": 160,
+            "false_negative": 27,
+            "true_positive": 26
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 8.445,
+        "preprocessing_ms": 0.004,
+        "model_training_ms": 1523.694,
+        "val_inference_ms": 26.665,
+        "test_inference_ms": 25.576,
+        "total_inference_ms": 52.241,
+        "total_runtime_ms": 1584.384
+      },
+      "model_parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": -1,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "random_forest",
+      "representation": "max",
+      "context_policy": "train_only_context",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.206704,
+        "roc_auc": 0.772209,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1189,
+          "precision": 0.206897,
+          "recall": 0.310345,
+          "f1_score": 0.248276,
+          "predicted_positive_count": 87,
+          "confusion_matrix": {
+            "true_negative": 1373,
+            "false_positive": 69,
+            "false_negative": 40,
+            "true_positive": 18
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.534483,
+          "precision_at_target_recall": 0.123506,
+          "f1_score": 0.200647,
+          "predicted_positive_count": 251,
+          "confusion_matrix": {
+            "true_negative": 1222,
+            "false_positive": 220,
+            "false_negative": 27,
+            "true_positive": 31
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.202789,
+        "roc_auc": 0.724433,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1189,
+          "precision": 0.148515,
+          "recall": 0.283019,
+          "f1_score": 0.194805,
+          "predicted_positive_count": 101,
+          "confusion_matrix": {
+            "true_negative": 1361,
+            "false_positive": 86,
+            "false_negative": 38,
+            "true_positive": 15
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.45283,
+          "precision_at_target_recall": 0.101266,
+          "f1_score": 0.165517,
+          "predicted_positive_count": 237,
+          "confusion_matrix": {
+            "true_negative": 1234,
+            "false_positive": 213,
+            "false_negative": 29,
+            "true_positive": 24
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 59.563,
+        "preprocessing_ms": 0.004,
+        "model_training_ms": 1579.415,
+        "val_inference_ms": 26.933,
+        "test_inference_ms": 26.833,
+        "total_inference_ms": 53.766,
+        "total_runtime_ms": 1692.749
+      },
+      "model_parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": -1,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "random_forest",
+      "representation": "multi_operator",
+      "context_policy": "train_only_context",
+      "feature_dim": 96,
+      "validation_metrics": {
+        "pr_auc": 0.173403,
+        "roc_auc": 0.738707,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1882,
+          "precision": 0.282051,
+          "recall": 0.189655,
+          "f1_score": 0.226804,
+          "predicted_positive_count": 39,
+          "confusion_matrix": {
+            "true_negative": 1414,
+            "false_positive": 28,
+            "false_negative": 47,
+            "true_positive": 11
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.517241,
+          "precision_at_target_recall": 0.108696,
+          "f1_score": 0.179641,
+          "predicted_positive_count": 276,
+          "confusion_matrix": {
+            "true_negative": 1196,
+            "false_positive": 246,
+            "false_negative": 28,
+            "true_positive": 30
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.139305,
+        "roc_auc": 0.741313,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1882,
+          "precision": 0.192308,
+          "recall": 0.09434,
+          "f1_score": 0.126582,
+          "predicted_positive_count": 26,
+          "confusion_matrix": {
+            "true_negative": 1426,
+            "false_positive": 21,
+            "false_negative": 48,
+            "true_positive": 5
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0694,
+          "achieved_recall": 0.528302,
+          "precision_at_target_recall": 0.119149,
+          "f1_score": 0.194444,
+          "predicted_positive_count": 235,
+          "confusion_matrix": {
+            "true_negative": 1240,
+            "false_positive": 207,
+            "false_negative": 25,
+            "true_positive": 28
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 63.982,
+        "preprocessing_ms": 0.007,
+        "model_training_ms": 1767.345,
+        "val_inference_ms": 26.077,
+        "test_inference_ms": 25.797,
+        "total_inference_ms": 51.874,
+        "total_runtime_ms": 1883.208
+      },
+      "model_parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": -1,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      }
+    },
+    {
+      "model_name": "random_forest",
+      "representation": "sum",
+      "context_policy": "train_only_context",
+      "feature_dim": 64,
+      "validation_metrics": {
+        "pr_auc": 0.163145,
+        "roc_auc": 0.750867,
+        "prevalence": 0.038667,
+        "support": {
+          "licit": 1442,
+          "fraud": 58
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1288,
+          "precision": 0.201835,
+          "recall": 0.37931,
+          "f1_score": 0.263473,
+          "predicted_positive_count": 109,
+          "confusion_matrix": {
+            "true_negative": 1355,
+            "false_positive": 87,
+            "false_negative": 36,
+            "true_positive": 22
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0793,
+          "achieved_recall": 0.517241,
+          "precision_at_target_recall": 0.117188,
+          "f1_score": 0.191083,
+          "predicted_positive_count": 256,
+          "confusion_matrix": {
+            "true_negative": 1216,
+            "false_positive": 226,
+            "false_negative": 28,
+            "true_positive": 30
+          }
+        }
+      },
+      "test_metrics": {
+        "pr_auc": 0.228825,
+        "roc_auc": 0.730366,
+        "prevalence": 0.035333,
+        "support": {
+          "licit": 1447,
+          "fraud": 53
+        },
+        "optimal_f1_evaluation": {
+          "threshold": 0.1288,
+          "precision": 0.243243,
+          "recall": 0.339623,
+          "f1_score": 0.283465,
+          "predicted_positive_count": 74,
+          "confusion_matrix": {
+            "true_negative": 1391,
+            "false_positive": 56,
+            "false_negative": 35,
+            "true_positive": 18
+          }
+        },
+        "target_recall_evaluation": {
+          "target_recall_specified": 0.5,
+          "threshold": 0.0793,
+          "achieved_recall": 0.509434,
+          "precision_at_target_recall": 0.166667,
+          "f1_score": 0.251163,
+          "predicted_positive_count": 162,
+          "confusion_matrix": {
+            "true_negative": 1312,
+            "false_positive": 135,
+            "false_negative": 26,
+            "true_positive": 27
+          }
+        }
+      },
+      "timing_ms": {
+        "feature_enrichment_ms": 10.981,
+        "preprocessing_ms": 0.005,
+        "model_training_ms": 1580.955,
+        "val_inference_ms": 39.39,
+        "test_inference_ms": 25.974,
+        "total_inference_ms": 65.363,
+        "total_runtime_ms": 1657.305
+      },
+      "model_parameters": {
+        "bootstrap": true,
+        "ccp_alpha": 0.0,
+        "class_weight": null,
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "sqrt",
+        "max_leaf_nodes": null,
+        "max_samples": null,
+        "min_impurity_decrease": 0.0,
+        "min_samples_leaf": 1,
+        "min_samples_split": 2,
+        "min_weight_fraction_leaf": 0.0,
+        "monotonic_cst": null,
+        "n_estimators": 100,
+        "n_jobs": -1,
+        "oob_score": false,
+        "random_state": 42,
+        "verbose": 0,
+        "warm_start": false
+      }
+    }
+  ]
+}
