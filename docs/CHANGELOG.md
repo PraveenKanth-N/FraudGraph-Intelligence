@@ -7,10 +7,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-### Planned for Phase 6 (Remaining Experiments)
+### Planned for Phase 6 (Remaining Experiments) / Phase 7
 - Shared-memory caching and reduction tiles (`__shared__`) for high-degree hub nodes (Candidate 2/3).
 - Degree-aware load balancing separating isolated/leaf nodes from dense fraud rings (Candidate 4).
-- Pinned DMA host memory and asynchronous CUDA multi-stream overlap (Candidate 7).
+- Graph feature enrichment and downstream machine learning fraud classification baseline (Phase 7).
+
+---
+
+## [0.6.1] - 2026-10-24 — Phase 6, Experiment 6.2: Pinned Host Memory & Asynchronous CUDA Streams
+
+### Added
+- **Pinned Host Memory & Asynchronous Streams CUDA Runner (`backend/gpu_engine/cuda/`):**
+  - Implemented standalone CLI driver [`main_streams.cu`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/src/main_streams.cu) using page-locked host memory (`cudaMallocHost` / `cudaFreeHost`) to enable direct PCIe DMA transfers without OS pageable bounce buffers.
+  - Asynchronous transfer and kernel execution sequencing via dedicated non-blocking CUDA stream (`cudaStreamNonBlocking`, `cudaMemcpyAsync`).
+  - Strict preservation of baseline (`fgi_baseline_kernels.cu`, `main_baseline.cu`) and Phase 6.1 (`fgi_coalesced_kernels.cu`, `main_coalesced.cu`) sources.
+  - Multi-target build support in [`Makefile`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/Makefile) compiling `fgi_baseline_runner`, `fgi_coalesced_runner`, and `fgi_streams_runner` for Tesla T4 (`compute_75,code=sm_75`).
+- **Python Adapter & Colab Workflow Integration (`backend/gpu_engine/`):**
+  - Added `kernel="streams"` support to [`cuda_runner.py`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda_runner.py).
+  - Updated [`package_colab_bundle.py`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/colab_runner/package_colab_bundle.py) to package all three runners into `experiments/colab_bundle_fgi_phase6.zip` (3.56 MB).
+  - Updated [`run_colab_benchmarks.py`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/colab_runner/run_colab_benchmarks.py) and [`fgi_colab_workflow.ipynb`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/colab_runner/fgi_colab_workflow.ipynb) for 3-way comparative benchmarking.
+- **Automated Verification Test Suite (`backend/tests/test_cuda_streams.py`):**
+  - 8 comprehensive tests validating source tokens, Makefile targets, runner interface, bundle packaging, schema conformity, PCIe bandwidth math, ingested toy validations, and measured Tier A benchmark results.
+  - Full backend test suite passing 72 tests (1 live GPU test appropriately skipped).
+- **Physical GPU Benchmark Results on NVIDIA Tesla T4 (Driver 580.82.07, CUDA 13.0):**
+  - Numerical correctness passed on all 9 toy-graph checks and all 9 Tier A benchmarks ($N=10,000, M=94,945, D=32$) with error $0.00 \le 1.0 \times 10^{-5}$ across Mean, Sum, and Max.
+  - H2D transfer time dropped from $0.538 - 0.551\text{ ms}$ to $0.156 - 0.160\text{ ms}$ (**$3.41\times - 3.53\times$ speedup**).
+  - D2H transfer time dropped from $0.317 - 0.350\text{ ms}$ to $0.105\text{ ms}$ (**$3.02\times - 3.34\times$ speedup**).
+  - Measured PCIe bandwidth: **$10.66 - 10.87\text{ GB/s}$ H2D**, **$12.11 - 12.20\text{ GB/s}$ D2H** effective payload transfer throughput, compared to $2.95 - 3.16\text{ GB/s}$ (H2D) and $3.65 - 4.08\text{ GB/s}$ (D2H) under pageable host memory.
+  - Pure kernel speedup vs baseline maintained at **$3.88\times - 4.06\times$** (invariant relative to Phase 6.1 coalesced, operator deltas between $0.28\%$ and $0.82\%$, delta $\le 0.00014\text{ ms}$).
+  - **End-to-End Wall-Clock Speedup:** **$3.35\times - 3.44\times$ vs Baseline**, **$3.22\times - 3.27\times$ vs Coalesced 6.1** ($0.94 - 0.97\text{ ms} \rightarrow 0.28\text{ ms}$).
+  - Ingested 18 verified JSON files into `experiments/results/` and preserved archive at `experiments/fgi_phase6_streams_gpu_results_20261024_114748.zip`. Phase 6.2 gate passed.
+- **Documentation Deliverables:**
+  - Authored [`docs/EXPERIMENT_6_2_PINNED_MEMORY_STREAMS.md`](file:///D:/FraudGraph%20Intelligence/docs/EXPERIMENT_6_2_PINNED_MEMORY_STREAMS.md).
+  - Updated [`docs/PHASE_STATUS.md`](file:///D:/FraudGraph%20Intelligence/docs/PHASE_STATUS.md) with Section 10.5 and updated Phase 6 gate status.
 
 ---
 

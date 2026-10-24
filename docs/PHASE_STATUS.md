@@ -19,7 +19,7 @@
 | **Phase 3** | **Dataset Pipeline & Graph Representation** | FGI-MOD-02, FGI-MOD-03 | **PASSED (Complete)** | Canonical CSR graph implementation (`csr_graph.py`) enforcing 8 invariants; deterministic synthetic power-law/star/uniform generator (`synthetic_generator.py`); temporal transaction graph builder (`transaction_graph_builder.py`) with zero leakage; 20 unit/invariant tests passing (22/22 total suite in 2.03s); `toy_graph_5nodes.npz` and `synthetic_tier_a_10k.npz` (10K nodes, 95K edges) generated; `GRAPH_DATA_CONTRACT.md` authored; ADRs 008-009 recorded. |
 | **Phase 4** | **CPU Reference Implementation** | FGI-MOD-04 | **PASSED (Complete)** | Implemented Sum, Mean, Max aggregators in `aggregators.py`; dual reference and vectorized SpMM modes; explicit empty-neighborhood zero sentinel ($d_i = 0 \implies \vec{0}$); 22 tests in `test_aggregators.py` (total 44/44 backend tests passing in 2.36s); high-precision benchmark harness in `benchmark_cpu.py` with JSON output in `experiments/results/`; resolved Phase 3 fixture inconsistencies (toy isolated node 4, non-zero features); `CPU_REFERENCE_ENGINE.md` authored. |
 | **Phase 5** | **Baseline CUDA Implementation** | FGI-MOD-05 | **PASSED (Complete)** | Baseline 1-thread-per-node CUDA C++ kernel in `fgi_baseline_kernels.cu`; standalone CLI driver in `main_baseline.cu`; Colab runner package in `colab_bundle_fgi_phase5.zip` (3.55 MB); executed on physical NVIDIA Tesla T4 GPU (40 SMs, 14.9 GB VRAM); correctness gate PASSED across Sum, Mean, Max (error = 0.0, tol <= 1e-5); synthetic Tier A (10K nodes, 95K edges, D=32) achieved 1.39B edges/sec throughput (kernel latency 0.068 ms); all 6 results ingested into `experiments/results/`; regression suite 55 passed; `CUDA_BASELINE.md` and `ADR-010` updated. |
-| **Phase 6** | **CUDA Optimization Laboratory** | FGI-MOD-06 | **PASSED (Experiment 6.1 Complete)** | Comprehensive optimization plan in `docs/PHASE6_OPTIMIZATION_PLAN.md`; Experiment 6.1 Warp-Coalesced Aggregator Kernel implemented, audited, and verified on physical Google Colab NVIDIA Tesla T4 GPU (sm_75, 40 SMs, 14.9 GB VRAM); pure kernel speedups: 3.94x (Mean), 4.04x (Sum), 3.96x (Max); edge throughput up to 5.60B edges/s; all 6 Tier A and toy numerical verifications PASSED (err=0.00, tol<=1e-5); bandwidth audited (analytical estimated compulsory DRAM BW: 171-176 GB/s, 54.6% peak; analytical un-cached algorithmic BW: 795-817 GB/s with L2 cache reuse); Amdahl's Law analysis recorded (E2E 1.02x-1.10x due to un-pinned PCIe transfers consuming 93%-98% time); 64 backend pytest tests passing; `EXPERIMENT_6_1_WARP_COALESCED.md` updated. |
+| **Phase 6** | **CUDA Optimization Laboratory** | FGI-MOD-06 | **PASSED (Experiments 6.1 & 6.2 Complete)** | Optimization plan in `PHASE6_OPTIMIZATION_PLAN.md`; Exp 6.1 (Warp Coalescing) achieved ~4.0x kernel speedup; Exp 6.2 (Pinned Memory & Streams) eliminated PCIe bottleneck via direct DMA, achieving 3.41x-3.53x H2D transfer speedup, 3.02x-3.34x D2H transfer speedup, and **3.35x-3.44x end-to-end speedup vs Baseline** (**3.22x-3.27x vs 6.1 Coalesced**) on NVIDIA Tesla T4 (Driver 580.82.07, CUDA 13.0); measured PCIe bandwidth: 10.66-10.87 GB/s H2D, 12.11-12.20 GB/s D2H; 100% numerical verification (atol <= 1e-5); 72 backend pytest tests passing; `EXPERIMENT_6_1_WARP_COALESCED.md` and `EXPERIMENT_6_2_PINNED_MEMORY_STREAMS.md` authored. |
 | **Phase 7** | Fraud Scoring & Evaluation | FGI-MOD-07 | **PENDING** | Feature enrichment with aggregated embeddings, scikit-learn classifier baseline, Precision, Recall, F1, PR-AUC, confusion matrices. |
 | **Phase 8** | Benchmark Automation & Experiment Management | FGI-MOD-08 | **PENDING** | Multi-run automated harness, graph-scaling experiments, latency/throughput speedup metrics, machine-readable JSON/CSV storage. |
 | **Phase 9** | Stitch UI Design & Frontend Implementation | FGI-MOD-10 | **PENDING** | React + Vite + TypeScript application, Obsidian Cybernetics design system tokens, Cytoscape.js graph canvas, ECharts analytics. |
@@ -259,9 +259,32 @@
 
 ### 10.4 Phase 6.1 Gate Status
 - **Phase 6.1 Status:** **`PASSED (Experiment 6.1 Complete & Revalidated)`**
-- **Next Steps:** Evaluate Candidate 4 (Degree-Aware Bucketing) or Candidate 7 (Pinned DMA Streams & Multi-Stream Overlap) for Experiment 6.2. Phase 6.2 candidates must not be modified until planned.
 
+---
 
+### 10.5 Experiment 6.2 Implementation & GPU Verification (Pinned Host Memory & Streams)
+- **Objective:** Eliminate the PCIe data transfer bottleneck documented in Phase 6.1 ($\sim 93\% - 98\%$ of total wall-clock runtime) by replacing pageable memory with page-locked (pinned) host memory (`cudaMallocHost` / `cudaFreeHost`) and executing asynchronous transfers (`cudaMemcpyAsync`) within a dedicated non-default stream (`cudaStreamNonBlocking`).
+- **Separate Implementation:** Authored in [`backend/gpu_engine/cuda/src/main_streams.cu`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/src/main_streams.cu). Reuses verified `fgi::launch_coalesced_aggregation` without modifying baseline or Phase 6.1 CUDA sources.
+- **Build & Adapter Integration:** Updated [`backend/gpu_engine/cuda/Makefile`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda/Makefile) with target `fgi_streams_runner`; updated [`backend/gpu_engine/cuda_runner.py`](file:///D:/FraudGraph%20Intelligence/backend/gpu_engine/cuda_runner.py) to support `kernel="streams"`; updated Colab workflow script and notebook to execute 3-way benchmarking (Baseline vs Coalesced vs Streams).
+- **Physical GPU Benchmark Results on NVIDIA Tesla T4 (Driver 580.82.07, CUDA 13.0, V13.0.88):**
+  - **Date:** October 24, 2026 (Run `20261024_114748`).
+  - **Numerical Correctness:** PASSED on all 9 toy-graph checks and all 9 Tier A benchmarks ($N=10,000, M=94,945, D=32$) with max absolute error equal to $0.00$ ($\text{atol} \le 1.0 \times 10^{-5}$) and zero NaNs/Infs.
+  - **PCIe Transfer Latency Reduction (Pinned Memory DMA):**
+    - **H2D Transfer Time:** Dropped from $0.538 - 0.551\text{ ms}$ (Baseline) to **$0.156 - 0.160\text{ ms}$** (**$3.41\times - 3.53\times$ speedup**).
+    - **D2H Transfer Time:** Dropped from $0.317 - 0.350\text{ ms}$ (Baseline) to **$0.105\text{ ms}$** (**$3.02\times - 3.34\times$ speedup**).
+    - **Measured PCIe Bandwidth:** Reached **$10.66 - 10.87\text{ GB/s}$ (H2D)** and **$12.11 - 12.20\text{ GB/s}$ (D2H)** effective payload transfer throughput, compared to $2.95 - 3.16\text{ GB/s}$ and $3.65 - 4.08\text{ GB/s}$ under pageable memory.
+  - **Pure Kernel Invariance:**
+    - Pure kernel latency remained mathematically invariant between Coalesced 6.1 and Streams 6.2 ($0.016731\text{ ms}$ vs $0.016869\text{ ms}$ for Sum, delta $0.82\%$; $0.017486\text{ ms}$ vs $0.017590\text{ ms}$ for Mean, delta $0.59\%$; $0.016512\text{ ms}$ vs $0.016558\text{ ms}$ for Max, delta $0.28\%$; maximum delta $\le 0.82\%$). Pure kernel speedup vs baseline remained **$3.88\times - 4.06\times$**.
+  - **End-to-End Latency & Amdahl's Law Resolution:**
+    - **Sum:** $0.9362\text{ ms} \rightarrow 0.2782\text{ ms}$ (**$3.37\times$ speedup vs Baseline**, **$3.26\times$ speedup vs Coalesced 6.1**).
+    - **Mean:** $0.9418\text{ ms} \rightarrow 0.2809\text{ ms}$ (**$3.35\times$ speedup vs Baseline**, **$3.22\times$ speedup vs Coalesced 6.1**).
+    - **Max:** $0.9671\text{ ms} \rightarrow 0.2809\text{ ms}$ (**$3.44\times$ speedup vs Baseline**, **$3.27\times$ speedup vs Coalesced 6.1**).
+    - Directly confirms the Amdahl's Law hypothesis: compressing data transfer time by $3.4\times$ allows the $4.0\times$ kernel acceleration to translate into a **$3.35\times - 3.44\times$ whole-pipeline wall-clock speedup**.
+- **Automated Verification:** Added 8 dedicated unit and schema tests in [`backend/tests/test_cuda_streams.py`](file:///D:/FraudGraph%20Intelligence/backend/tests/test_cuda_streams.py); full backend test suite passes **72/72 tests (1 live GPU test skipped)**; frontend typecheck and build pass cleanly with 0 errors.
+- **Specification Report:** Authored [`docs/EXPERIMENT_6_2_PINNED_MEMORY_STREAMS.md`](file:///D:/FraudGraph%20Intelligence/docs/EXPERIMENT_6_2_PINNED_MEMORY_STREAMS.md).
+- **Telemetry Archive:** All 18 raw JSON files ingested into `experiments/results/`; archives preserved at `experiments/fgi_phase6_gpu_results.zip` and timestamped backup `experiments/fgi_phase6_streams_gpu_results_20261024_114748.zip`.
 
-
+### 10.6 Phase 6 Status & Next Steps
+- **Phase 6 Status:** **`PASSED (Experiments 6.1 & 6.2 Complete)`**
+- **Next Steps:** Evaluate Candidate 4 (Degree-Aware Bucketing) or Candidate 2/3 (Shared-Memory Hub Caching) for remaining Phase 6 explorations, or transition to Phase 7 (Fraud Scoring & Evaluation) per project milestones.
 

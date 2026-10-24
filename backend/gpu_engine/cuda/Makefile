@@ -13,16 +13,21 @@ BUILD_DIR = build
 
 TARGET_BASELINE = $(BIN_DIR)/fgi_baseline_runner
 TARGET_COALESCED = $(BIN_DIR)/fgi_coalesced_runner
+TARGET_STREAMS = $(BIN_DIR)/fgi_streams_runner
 
 OBJS_BASELINE = $(BUILD_DIR)/fgi_baseline_kernels.o $(BUILD_DIR)/main_baseline.o
 OBJS_COALESCED = $(BUILD_DIR)/fgi_coalesced_kernels.o $(BUILD_DIR)/main_coalesced.o
+OBJS_STREAMS = $(BUILD_DIR)/fgi_coalesced_kernels.o $(BUILD_DIR)/main_streams.o
 
-all: $(TARGET_BASELINE) $(TARGET_COALESCED)
+all: $(TARGET_BASELINE) $(TARGET_COALESCED) $(TARGET_STREAMS)
 
 $(TARGET_BASELINE): $(OBJS_BASELINE) | $(BIN_DIR)
 	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
 $(TARGET_COALESCED): $(OBJS_COALESCED) | $(BIN_DIR)
+	$(NVCC) $(NVCC_FLAGS) -o $@ $^
+
+$(TARGET_STREAMS): $(OBJS_STREAMS) | $(BIN_DIR)
 	$(NVCC) $(NVCC_FLAGS) -o $@ $^
 
 $(BUILD_DIR)/%.o: src/%.cu | $(BUILD_DIR)

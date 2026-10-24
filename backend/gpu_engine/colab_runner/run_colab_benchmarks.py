@@ -48,13 +48,14 @@ def main():
     cuda_dir = Path("cuda")
     baseline_bin = cuda_dir / "bin" / "fgi_baseline_runner"
     coalesced_bin = cuda_dir / "bin" / "fgi_coalesced_runner"
+    streams_bin = cuda_dir / "bin" / "fgi_streams_runner"
 
-    # 2. Compile Both CUDA Executables
-    print("\n[+] Compiling Baseline & Warp-Coalesced CUDA Engines:")
+    # 2. Compile All Three CUDA Executables
+    print("\n[+] Compiling Baseline, Warp-Coalesced, and Pinned-Streams CUDA Engines:")
     run_command("make -C cuda clean")
     run_command("make -C cuda")
 
-    for b in [baseline_bin, coalesced_bin]:
+    for b in [baseline_bin, coalesced_bin, streams_bin]:
         if not b.exists():
             print(f"[FATAL] Binary not found after compilation: {b}", file=sys.stderr)
             sys.exit(1)
@@ -67,12 +68,18 @@ def main():
     tier_a_dir = Path("data/synthetic_tier_a_10k")
     operators = ["mean", "sum", "max"]
 
+    engine_list = [
+        (baseline_bin, "baseline"),
+        (coalesced_bin, "coalesced"),
+        (streams_bin, "streams"),
+    ]
+
     # 3. Correctness Gate (Toy Graph Fixture)
     print("\n" + "=" * 80)
     print(" STEP 1: CORRECTNESS VERIFICATION GATE (toy_graph_5nodes)")
     print("=" * 80)
 
-    for bin_target, label in [(baseline_bin, "baseline"), (coalesced_bin, "coalesced")]:
+    for bin_target, label in engine_list:
         print(f"\n--- Testing Engine: {label.upper()} ({bin_target.name}) ---")
         for op in operators:
             ref_bin = toy_dir / f"ref_{op}.bin"
@@ -100,7 +107,7 @@ def main():
     timestamp_str = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     perf_records = {}
 
-    for bin_target, label in [(baseline_bin, "baseline"), (coalesced_bin, "coalesced")]:
+    for bin_target, label in engine_list:
         print(f"\n--- Benchmarking Engine: {label.upper()} (5 warmups, 20 repetitions) ---")
         perf_records[label] = {}
 
@@ -123,9 +130,14 @@ def main():
 
                 k_mean = timings.get("kernel_mean", 0.0)
                 e2e_mean = timings.get("end_to_end_mean", 0.0)
+                h2d_mean = timings.get("h2d_transfer_mean", 0.0)
+                d2h_mean = timings.get("d2h_transfer_mean", 0.0)
+
                 perf_records[label][op] = {
                     "kernel_mean": k_mean,
                     "end_to_end_mean": e2e_mean,
+                    "h2d_mean": h2d_mean,
+                    "d2h_mean": d2h_mean,
                     "throughput": perf.get("edges_per_second", 0.0),
                     "bandwidth": perf.get("effective_bandwidth_gbps", 0.0),
                     "verif": verif.get("status"),
@@ -135,8 +147,8 @@ def main():
                 print(f"    Operator:         {op.upper()} ({label})")
                 print(f"    Kernel Mean:      {k_mean:.3f} ms +/- {timings.get('kernel_std', 0.0):.3f} ms")
                 print(f"    Kernel p50:       {timings.get('kernel_p50', 0.0):.3f} ms")
-                print(f"    H2D Transfer:     {timings.get('h2d_transfer_mean', 0.0):.3f} ms")
-                print(f"    D2H Transfer:     {timings.get('d2h_transfer_mean', 0.0):.3f} ms")
+                print(f"    H2D Transfer:     {h2d_mean:.3f} ms")
+                print(f"    D2H Transfer:     {d2h_mean:.3f} ms")
                 print(f"    End-to-End:       {e2e_mean:.3f} ms")
                 print(f"    Throughput:       {perf.get('edges_per_second', 0.0):,.0f} edges/sec")
                 if "estimated_compulsory_bandwidth_gbps" in perf:
@@ -144,22 +156,33 @@ def main():
                     print(f"    Est. Algo. BW:    {perf['estimated_algorithmic_bandwidth_gbps']:.2f} GB/s (un-cached traffic)")
                 else:
                     print(f"    Est. Bandwidth:   {perf.get('effective_bandwidth_gbps', 0.0):.2f} GB/s")
+                if "pcie_h2d_bandwidth_gbps" in perf:
+                    print(f"    PCIe H2D BW:      {perf['pcie_h2d_bandwidth_gbps']:.2f} GB/s | D2H: {perf.get('pcie_d2h_bandwidth_gbps', 0.0):.2f} GB/s")
                 print(f"    Validation:       {verif.get('status')} (Max Abs Error: {verif.get('max_absolute_error', 0.0):.2e})")
 
     # 5. Comparative Speedup Summary
     print("\n" + "=" * 80)
-    print(" STEP 3: COMPARATIVE SPEEDUP SUMMARY (EXP 6.1 COALESCED VS BASELINE)")
+    print(" STEP 3: COMPARATIVE SPEEDUP SUMMARY (EXP 6.1 & 6.2 VS BASELINE)")
     print("=" * 80)
-    print(f"{'Operator':<10} | {'Base Kernel':<12} | {'Opt Kernel':<12} | {'Kernel Speedup':<15} | {'E2E Speedup':<12}")
-    print("-" * 70)
+    print(f"{'Operator':<8} | {'Engine':<11} | {'Kernel (ms)':<12} | {'Kernel Spdup':<13} | {'Transfer (ms)':<14} | {'E2E (ms)':<10} | {'E2E Spdup':<10}")
+    print("-" * 88)
     for op in operators:
         b_k = perf_records["baseline"][op]["kernel_mean"]
-        o_k = perf_records["coalesced"][op]["kernel_mean"]
         b_e2e = perf_records["baseline"][op]["end_to_end_mean"]
-        o_e2e = perf_records["coalesced"][op]["end_to_end_mean"]
-        k_speedup = (b_k / o_k) if o_k > 0 else 0.0
-        e2e_speedup = (b_e2e / o_e2e) if o_e2e > 0 else 0.0
-        print(f"{op.upper():<10} | {b_k:8.3f} ms | {o_k:8.3f} ms | {k_speedup:12.2f}x | {e2e_speedup:9.2f}x")
+        b_xfer = perf_records["baseline"][op]["h2d_mean"] + perf_records["baseline"][op]["d2h_mean"]
+
+        c_k = perf_records["coalesced"][op]["kernel_mean"]
+        c_e2e = perf_records["coalesced"][op]["end_to_end_mean"]
+        c_xfer = perf_records["coalesced"][op]["h2d_mean"] + perf_records["coalesced"][op]["d2h_mean"]
+
+        s_k = perf_records["streams"][op]["kernel_mean"]
+        s_e2e = perf_records["streams"][op]["end_to_end_mean"]
+        s_xfer = perf_records["streams"][op]["h2d_mean"] + perf_records["streams"][op]["d2h_mean"]
+
+        print(f"{op.upper():<8} | {'Baseline':<11} | {b_k:10.3f}   | {'1.00x':<13} | {b_xfer:12.3f}   | {b_e2e:8.3f} | {'1.00x':<10}")
+        print(f"{'':<8} | {'Coalesced':<11} | {c_k:10.3f}   | {(b_k/c_k if c_k>0 else 0):11.2f}x | {c_xfer:12.3f}   | {c_e2e:8.3f} | {(b_e2e/c_e2e if c_e2e>0 else 0):8.2f}x")
+        print(f"{'':<8} | {'Streams':<11} | {s_k:10.3f}   | {(b_k/s_k if s_k>0 else 0):11.2f}x | {s_xfer:12.3f}   | {s_e2e:8.3f} | {(b_e2e/s_e2e if s_e2e>0 else 0):8.2f}x")
+        print("-" * 88)
 
     # 6. Archive Results for Download
     zip_out = Path("fgi_phase6_gpu_results.zip")
