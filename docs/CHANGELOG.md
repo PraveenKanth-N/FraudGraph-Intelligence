@@ -8,8 +8,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Planned for Phase 7
-- Graph feature enrichment and downstream machine learning fraud classification baseline (Phase 7).
-- Downstream XGBoost / Random Forest classification on aggregated embeddings vs raw tabular features.
+- Phase 7.3: Graph feature enrichment pipeline using CPU reference and GPU optimized aggregators (`sum`, `mean`, `max`).
+- Phase 7.4: Downstream machine learning fraud classification baseline comparing tabular-only vs graph-enriched features (Logistic Regression, Random Forest, LightGBM/XGBoost).
+- Phase 7.5: Evaluation reporting (PR-AUC, ROC-AUC, Precision@K, Recall@K, confusion matrices, and speedup impact).
+
+---
+
+## [0.7.0] - 2026-10-24 — Phase 7.1 & 7.2: Dataset Audit and Deterministic Labeled Synthetic Fraud Fixture
+
+### Added
+- **Synthetic Fraud Generator (`backend/cpu_engine/synthetic_fraud_generator.py`):**
+  - High-performance deterministic transaction graph generator producing labeled fixtures with controlled fraud prevalence and non-trivial graph patterns.
+  - Data generating process modeling Poisson transaction timestamps, Zipfian credit card and device distributions, and 20 coordinated fraud rings (245 transactions) alongside 105 opportunistic frauds ($N=10,000$, $M=231,984$, $D=32$, 350 positive fraud labels = exactly 3.50% prevalence).
+  - Subtle feature space separation with bounded single-feature Pearson correlation ($r \approx 0.120 < 0.35$), ensuring task cannot be trivially solved by univariate tabular heuristics.
+  - Temporal lookback sliding window ($W=100$ transactions) enforcing strict causal ordering ($t_j < t_i$, $j < i$) directed from query transaction $i$ to historical neighbor $j$, preventing future-to-past temporal leakage across all 231,984 edges.
+  - Serialization functions `save_labeled_graph()` and `load_labeled_graph()` outputting structured `.npz` archives with `row_ptr`, `col_idx`, `features`, `labels`, `timestamps`, and JSON `manifest`.
+  - Chronological dataset splitting function `temporal_train_test_split()` producing strictly non-overlapping train (70%, 239 frauds), validation (15%, 58 frauds), and test (15%, 53 frauds) partitions.
+- **Labeled Fixture (`data/fixtures/synthetic_fraud_10k.npz`):**
+  - Generated deterministic canonical fixture ($N=10,000, M=231,984, D=32$, 2.14 MB, seed=42) with full backward compatibility with standard `CSRGraph.load()`.
+- **Automated Verification Test Suite (`backend/tests/test_synthetic_fraud_generator.py`):**
+  - 11 comprehensive tests validating determinism, seed divergence, exact fraud prevalence (3.50%), feature matrix invariants, 8 structural CSR invariants, temporal causality ($t_j < t_i$), label leakage quarantine, round-trip serialization, `CSRGraph.load()` backward compatibility, chronological partition splits, and Phase 3 & 6 fixture preservation (`test_existing_graph_fixtures_remain_unchanged`).
+  - Recorded reproducible preliminary tabular classifier verification on canonical split (Logistic Regression: ROC-AUC 0.7855, PR-AUC 0.3088; Random Forest: ROC-AUC 0.7786, PR-AUC 0.2445 vs random baseline 0.0353) strictly labeled as synthetic verification metrics.
+- **Documentation Deliverables:**
+  - Authored comprehensive specification [`docs/SYNTHETIC_FRAUD_DATASET.md`](file:///D:/FraudGraph%20Intelligence/docs/SYNTHETIC_FRAUD_DATASET.md).
+  - Updated [`docs/PHASE_STATUS.md`](file:///D:/FraudGraph%20Intelligence/docs/PHASE_STATUS.md) with Section 11 documenting Phase 7.1 audit findings and Phase 7.2 fixture statistics.
 
 ---
 

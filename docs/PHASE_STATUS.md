@@ -20,7 +20,7 @@
 | **Phase 4** | **CPU Reference Implementation** | FGI-MOD-04 | **PASSED (Complete)** | Implemented Sum, Mean, Max aggregators in `aggregators.py`; dual reference and vectorized SpMM modes; explicit empty-neighborhood zero sentinel ($d_i = 0 \implies \vec{0}$); 22 tests in `test_aggregators.py` (total 44/44 backend tests passing in 2.36s); high-precision benchmark harness in `benchmark_cpu.py` with JSON output in `experiments/results/`; resolved Phase 3 fixture inconsistencies (toy isolated node 4, non-zero features); `CPU_REFERENCE_ENGINE.md` authored. |
 | **Phase 5** | **Baseline CUDA Implementation** | FGI-MOD-05 | **PASSED (Complete)** | Baseline 1-thread-per-node CUDA C++ kernel in `fgi_baseline_kernels.cu`; standalone CLI driver in `main_baseline.cu`; Colab runner package in `colab_bundle_fgi_phase5.zip` (3.55 MB); executed on physical NVIDIA Tesla T4 GPU (40 SMs, 14.9 GB VRAM); correctness gate PASSED across Sum, Mean, Max (error = 0.0, tol <= 1e-5); synthetic Tier A (10K nodes, 95K edges, D=32) achieved 1.39B edges/sec throughput (kernel latency 0.068 ms); all 6 results ingested into `experiments/results/`; regression suite 55 passed; `CUDA_BASELINE.md` and `ADR-010` updated. |
 | **Phase 6** | **CUDA Optimization Laboratory** | FGI-MOD-06 | **PASSED (Complete — Exp 6.1, 6.2, 6.3 Empirically Validated)** | Optimization plan in `PHASE6_OPTIMIZATION_PLAN.md`; Exp 6.1 (Warp Coalescing) achieved ~4.0x kernel speedup; Exp 6.2 (Pinned Streams) achieved 3.35x-3.44x end-to-end speedup vs Baseline (3.22x-3.27x vs 6.1); Exp 6.3 (Degree-Aware Hybrid Dispatch) validated on Tesla T4 (Driver 580.82.07, CUDA 13.0), eliminating SIMT degree divergence on heavy-tailed power-law graphs to achieve 107.7x kernel speedup over Baseline (3.38x over Coalesced/Streams) and 19.92x E2E speedup on MEAN (18.37x on MAX), with 100% numerical verification (atol <= 1e-5); 80 backend tests passing; `EXPERIMENT_6_1_WARP_COALESCED.md`, `EXPERIMENT_6_2_PINNED_MEMORY_STREAMS.md`, and `EXPERIMENT_6_3_DEGREE_AWARE_DISPATCH.md` authored. |
-| **Phase 7** | Fraud Scoring & Evaluation | FGI-MOD-07 | **PENDING** | Feature enrichment with aggregated embeddings, scikit-learn classifier baseline, Precision, Recall, F1, PR-AUC, confusion matrices. |
+| **Phase 7** | Fraud Scoring & Evaluation | FGI-MOD-07 | **IN PROGRESS (Phases 7.1 & 7.2 Complete)** | Dataset audit completed (7.1); deterministic labeled synthetic fraud fixture (`synthetic_fraud_10k.npz`, 10K nodes, 231,984 edges, 350 frauds = 3.50% prevalence) generated with zero temporal leakage (7.2); 11/11 invariant unit tests passing (93 total suite). Classifier baselines (7.3-7.5) pending. |
 | **Phase 8** | Benchmark Automation & Experiment Management | FGI-MOD-08 | **PENDING** | Multi-run automated harness, graph-scaling experiments, latency/throughput speedup metrics, machine-readable JSON/CSV storage. |
 | **Phase 9** | Stitch UI Design & Frontend Implementation | FGI-MOD-10 | **PENDING** | React + Vite + TypeScript application, Obsidian Cybernetics design system tokens, Cytoscape.js graph canvas, ECharts analytics. |
 | **Phase 10**| Backend & Frontend Integration | FGI-MOD-09, FGI-MOD-10 | **PENDING** | FastAPI REST endpoints (`/api/v1`), interactive graph queries, live experiment trigger/ingestion, diagnostics console. |
@@ -323,4 +323,73 @@
 ### 10.8 Phase 6 Status & Next Steps
 - **Phase 6 Status:** **`PASSED (Experiments 6.1, 6.2, and 6.3 Complete & Empirically Validated)`**
 - **Next Steps:** Phase 6 CUDA Optimization Laboratory is successfully closed. Transition to Phase 7 (Fraud Scoring & Classifier Pipeline) to evaluate graph-aggregated feature embeddings in fraud classification models.
+
+---
+
+## 11. Phase 7: Fraud Scoring & Evaluation Laboratory
+
+### 11.1 Phase 7.1 Dataset and Label Audit (Read-Only)
+- **Objective:** Establish the empirical ground truth regarding available datasets, targets, feature dimensions, and class balance prior to implementing classifier pipelines.
+- **Audit Findings:**
+  1. *Existing Fixtures (`data/fixtures/`):* `toy_graph_5nodes.npz`, `synthetic_tier_a_10k.npz`, and `synthetic_skewed_10k.npz` are unlabeled structural fixtures ($y$ is empty/unspecified). They exist strictly for numerical verification and CUDA performance benchmarking.
+  2. *Raw Dataset Directory (`data/raw/`):* Currently unpopulated. Real external benchmarks (such as IEEE-CIS Fraud Detection) require large multi-gigabyte downloads and offline preprocessing.
+  3. *Leakage Constraints:* Identified strict requirements that target labels must remain quarantined outside the node feature matrix $X \in \mathbb{R}^{N \times D}$, and that graph construction must strictly obey temporal ordering ($t_j \le t_i$) to prevent future-to-past information leakage during neighbor aggregation.
+  4. *Downstream Interface Contract:* Confirmed that CPU reference aggregators (`sum`, `mean`, `max` from `backend/cpu_engine/aggregators.py`) and GPU runners produce output matrices of shape $(N, D)$, which concatenate naturally with raw node features $(N, D)$ into enriched representations $(N, 2D)$ for downstream tabular classifiers.
+
+### 11.2 Phase 7.2 Deterministic Labeled Synthetic Fraud Fixture (`synthetic_fraud_10k.npz`)
+- **Objective:** Implement a fully reproducible, self-contained, labeled synthetic transaction-graph generator producing a non-trivial benchmark fixture with controlled fraud prevalence and zero leakage.
+- **Module Implementation:** Authored in [`backend/cpu_engine/synthetic_fraud_generator.py`](file:///D:/FraudGraph%20Intelligence/backend/cpu_engine/synthetic_fraud_generator.py).
+  - *Data Generating Process (DGP):*
+    - **Node Count & Features:** $N = 10,000$ transactions, $D = 32$ continuous features (`float32`).
+    - **Arrival Process:** Poisson inter-arrival times generating monotonic arrival timestamps $t_i$.
+    - **Entity Simulation:** Zipfian card ($K=800, \alpha=1.1$) and device ($M=400, \alpha=1.2$) associations.
+    - **Fraud Generation:** Exactly 350 fraud transactions (**prevalence: 3.50%**), partitioned into:
+      - 20 coordinated fraud rings (245 transactions across compromised card/device clusters).
+      - 105 opportunistic/isolated frauds.
+    - **Feature Generation:**
+      - Features 0–3: Transaction amount, velocity, card-frequency shifts.
+      - Features 4–7: Risk/consistency features with subtle mean shifts for fraudulent nodes.
+      - Features 8–31: Background Gaussian noise ($\mathcal{N}(0, 1)$).
+      - Bounded single-feature correlation: maximum absolute Pearson correlation with label $y$ is strictly bounded ($r \approx 0.120 < 0.35$), ensuring the classification problem is non-trivial and cannot be solved by a simple threshold on a single tabular feature.
+    - **Temporal Graph Construction (Lookback Window):**
+      - Edges formed between transactions sharing a card or device within a chronological lookback window ($W = 100$ transactions).
+      - Strict causal ordering: for every directed edge $(i, j)$ in CSR (where row $i$ points to historical context neighbor $j$), $t_j < t_i$ ($j < i$) strictly holds. Verified across 100% of 231,984 edges.
+  - *Graph Dimensions & Density:*
+    - Nodes: $10,000$
+    - Directed CSR Edges: $231,984$ (average in-degree: $23.20$)
+    - Max Degree: $178$
+    - Zero-Degree (Isolated) Nodes: $1,280$ ($12.80\%$)
+  - *Serialization Schema (`data/fixtures/synthetic_fraud_10k.npz`):*
+    - Includes `row_ptr` (`int32`), `col_idx` (`int32`), `features` (`float32`), `labels` (`int32`), `timestamps` (`float64`), and detailed JSON `manifest`.
+    - Backward-compatible with `CSRGraph.load()` (which safely ignores extraneous label/timestamp keys while maintaining full structural fidelity).
+  - *Chronological Splitting (`temporal_train_test_split`):*
+    - **Train (70%):** Nodes 0–6,999 (7,000 nodes, 239 frauds, 3.41% prevalence)
+    - **Validation (15%):** Nodes 7,000–8,499 (1,500 nodes, 58 frauds, 3.87% prevalence)
+    - **Test (15%):** Nodes 8,500–9,999 (1,500 nodes, 53 frauds, 3.53% prevalence)
+    - Strict chronological boundary: $\max(t_{\text{train}}) \le \min(t_{\text{val}}) \le \max(t_{\text{val}}) \le \min(t_{\text{test}})$.
+
+### 11.3 Automated Verification Test Suite (`test_synthetic_fraud_generator.py`)
+- Authored 11 comprehensive unit and invariant tests in [`backend/tests/test_synthetic_fraud_generator.py`](file:///D:/FraudGraph%20Intelligence/backend/tests/test_synthetic_fraud_generator.py):
+  1. `test_determinism_and_reproducibility`: Exact bitwise reproducibility with identical seed.
+  2. `test_seed_divergence`: Distinct seeds produce different graphs.
+  3. `test_fraud_prevalence_exact`: Exact count (350) and prevalence (3.50%).
+  4. `test_feature_matrix_invariants`: Shape $(10000, 32)$, float32, zero NaNs/Infs.
+  5. `test_csr_structural_invariants`: Full compliance with all 8 CSR invariants.
+  6. `test_temporal_causality_zero_leakage`: $100\%$ compliance with $t_j \le t_i$.
+  7. `test_label_leakage_safeguards`: Labels quarantined; max feature correlation $< 0.35$.
+  8. `test_save_load_roundtrip_npz`: Round-trip array fidelity across all 5 arrays + manifest.
+  9. `test_compatibility_with_csr_graph_load`: Verifies backward compatibility with standard `CSRGraph.load()`.
+  10. `test_temporal_train_test_split`: Verifies chronological bounds, non-overlap, and positive label presence across all splits.
+  11. `test_existing_graph_fixtures_remain_unchanged`: Asserts that Phase 3 and Phase 6 fixtures (`toy_graph_5nodes.npz`, `synthetic_tier_a_10k.npz`, `synthetic_skewed_10k.npz`) remain identical and uncorrupted.
+- **Preliminary Synthetic Classifier Baseline (Verification Only):** Evaluated standard scikit-learn models on the canonical split with `StandardScaler` fitted strictly on train (zero transductive leakage):
+  - Logistic Regression ($C=1.0$): Test ROC-AUC $0.7855$, PR-AUC $0.3088$ (minority prevalence $\pi = 0.0353$).
+  - Random Forest ($100$ trees): Test ROC-AUC $0.7786$, PR-AUC $0.2445$.
+  - *Scientific Integrity Disclosure:* These preliminary metrics are measured strictly on the synthetic benchmark fixture (`synthetic_fraud_10k.npz`) for verification that the synthetic classification task is non-trivial prior to graph enrichment; they do not represent real-world fraud detection performance.
+- **Test Suite Results:** All 11 tests pass in 1.76s; full backend suite passes **93 tests (1 skipped)**.
+- **Specification Report:** Authored [`docs/SYNTHETIC_FRAUD_DATASET.md`](file:///D:/FraudGraph%20Intelligence/docs/SYNTHETIC_FRAUD_DATASET.md).
+
+### 11.4 Phase 7 Gate Status & Next Steps
+- **Phase 7.1 Status:** **`PASSED (Dataset Audit Complete)`**
+- **Phase 7.2 Status:** **`PASSED (Deterministic Labeled Synthetic Fixture Verified)`**
+- **Next Steps:** Proceed to Phase 7.3 (Feature Enrichment Pipeline using CPU/GPU aggregators) and Phase 7.4 (Classifier Baseline Training with Logistic Regression, Random Forest, and LightGBM/XGBoost).
 
