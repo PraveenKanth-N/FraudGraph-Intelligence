@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.config import settings
-from backend.app.api.v1.endpoints import health
+from backend.app.api.v1.endpoints import health, dashboard, datasets
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -23,6 +23,8 @@ app.add_middleware(
 
 # Mount API Routers
 app.include_router(health.router, prefix=settings.API_V1_PREFIX, tags=["Diagnostics & Telemetry"])
+app.include_router(dashboard.router, prefix=settings.API_V1_PREFIX, tags=["Dashboard & Workspaces"])
+app.include_router(datasets.router, prefix=settings.API_V1_PREFIX, tags=["Datasets"])
 
 @app.get("/")
 def root():

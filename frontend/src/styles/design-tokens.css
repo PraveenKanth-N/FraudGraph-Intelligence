@@ -1,10 +1,17 @@
 :root {
+  /* Surface Depths */
   --surface-obsidian: #05070A;
   --surface-graphite: #0D1117;
   --surface-raised: #161B22;
+  --surface-container-high: #272A2F;
+  --surface-container-highest: #32353A;
+  --surface-dim: #111418;
+
+  /* Hairlines and Borders */
   --border-hairline: #21262D;
   --border-active: #00F2FE;
 
+  /* Luminescent Accents */
   --primary: #00F2FE;
   --primary-hover: #0AE8B7;
   --on-primary: #05070A;
@@ -12,21 +19,32 @@
   --secondary: #0AE8B7;
   --tertiary: #EFECE6;
 
+  /* Semantic Alerts & Metrics */
   --alert-critical: #FF3B30;
+  --alert-warning: #FF9F0A;
   --metric-dim: #484F58;
   --text-primary: #E1E2E8;
   --text-muted: #8B949E;
 
+  /* Typography */
   --font-serif: 'Newsreader', Georgia, serif;
   --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'Geist', monospace;
+
+  /* Spacing Scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
 }
 
+/* Strict Zero-Radius Architectural Constraint */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  border-radius: 0 !important; /* Strict zero-radius constraint per Obsidian Cybernetics */
+  border-radius: 0 !important;
 }
 
 body {
@@ -34,10 +52,74 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-code, pre, .telemetry-label {
+/* Accessible Focus States */
+:focus-visible {
+  outline: 1px solid var(--border-active);
+  outline-offset: 1px;
+}
+
+/* Telemetry & Code Typography */
+code, pre, .telemetry-label, .font-mono {
   font-family: var(--font-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* High-Density Cybernetic Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-obsidian);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-hairline);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--metric-dim);
+}
+
+/* Accessibility: Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Button & Control Reset */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  color: inherit;
+  background: var(--surface-obsidian);
+  border: 1px solid var(--border-hairline);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--border-active);
+  outline: none;
 }
