@@ -1,48 +1,36 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, ShieldAlert, Cpu, Database, ArrowRight, BarChart3 } from 'lucide-react';
+import { Activity, ShieldAlert, Cpu, Database, ArrowRight, BarChart3, RefreshCw } from 'lucide-react';
 import { BreadcrumbHeader } from '../components/layout/BreadcrumbHeader';
 import { Panel } from '../components/common/Panel';
 import { TelemetryCard } from '../components/common/TelemetryCard';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { CyberButton } from '../components/common/CyberButton';
 import { StateView } from '../components/common/StateView';
-import { fetchDashboardSummary } from '../services/api';
-import { DashboardSummary } from '../types/api';
+import { useDashboardPolling } from '../hooks/useDashboardPolling';
 
 export const OverviewPage: React.FC = () => {
-  const [data, setData] = useState<DashboardSummary | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data,
+    state: telemetryState,
+    isLoading: loading,
+    isRefreshing,
+    error: pollingError,
+    lastSuccessTime,
+    refresh: loadData,
+  } = useDashboardPolling({ intervalMs: 30000, enabled: true });
+  const error = pollingError ? pollingError.message : null;
   const navigate = useNavigate();
 
-  const loadData = () => {
-    setLoading(true);
-    setError(null);
-    fetchDashboardSummary()
-      .then((res) => {
-        setData(res);
-        setLoading(false);
-      })
-      .catch((err: Error) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  };
+  if (!data) {
+    if (loading) {
+      return (
+        <div className="p-8 max-w-7xl mx-auto w-full">
+          <StateView type="loading" title="SYNCHRONIZING REPOSITORY DASHBOARD TELEMETRY" />
+        </div>
+      );
+    }
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="p-8 max-w-7xl mx-auto w-full">
-        <StateView type="loading" title="SYNCHRONIZING REPOSITORY DASHBOARD TELEMETRY" />
-      </div>
-    );
-  }
-
-  if (error || !data) {
     return (
       <div className="p-8 max-w-7xl mx-auto w-full">
         <StateView
@@ -65,11 +53,27 @@ export const OverviewPage: React.FC = () => {
         badges={
           <>
             <StatusBadge variant="primary">PHASE 9B ACTIVE</StatusBadge>
+            <StatusBadge variant="muted">HISTORICAL ARTIFACTS</StatusBadge>
+            {telemetryState === 'DEGRADED' && (
+              <StatusBadge variant="warning">DEGRADED TELEMETRY</StatusBadge>
+            )}
+            {isRefreshing && (
+              <StatusBadge variant="primary">REFRESHING...</StatusBadge>
+            )}
             <StatusBadge variant="success">SYNTHETIC DATASET</StatusBadge>
           </>
         }
         actions={
           <div className="flex items-center gap-2">
+            <CyberButton
+              variant="secondary"
+              size="sm"
+              onClick={loadData}
+              disabled={isRefreshing}
+              icon={<RefreshCw size={13} className={isRefreshing ? 'animate-spin' : ''} />}
+            >
+              REFRESH TELEMETRY
+            </CyberButton>
             <CyberButton
               variant="secondary"
               size="sm"
@@ -92,6 +96,34 @@ export const OverviewPage: React.FC = () => {
 
       {/* Main Body Grid */}
       <div className="p-6 max-w-7xl mx-auto w-full space-y-6">
+        {/* Degraded Telemetry Notice Banner */}
+        {telemetryState === 'DEGRADED' && (
+          <div className="p-3 bg-[rgba(255,159,10,0.08)] border border-[var(--alert-warning)] text-xs text-[var(--text-muted)] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-[var(--alert-warning)] shrink-0" />
+              <span>
+                <strong className="text-[var(--alert-warning)] font-mono uppercase">Telemetry Degraded:</strong>{' '}
+                Background refresh failed. Retaining last verified artifact data from{' '}
+                {lastSuccessTime ? lastSuccessTime.toLocaleTimeString() : 'previous probe'}.
+                {error && (
+                  <span className="font-mono text-[11px] block text-[var(--metric-dim)] mt-0.5">
+                    Reason: {error}
+                  </span>
+                )}
+              </span>
+            </div>
+            <CyberButton
+              variant="secondary"
+              size="sm"
+              onClick={loadData}
+              disabled={isRefreshing}
+              icon={<RefreshCw size={12} className={isRefreshing ? 'animate-spin' : ''} />}
+            >
+              RETRY
+            </CyberButton>
+          </div>
+        )}
+
         {/* KPI Telemetry Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <TelemetryCard
@@ -104,19 +136,23 @@ export const OverviewPage: React.FC = () => {
           />
           <TelemetryCard
             label="TOP MODEL PR-AUC"
-            value={data.evaluation.top_test_pr_auc.toFixed(4)}
+            value={data.evaluation.top_test_pr_auc != null ? data.evaluation.top_test_pr_auc.toFixed(4) : '—'}
             unit="TEST"
-            subtext={`${data.evaluation.top_model} • ROC-AUC ${data.evaluation.top_test_roc_auc.toFixed(4)}`}
+            subtext={
+              data.evaluation.top_test_roc_auc != null
+                ? `${data.evaluation.top_model || 'Top Model'} • ROC-AUC ${data.evaluation.top_test_roc_auc.toFixed(4)}`
+                : (data.evaluation.error_message || 'Evaluation artifact unavailable')
+            }
             icon={<Activity size={16} />}
-            statusColor="mint"
+            statusColor={data.evaluation.artifact_state === 'AVAILABLE' ? 'mint' : 'dim'}
           />
           <TelemetryCard
             label="PEAK VECTORIZED SPEEDUP"
-            value={`${data.benchmarks.top_speedup_vs_cpu_ref}x`}
+            value={data.benchmarks.top_speedup_vs_cpu_ref != null ? `${data.benchmarks.top_speedup_vs_cpu_ref}x` : '—'}
             unit="VS REF"
-            subtext={data.benchmarks.top_speedup_workload}
+            subtext={data.benchmarks.top_speedup_workload || data.benchmarks.error_message || 'Benchmark artifact unavailable'}
             icon={<Cpu size={16} />}
-            statusColor="cyan"
+            statusColor={data.benchmarks.artifact_state === 'AVAILABLE' ? 'cyan' : 'dim'}
           />
           <TelemetryCard
             label="RESEARCH INTEGRITY"
@@ -152,22 +188,31 @@ export const OverviewPage: React.FC = () => {
                   <div>
                     <div className="text-[11px] font-mono text-[var(--text-muted)]">TOP PR-AUC</div>
                     <div className="text-xl font-semibold text-[var(--primary)] font-mono">
-                      {data.evaluation.top_test_pr_auc.toFixed(4)}
+                      {data.evaluation.top_test_pr_auc != null ? data.evaluation.top_test_pr_auc.toFixed(4) : '—'}
                     </div>
                   </div>
                   <div>
                     <div className="text-[11px] font-mono text-[var(--text-muted)]">TOP ROC-AUC</div>
                     <div className="text-xl font-semibold text-[var(--secondary)] font-mono">
-                      {data.evaluation.top_test_roc_auc.toFixed(4)}
+                      {data.evaluation.top_test_roc_auc != null ? data.evaluation.top_test_roc_auc.toFixed(4) : '—'}
                     </div>
                   </div>
                   <div>
                     <div className="text-[11px] font-mono text-[var(--text-muted)]">TOP TEST F1</div>
                     <div className="text-xl font-semibold text-[#FFFFFF] font-mono">
-                      {data.evaluation.top_test_f1.toFixed(4)}
+                      {data.evaluation.top_test_f1 != null ? data.evaluation.top_test_f1.toFixed(4) : '—'}
                     </div>
                   </div>
                 </div>
+
+                {data.evaluation.artifact_state && data.evaluation.artifact_state !== 'AVAILABLE' && (
+                  <div className="p-3 bg-[rgba(255,69,58,0.08)] border border-[var(--alert-error)] text-xs text-[var(--text-muted)]">
+                    <strong className="text-[var(--alert-error)] uppercase font-mono block mb-0.5">
+                      Evaluation Artifact State: {data.evaluation.artifact_state}
+                    </strong>
+                    {data.evaluation.error_message || 'Artifact file is missing or unreadable.'}
+                  </div>
+                )}
 
                 <div className="text-xs text-[var(--text-muted)] leading-relaxed">
                   Evaluated across Logistic Regression and Random Forest models with 5 neighbor representations (
@@ -189,7 +234,11 @@ export const OverviewPage: React.FC = () => {
             <Panel
               title="PHASE 8 BENCHMARK MATRIX TELEMETRY"
               subtitle={data.benchmarks.session_id}
-              badge={<StatusBadge variant="muted">36 RUNS</StatusBadge>}
+              badge={
+                <StatusBadge variant={data.benchmarks.artifact_state === 'AVAILABLE' ? 'muted' : 'warning'}>
+                  {data.benchmarks.artifact_state === 'AVAILABLE' ? `${data.benchmarks.total_runs} RUNS` : data.benchmarks.artifact_state}
+                </StatusBadge>
+              }
               actions={
                 <CyberButton
                   variant="terminal"
@@ -204,21 +253,32 @@ export const OverviewPage: React.FC = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-center">
                   <div className="p-2 border border-[var(--border-hairline)] bg-[var(--surface-obsidian)]">
                     <div className="text-[10px] font-mono text-[var(--text-muted)]">TOTAL RUNS</div>
-                    <div className="text-base font-semibold font-mono text-[#FFFFFF]">{data.benchmarks.total_runs}</div>
+                    <div className="text-base font-semibold font-mono text-[#FFFFFF]">{data.benchmarks.total_runs || '—'}</div>
                   </div>
                   <div className="p-2 border border-[var(--border-hairline)] bg-[var(--surface-obsidian)]">
                     <div className="text-[10px] font-mono text-[var(--text-muted)]">MEASURED CPU</div>
-                    <div className="text-base font-semibold font-mono text-[var(--secondary)]">{data.benchmarks.measured_cpu_runs}</div>
+                    <div className="text-base font-semibold font-mono text-[var(--secondary)]">{data.benchmarks.measured_cpu_runs || '—'}</div>
                   </div>
                   <div className="p-2 border border-[var(--border-hairline)] bg-[var(--surface-obsidian)]">
                     <div className="text-[10px] font-mono text-[var(--text-muted)]">SKIPPED CUDA</div>
-                    <div className="text-base font-semibold font-mono text-[var(--alert-warning)]">{data.benchmarks.skipped_gpu_runs}</div>
+                    <div className="text-base font-semibold font-mono text-[var(--alert-warning)]">{data.benchmarks.skipped_gpu_runs || '—'}</div>
                   </div>
                   <div className="p-2 border border-[var(--border-hairline)] bg-[var(--surface-obsidian)]">
                     <div className="text-[10px] font-mono text-[var(--text-muted)]">MAX SPEEDUP</div>
-                    <div className="text-base font-semibold font-mono text-[var(--primary)]">{data.benchmarks.top_speedup_vs_cpu_ref}x</div>
+                    <div className="text-base font-semibold font-mono text-[var(--primary)]">
+                      {data.benchmarks.top_speedup_vs_cpu_ref != null ? `${data.benchmarks.top_speedup_vs_cpu_ref}x` : '—'}
+                    </div>
                   </div>
                 </div>
+
+                {data.benchmarks.artifact_state && data.benchmarks.artifact_state !== 'AVAILABLE' && (
+                  <div className="p-3 bg-[rgba(255,69,58,0.08)] border border-[var(--alert-error)] text-xs text-[var(--text-muted)]">
+                    <strong className="text-[var(--alert-error)] uppercase font-mono block mb-0.5">
+                      Benchmark Artifact State: {data.benchmarks.artifact_state}
+                    </strong>
+                    {data.benchmarks.error_message || 'Artifact file is missing or unreadable.'}
+                  </div>
+                )}
 
                 <div className="text-xs text-[var(--text-muted)] leading-relaxed">
                   Local Windows execution skipped CUDA kernel runs due to absent local NVCC compiler.
@@ -240,11 +300,17 @@ export const OverviewPage: React.FC = () => {
                 <div>
                   <div className="font-mono text-[10px] text-[var(--text-muted)] uppercase">LOCAL HOST ACCELERATOR</div>
                   <div className="font-semibold text-[#FFFFFF] mt-0.5">
-                    {data.hardware.local_gpu_detected || 'NVIDIA GeForce MX450'}
+                    {data.hardware.local_gpu_detected || 'None detected'}
                   </div>
                   <div className="text-[11px] font-mono text-[var(--alert-warning)] mt-0.5">
                     {data.hardware.local_compiler_status}
                   </div>
+                  {data.hardware.local_vram_free_mb !== null &&
+                    data.hardware.local_vram_free_mb !== undefined && (
+                      <div className="text-[10px] font-mono text-[var(--metric-dim)] mt-0.5">
+                        FREE VRAM: {data.hardware.local_vram_free_mb} MB
+                      </div>
+                    )}
                 </div>
 
                 <div className="pt-2 border-t border-[var(--border-hairline)]">
@@ -263,6 +329,17 @@ export const OverviewPage: React.FC = () => {
                   <div className="text-[11px] text-[var(--text-muted)] mt-0.5">
                     SHA-256: <span className="font-mono text-[10px]">{data.dataset.sha256.slice(0, 16)}...</span>
                   </div>
+                </div>
+
+                <div className="pt-2 border-t border-[var(--border-hairline)] text-[10px] font-mono text-[var(--metric-dim)] flex justify-between">
+                  <span>LAST TELEMETRY PROBE:</span>
+                  <span>
+                    {lastSuccessTime
+                      ? lastSuccessTime.toLocaleTimeString()
+                      : data.timestamp
+                      ? new Date(data.timestamp).toLocaleTimeString()
+                      : 'RECENT'}
+                  </span>
                 </div>
               </div>
             </Panel>

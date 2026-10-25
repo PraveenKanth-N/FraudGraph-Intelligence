@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
 import { TopNav } from './TopNav';
 import { SystemHealthDrawer } from './SystemHealthDrawer';
 import { SettingsModal } from './SettingsModal';
-import { fetchHealth } from '../../services/api';
-import { HealthData } from '../../types/api';
+import { useHealthPolling } from '../../hooks/useHealthPolling';
 import { WorkstationSettings } from '../../types/navigation';
 
 const DEFAULT_SETTINGS: WorkstationSettings = {
@@ -15,8 +14,7 @@ const DEFAULT_SETTINGS: WorkstationSettings = {
 };
 
 export const AppLayout: React.FC = () => {
-  const [health, setHealth] = useState<HealthData | null>(null);
-  const [healthLoading, setHealthLoading] = useState<boolean>(true);
+  const healthResource = useHealthPolling({ intervalMs: 15000, enabled: true });
   const [isHealthOpen, setIsHealthOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [settings, setSettings] = useState<WorkstationSettings>(() => {
@@ -28,23 +26,6 @@ export const AppLayout: React.FC = () => {
     }
   });
 
-  const loadHealth = () => {
-    setHealthLoading(true);
-    fetchHealth()
-      .then((data) => {
-        setHealth(data);
-        setHealthLoading(false);
-      })
-      .catch(() => {
-        setHealth(null);
-        setHealthLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    loadHealth();
-  }, []);
-
   const handleSaveSettings = (newSettings: WorkstationSettings) => {
     setSettings(newSettings);
     try {
@@ -54,19 +35,31 @@ export const AppLayout: React.FC = () => {
     }
   };
 
+  // F-06 Fix: Stabilize context object reference to prevent unneeded child route re-renders
+  const outletContext = useMemo(
+    () => ({
+      settings,
+      health: healthResource.data,
+      healthState: healthResource.state,
+      onRefreshHealth: healthResource.refresh,
+    }),
+    [settings, healthResource.data, healthResource.state, healthResource.refresh]
+  );
+
   return (
     <div className="min-h-screen flex flex-col bg-[var(--surface-obsidian)] text-[var(--text-primary)]">
       {/* Universal Top Navigation Header */}
       <TopNav
-        health={health}
-        healthLoading={healthLoading}
+        health={healthResource.data}
+        healthLoading={healthResource.isLoading}
+        telemetryState={healthResource.state}
         onOpenHealth={() => setIsHealthOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
       {/* Main Page Content */}
       <main className="flex-1 flex flex-col" id="main-content">
-        <Outlet context={{ settings, health, onRefreshHealth: loadHealth }} />
+        <Outlet context={outletContext} />
       </main>
 
       {/* Institutional Academic Footer */}
@@ -74,7 +67,7 @@ export const AppLayout: React.FC = () => {
         <div className="flex items-center gap-3">
           <span>WORKSPACE: D:\FraudGraph Intelligence</span>
           <span className="hidden sm:inline border-l border-[var(--border-hairline)] pl-3">
-            HEAD: d0ea85a (Phase 9B)
+            HEAD: ae5b1aa (Phase 9B)
           </span>
         </div>
         <div className="flex items-center gap-3 text-right">
@@ -89,9 +82,12 @@ export const AppLayout: React.FC = () => {
       <SystemHealthDrawer
         isOpen={isHealthOpen}
         onClose={() => setIsHealthOpen(false)}
-        health={health}
-        isLoading={healthLoading}
-        onRefresh={loadHealth}
+        health={healthResource.data}
+        isLoading={healthResource.isLoading || healthResource.isRefreshing}
+        telemetryState={healthResource.state}
+        lastSuccessTime={healthResource.lastSuccessTime}
+        error={healthResource.error}
+        onRefresh={healthResource.refresh}
       />
 
       {/* Settings Modal */}

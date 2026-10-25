@@ -4,10 +4,12 @@ import { Settings, Menu, X } from 'lucide-react';
 import clsx from 'clsx';
 import { NavItem } from '../../types/navigation';
 import { HealthData } from '../../types/api';
+import { TelemetryState } from '../../types/telemetry';
 
 export interface TopNavProps {
   health: HealthData | null;
   healthLoading: boolean;
+  telemetryState?: TelemetryState;
   onOpenHealth: () => void;
   onOpenSettings: () => void;
 }
@@ -26,6 +28,7 @@ export const NAV_ITEMS: NavItem[] = [
 export const TopNav: React.FC<TopNavProps> = ({
   health,
   healthLoading,
+  telemetryState,
   onOpenHealth,
   onOpenSettings,
 }) => {
@@ -138,6 +141,8 @@ export const TopNav: React.FC<TopNavProps> = ({
                 'w-2 h-2',
                 healthLoading
                   ? 'bg-[var(--alert-warning)] animate-pulse'
+                  : telemetryState === 'DEGRADED'
+                  ? 'bg-[var(--alert-warning)]'
                   : isHealthy
                   ? 'bg-[var(--secondary)]'
                   : 'bg-[var(--alert-critical)]'
@@ -146,6 +151,8 @@ export const TopNav: React.FC<TopNavProps> = ({
             <span className="hidden sm:inline text-[11px]">
               {healthLoading
                 ? 'PROBING...'
+                : telemetryState === 'DEGRADED'
+                ? 'SYS DEGRADED'
                 : isHealthy
                 ? 'SYS HEALTHY'
                 : 'OFFLINE'}

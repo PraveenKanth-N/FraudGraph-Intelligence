@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { RefreshCw } from 'lucide-react';
 import { BreadcrumbHeader } from '../components/layout/BreadcrumbHeader';
 import { Panel } from '../components/common/Panel';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { DataTable, Column } from '../components/common/DataTable';
+import { CyberButton } from '../components/common/CyberButton';
+import { useDashboardPolling } from '../hooks/useDashboardPolling';
 
 interface BenchmarkRunRecord {
   workload: string;
@@ -18,6 +21,7 @@ interface BenchmarkRunRecord {
 
 export const ExperimentManagerPage: React.FC = () => {
   const [filterEngine, setFilterEngine] = useState<'all' | 'cpu' | 'cuda'>('all');
+  const { data: dashboard, isRefreshing, refresh: loadDashboard } = useDashboardPolling();
 
   // Genuine runs directly sourced from experiments/results/benchmark_runs/session_20261024_230008_smoke/summary_table.csv
   const runs: BenchmarkRunRecord[] = [
@@ -228,8 +232,21 @@ export const ExperimentManagerPage: React.FC = () => {
         badges={
           <>
             <StatusBadge variant="primary">PHASE 8 CANONICAL</StatusBadge>
-            <StatusBadge variant="muted">SESSION: session_20261024_230008_smoke</StatusBadge>
+            <StatusBadge variant={dashboard?.benchmarks.artifact_state === 'AVAILABLE' ? 'muted' : 'warning'}>
+              SESSION: {dashboard?.benchmarks.session_id || (dashboard?.benchmarks.artifact_state ? `ARTIFACT ${dashboard.benchmarks.artifact_state}` : '—')}
+            </StatusBadge>
           </>
+        }
+        actions={
+          <CyberButton
+            variant="secondary"
+            size="sm"
+            onClick={loadDashboard}
+            disabled={isRefreshing}
+            icon={<RefreshCw size={13} className={isRefreshing ? 'animate-spin' : ''} />}
+          >
+            REFRESH SESSION DATA
+          </CyberButton>
         }
       />
 
@@ -238,7 +255,9 @@ export const ExperimentManagerPage: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 border border-[var(--border-hairline)] bg-[var(--surface-graphite)]">
           <div>
             <div className="text-[10px] font-mono text-[var(--text-muted)] uppercase">SESSION PROVENANCE</div>
-            <div className="text-sm font-semibold font-mono text-[#FFFFFF] mt-0.5">session_20261024_230008_smoke</div>
+            <div className="text-sm font-semibold font-mono text-[#FFFFFF] mt-0.5">
+              {dashboard?.benchmarks.session_id || (dashboard?.benchmarks.artifact_state ? `ARTIFACT ${dashboard.benchmarks.artifact_state}` : '—')}
+            </div>
           </div>
           <div>
             <div className="text-[10px] font-mono text-[var(--text-muted)] uppercase">REPETITIONS POLICY</div>

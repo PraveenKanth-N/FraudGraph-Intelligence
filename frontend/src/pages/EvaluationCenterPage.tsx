@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Activity, ShieldAlert, Sliders, Info } from 'lucide-react';
+import { Activity, ShieldAlert, Sliders, Info, RefreshCw } from 'lucide-react';
 import { BreadcrumbHeader } from '../components/layout/BreadcrumbHeader';
 import { Panel } from '../components/common/Panel';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { TelemetryCard } from '../components/common/TelemetryCard';
 import { DataTable, Column } from '../components/common/DataTable';
 import { Tabs } from '../components/common/Tabs';
+import { CyberButton } from '../components/common/CyberButton';
+import { useDashboardPolling } from '../hooks/useDashboardPolling';
 
 interface ModelRow {
   model: string;
@@ -28,6 +30,7 @@ interface ModelRow {
 export const EvaluationCenterPage: React.FC = () => {
   const [activePolicy, setActivePolicy] = useState<string>('causal');
   const [threshold, setThreshold] = useState<number>(0.1090);
+  const { data: dashboard, isRefreshing, refresh: loadDashboard } = useDashboardPolling();
 
   // Exact data from experiments/results/evaluation_reporting_7_5/summary_evaluation_metrics.csv
   const causalData: ModelRow[] = [
@@ -256,6 +259,17 @@ export const EvaluationCenterPage: React.FC = () => {
             <StatusBadge variant="success">FROZEN THRESHOLD EVALUATION</StatusBadge>
           </>
         }
+        actions={
+          <CyberButton
+            variant="secondary"
+            size="sm"
+            onClick={loadDashboard}
+            disabled={isRefreshing}
+            icon={<RefreshCw size={13} className={isRefreshing ? 'animate-spin' : ''} />}
+          >
+            REFRESH EVALUATION METRICS
+          </CyberButton>
+        }
       />
 
       <div className="p-6 max-w-7xl mx-auto w-full space-y-6 flex-1 flex flex-col">
@@ -263,19 +277,27 @@ export const EvaluationCenterPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <TelemetryCard
             label="TOP DOWNSTREAM PR-AUC"
-            value="0.3315"
+            value={dashboard?.evaluation.top_test_pr_auc != null ? dashboard.evaluation.top_test_pr_auc.toFixed(4) : '—'}
             unit="TEST"
-            subtext="Logistic Regression (max neighbor aggregation, 64D)"
+            subtext={
+              dashboard?.evaluation.top_model
+                ? `${dashboard.evaluation.top_model} (Frozen Val τ*)`
+                : (dashboard?.evaluation.artifact_state && dashboard.evaluation.artifact_state !== 'AVAILABLE' ? `Artifact ${dashboard.evaluation.artifact_state}` : 'Evaluating...')
+            }
             icon={<Activity size={16} />}
-            statusColor="cyan"
+            statusColor={dashboard?.evaluation.artifact_state === 'AVAILABLE' ? 'cyan' : 'dim'}
           />
           <TelemetryCard
             label="TOP DOWNSTREAM ROC-AUC"
-            value="0.7865"
+            value={dashboard?.evaluation.top_test_roc_auc != null ? dashboard.evaluation.top_test_roc_auc.toFixed(4) : '—'}
             unit="TEST"
-            subtext="Logistic Regression (max neighbor aggregation, 64D)"
+            subtext={
+              dashboard?.evaluation.top_test_f1 != null
+                ? `Test F1: ${dashboard.evaluation.top_test_f1.toFixed(4)}`
+                : (dashboard?.evaluation.artifact_state && dashboard.evaluation.artifact_state !== 'AVAILABLE' ? 'Metrics Unavailable' : 'Evaluating...')
+            }
             icon={<Activity size={16} />}
-            statusColor="mint"
+            statusColor={dashboard?.evaluation.artifact_state === 'AVAILABLE' ? 'mint' : 'dim'}
           />
           <TelemetryCard
             label="TEST EVALUATION PARTITION"

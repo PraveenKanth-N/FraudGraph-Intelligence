@@ -4,6 +4,7 @@ import { Modal } from '../common/Modal';
 import { CyberButton } from '../common/CyberButton';
 import { StatusBadge } from '../common/StatusBadge';
 import { HealthData } from '../../types/api';
+import { TelemetryState } from '../../types/telemetry';
 
 export interface SystemHealthDrawerProps {
   isOpen: boolean;
@@ -11,6 +12,9 @@ export interface SystemHealthDrawerProps {
   health: HealthData | null;
   isLoading: boolean;
   onRefresh: () => void;
+  telemetryState?: TelemetryState;
+  lastSuccessTime?: Date | null;
+  error?: Error | null;
 }
 
 export const SystemHealthDrawer: React.FC<SystemHealthDrawerProps> = ({
@@ -19,6 +23,9 @@ export const SystemHealthDrawer: React.FC<SystemHealthDrawerProps> = ({
   health,
   isLoading,
   onRefresh,
+  telemetryState,
+  lastSuccessTime,
+  error,
 }) => {
   const isHealthy = health?.status === 'healthy';
 
@@ -32,7 +39,12 @@ export const SystemHealthDrawer: React.FC<SystemHealthDrawerProps> = ({
       actions={
         <div className="flex items-center justify-between w-full">
           <span className="text-[11px] font-mono text-[var(--metric-dim)]">
-            RUNTIME: Python {health?.system?.python_version || '3.14.3'} • AMD64
+            RUNTIME:{' '}
+            {health?.system?.python_version
+              ? `Python ${health.system.python_version} • AMD64`
+              : isLoading
+              ? 'PROBING RUNTIME...'
+              : 'UNAVAILABLE'}
           </span>
           <div className="flex gap-2">
             <CyberButton
@@ -57,20 +69,45 @@ export const SystemHealthDrawer: React.FC<SystemHealthDrawerProps> = ({
           <div className="flex items-center gap-3">
             <div
               className={`w-3 h-3 ${
-                isHealthy ? 'bg-[var(--secondary)]' : 'bg-[var(--alert-critical)]'
+                telemetryState === 'DEGRADED'
+                  ? 'bg-[var(--alert-warning)]'
+                  : isHealthy
+                  ? 'bg-[var(--secondary)]'
+                  : 'bg-[var(--alert-critical)]'
               }`}
             />
             <div>
               <div className="font-mono text-xs uppercase text-[#FFFFFF] font-semibold">
-                {isHealthy ? 'ALL CORE SUBSYSTEMS OPERATIONAL' : 'SYSTEM OFFLINE / STANDALONE'}
+                {telemetryState === 'DEGRADED'
+                  ? 'TELEMETRY DEGRADED // RETAINING STALE PROBE'
+                  : isHealthy
+                  ? 'ALL CORE SUBSYSTEMS OPERATIONAL'
+                  : 'SYSTEM OFFLINE / STANDALONE'}
               </div>
               <div className="text-xs text-[var(--text-muted)] font-mono">
-                LAST PROBE: {health?.system?.timestamp || new Date().toISOString()}
+                LAST PROBE: {health?.system?.timestamp || (lastSuccessTime ? lastSuccessTime.toISOString() : 'UNAVAILABLE')}
               </div>
+              {error && (
+                <div className="text-[10px] text-[var(--alert-warning)] font-mono mt-0.5 truncate max-w-md">
+                  PROBE WARNING: {error.message}
+                </div>
+              )}
             </div>
           </div>
-          <StatusBadge variant={isHealthy ? 'success' : 'critical'}>
-            {isHealthy ? 'VERIFIED PASS' : 'DISCONNECTED'}
+          <StatusBadge
+            variant={
+              telemetryState === 'DEGRADED'
+                ? 'warning'
+                : isHealthy
+                ? 'success'
+                : 'critical'
+            }
+          >
+            {telemetryState === 'DEGRADED'
+              ? 'DEGRADED'
+              : isHealthy
+              ? 'VERIFIED PASS'
+              : 'DISCONNECTED'}
           </StatusBadge>
         </div>
 
@@ -85,10 +122,16 @@ export const SystemHealthDrawer: React.FC<SystemHealthDrawerProps> = ({
               <Server size={14} className="text-[var(--primary)]" />
             </div>
             <div className="text-lg font-semibold text-[#FFFFFF] mb-1">
-              {health?.compute_engine?.backend?.toUpperCase() || 'CPU REFERENCE'}
+              {health?.compute_engine?.backend
+                ? health.compute_engine.backend.toUpperCase()
+                : isLoading
+                ? 'PROBING...'
+                : 'UNAVAILABLE'}
             </div>
             <div className="text-xs text-[var(--text-muted)] leading-relaxed">
-              CSR-based deterministic parallel neighbor aggregator. Verified NumPy vectorized execution.
+              {health?.compute_engine
+                ? 'CSR-based deterministic parallel neighbor aggregator. Verified NumPy vectorized execution.'
+                : 'Compute engine diagnostics unreachable. Verify that FastAPI service is running.'}
             </div>
             <div className="mt-3 pt-2 border-t border-[var(--border-hairline)] flex justify-between text-[11px] font-mono">
               <span className="text-[var(--text-muted)]">NUMERICAL TOLERANCE:</span>
@@ -105,15 +148,35 @@ export const SystemHealthDrawer: React.FC<SystemHealthDrawerProps> = ({
               <Cpu size={14} className="text-[var(--alert-warning)]" />
             </div>
             <div className="text-lg font-semibold text-[#FFFFFF] mb-1">
-              {health?.compute_engine?.local_gpu_detected || 'NVIDIA GeForce MX450'}
+              {health?.compute_engine?.local_gpu_detected
+                ? health.compute_engine.local_gpu_detected
+                : isLoading
+                ? 'PROBING...'
+                : 'NOT DETECTED'}
             </div>
             <div className="text-xs text-[var(--text-muted)] leading-relaxed">
-              2048 MiB VRAM • Compute Capability 7.5. Local NVCC is unavailable; kernels compiled in Colab.
+              {health?.compute_engine
+                ? health.compute_engine.local_gpu_detected
+                  ? `${
+                      health.compute_engine.vram_free_mb !== null &&
+                      health.compute_engine.vram_free_mb !== undefined
+                        ? `${health.compute_engine.vram_free_mb} MB Free VRAM • `
+                        : ''
+                    }Local NVCC is unavailable; kernels compiled in Colab.`
+                  : 'No local GPU accelerator detected. CPU execution mode active; CUDA benchmarks executed via Colab runner.'
+                : 'Hardware accelerator diagnostics unreachable.'}
             </div>
             <div className="mt-3 pt-2 border-t border-[var(--border-hairline)] flex justify-between text-[11px] font-mono">
               <span className="text-[var(--text-muted)]">LOCAL COMPILER:</span>
-              <span className="text-[var(--alert-warning)]">
-                {health?.compute_engine?.cuda_compiler_status || 'UNAVAILABLE_LOCAL_COLAB_READY'}
+              <span
+                className={
+                  health?.compute_engine?.cuda_available_locally
+                    ? 'text-[var(--secondary)]'
+                    : 'text-[var(--alert-warning)]'
+                }
+              >
+                {health?.compute_engine?.cuda_compiler_status ||
+                  (isLoading ? 'PROBING...' : 'UNAVAILABLE')}
               </span>
             </div>
           </div>

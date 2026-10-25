@@ -1,11 +1,13 @@
 import React from 'react';
-import { Cpu, ShieldCheck, Activity } from 'lucide-react';
+import { Cpu, ShieldCheck, Activity, RefreshCw } from 'lucide-react';
 import { BreadcrumbHeader } from '../components/layout/BreadcrumbHeader';
 import { Panel } from '../components/common/Panel';
 import { StatusBadge } from '../components/common/StatusBadge';
 import { TelemetryCard } from '../components/common/TelemetryCard';
 import { DataTable, Column } from '../components/common/DataTable';
 import { StateView } from '../components/common/StateView';
+import { CyberButton } from '../components/common/CyberButton';
+import { useHealthPolling } from '../hooks/useHealthPolling';
 
 interface KernelMetadata {
   id: string;
@@ -18,6 +20,13 @@ interface KernelMetadata {
 }
 
 export const CudaLabPage: React.FC = () => {
+  const {
+    data: health,
+    isLoading,
+    isRefreshing,
+    refresh: refreshHealth,
+  } = useHealthPolling({ intervalMs: 15000, enabled: true });
+
   const kernels: KernelMetadata[] = [
     {
       id: 'K01',
@@ -107,9 +116,29 @@ export const CudaLabPage: React.FC = () => {
         subtitle="Low-level kernel profiling, memory hierarchy analysis, and timing boundary distinctions across GPU execution tiers."
         badges={
           <>
-            <StatusBadge variant="warning">LOCAL NVCC UNAVAILABLE</StatusBadge>
+            <StatusBadge
+              variant={
+                health?.compute_engine?.cuda_available_locally
+                  ? 'success'
+                  : 'warning'
+              }
+            >
+              {health?.compute_engine?.cuda_compiler_status ||
+                (isLoading ? 'PROBING RUNTIME...' : 'LOCAL NVCC UNAVAILABLE')}
+            </StatusBadge>
             <StatusBadge variant="success">COLAB TESLA T4 VERIFIED</StatusBadge>
           </>
+        }
+        actions={
+          <CyberButton
+            variant="secondary"
+            size="sm"
+            onClick={refreshHealth}
+            disabled={isRefreshing}
+            icon={<RefreshCw size={13} className={isRefreshing ? 'animate-spin' : ''} />}
+          >
+            PROBE HOST GPU
+          </CyberButton>
         }
       />
 
@@ -118,17 +147,35 @@ export const CudaLabPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <TelemetryCard
             label="LOCAL WINDOWS HOST GPU"
-            value="NVIDIA GeForce MX450"
-            unit="CC 7.5"
-            subtext="2048 MiB VRAM • Local NVCC compiler absent • Fallback active"
+            value={
+              health?.compute_engine?.local_gpu_detected ||
+              (isLoading ? 'PROBING...' : 'NO GPU DETECTED')
+            }
+            unit={
+              health?.compute_engine?.cuda_available_locally
+                ? 'CUDA READY'
+                : health?.compute_engine?.local_gpu_detected
+                ? 'NVCC ABSENT'
+                : 'NO GPU'
+            }
+            subtext={
+              health?.compute_engine?.local_gpu_detected
+                ? health?.compute_engine?.vram_free_mb !== null &&
+                  health?.compute_engine?.vram_free_mb !== undefined
+                  ? `${health.compute_engine.vram_free_mb} MB Free VRAM • Local NVCC compiler absent • Fallback active`
+                  : 'Local GPU detected • VRAM diagnostics unavailable'
+                : 'No physical GPU detected on host • CPU execution fallback active'
+            }
             icon={<Cpu size={16} />}
-            statusColor="amber"
+            statusColor={
+              health?.compute_engine?.cuda_available_locally ? 'mint' : 'amber'
+            }
           />
           <TelemetryCard
             label="CANONICAL BENCHMARK RIG"
             value="NVIDIA Tesla T4"
-            unit="COLAB"
-            subtext="40 SMs • 2,560 CUDA cores • 14.9 GB VRAM • CUDA 13.0"
+            unit="HISTORICAL"
+            subtext="40 SMs • 2,560 CUDA cores • 14.9 GB VRAM • Ingested Colab archive"
             icon={<Activity size={16} />}
             statusColor="mint"
           />
