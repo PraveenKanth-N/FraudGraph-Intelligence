@@ -1,6 +1,7 @@
 from datetime import datetime
-import sys
+import shutil
 import subprocess
+import sys
 from fastapi import APIRouter
 from backend.app.config import settings
 
@@ -15,27 +16,58 @@ def get_gpu_diagnostics() -> dict:
             stderr=subprocess.DEVNULL,
             text=True
         ).strip()
-        parts = [p.strip() for p in output.split(",")]
+        if not output:
+            raise ValueError("nvidia-smi returned empty output")
+
+        lines = [line.strip() for line in output.splitlines() if line.strip()]
+        if not lines:
+            raise ValueError("nvidia-smi returned empty lines")
+
+        parts = [p.strip() for p in lines[0].split(",")]
+        gpu_name = parts[0] if len(parts) > 0 and parts[0] else None
+        if not gpu_name:
+            raise ValueError("No GPU name parsed from nvidia-smi output")
+
+        driver_version = parts[1] if len(parts) > 1 and parts[1] else None
+        compute_capability = parts[2] if len(parts) > 2 and parts[2] else None
+
+        vram_total_mb = None
+        if len(parts) > 3 and parts[3]:
+            try:
+                vram_total_mb = float(parts[3])
+            except ValueError:
+                vram_total_mb = None
+
+        vram_free_mb = None
+        if len(parts) > 4 and parts[4]:
+            try:
+                vram_free_mb = float(parts[4])
+            except ValueError:
+                vram_free_mb = None
+
+        local_nvcc = shutil.which("nvcc") is not None
+        compiler_status = "AVAILABLE_LOCAL" if local_nvcc else "UNAVAILABLE_LOCAL_COLAB_READY"
+
         return {
             "detected": True,
-            "name": parts[0] if len(parts) > 0 else "NVIDIA GPU",
-            "driver_version": parts[1] if len(parts) > 1 else None,
-            "compute_capability": parts[2] if len(parts) > 2 else "7.5",
-            "vram_total_mb": float(parts[3]) if len(parts) > 3 else None,
-            "vram_free_mb": float(parts[4]) if len(parts) > 4 else None,
-            "local_nvcc_available": False,
-            "cuda_compiler_status": "UNAVAILABLE_LOCAL_COLAB_READY"
+            "name": gpu_name,
+            "driver_version": driver_version,
+            "compute_capability": compute_capability,
+            "vram_total_mb": vram_total_mb,
+            "vram_free_mb": vram_free_mb,
+            "local_nvcc_available": local_nvcc,
+            "cuda_compiler_status": compiler_status
         }
     except Exception:
         return {
-            "detected": True,
-            "name": "NVIDIA GeForce MX450",
-            "driver_version": "581.83",
-            "compute_capability": "7.5",
-            "vram_total_mb": 2048.0,
-            "vram_free_mb": 1907.0,
+            "detected": False,
+            "name": None,
+            "driver_version": None,
+            "compute_capability": None,
+            "vram_total_mb": None,
+            "vram_free_mb": None,
             "local_nvcc_available": False,
-            "cuda_compiler_status": "UNAVAILABLE_LOCAL_COLAB_READY"
+            "cuda_compiler_status": "NO_GPU_DETECTED_COLAB_READY"
         }
 
 @router.get("/health")
@@ -49,8 +81,8 @@ def check_health():
         "compute_engine": {
             "backend": settings.COMPUTE_BACKEND,
             "cuda_available_locally": gpu_info["local_nvcc_available"],
-            "local_gpu_detected": gpu_info["name"],
-            "vram_free_mb": gpu_info["vram_free_mb"],
+            "local_gpu_detected": gpu_info["name"] if gpu_info["detected"] else None,
+            "vram_free_mb": gpu_info["vram_free_mb"] if gpu_info["detected"] else None,
             "cuda_compiler_status": gpu_info["cuda_compiler_status"],
             "colab_workflow_enabled": True
         },

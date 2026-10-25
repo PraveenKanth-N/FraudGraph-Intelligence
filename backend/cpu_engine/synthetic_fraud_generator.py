@@ -30,6 +30,8 @@ import numpy as np
 
 from backend.cpu_engine.csr_graph import CSRGraph, GraphValidationError
 
+GENERATOR_VERSION: str = "1.0.0"
+
 
 def generate_synthetic_fraud_graph(
     num_nodes: int = 10000,
@@ -288,6 +290,7 @@ def save_labeled_graph(
 
     fraud_count = int(np.sum(labels_arr))
     manifest = {
+        "generator_version": GENERATOR_VERSION,
         "num_nodes": graph.num_nodes,
         "num_edges": graph.num_edges,
         "feature_dim": graph.feature_dim,
@@ -339,9 +342,9 @@ def load_labeled_graph(source_path: str | Path) -> tuple[CSRGraph, np.ndarray, n
         raise FileNotFoundError(f"Graph archive not found at: {src}")
 
     with np.load(src, allow_pickle=False) as data:
-        row_ptr = data["row_ptr"]
-        col_idx = data["col_idx"]
-        features = data["features"]
+        row_ptr = np.array(data["row_ptr"])
+        col_idx = np.array(data["col_idx"])
+        features = np.array(data["features"])
         labels = data["labels"].astype(np.int32)
         timestamps = data["timestamps"].astype(np.float64)
         manifest_str = str(data["manifest"])
@@ -350,6 +353,10 @@ def load_labeled_graph(source_path: str | Path) -> tuple[CSRGraph, np.ndarray, n
     idx_to_node_id = manifest.get("idx_to_node_id")
     node_id_to_idx = {nid: i for i, nid in enumerate(idx_to_node_id)} if idx_to_node_id else None
 
+    metadata = dict(manifest.get("metadata", {}))
+    if "generator_version" in manifest and "generator_version" not in metadata:
+        metadata["generator_version"] = manifest["generator_version"]
+
     graph = CSRGraph(
         row_ptr=row_ptr,
         col_idx=col_idx,
@@ -357,7 +364,7 @@ def load_labeled_graph(source_path: str | Path) -> tuple[CSRGraph, np.ndarray, n
         is_directed=manifest.get("is_directed", True),
         node_id_to_idx=node_id_to_idx,
         idx_to_node_id=idx_to_node_id,
-        metadata=manifest.get("metadata", {}),
+        metadata=metadata,
         validate=True,
     )
 

@@ -12,6 +12,7 @@ import pytest
 
 from backend.cpu_engine.csr_graph import CSRGraph
 from backend.cpu_engine.synthetic_fraud_generator import (
+    GENERATOR_VERSION,
     generate_synthetic_fraud_graph,
     load_labeled_graph,
     save_labeled_graph,
@@ -203,3 +204,89 @@ def test_existing_graph_fixtures_remain_unchanged():
     skewed = CSRGraph.load(skewed_path)
     assert skewed.num_nodes == 10000
     assert skewed.num_edges == 94970
+
+
+def test_manifest_contains_generator_version(tmp_path):
+    """Verify newly saved graph manifests contain generator_version '1.0.0'."""
+    g, y, t = generate_synthetic_fraud_graph(num_nodes=100, feature_dim=8, seed=42)
+    save_path = tmp_path / "version_check.npz"
+    saved_file = save_labeled_graph(save_path, g, y, t)
+
+    with np.load(saved_file, allow_pickle=False) as data:
+        manifest = json.loads(str(data["manifest"]))
+        assert "generator_version" in manifest
+        assert manifest["generator_version"] == GENERATOR_VERSION
+        assert manifest["generator_version"] == "1.0.0"
+
+    g_loaded, _, _ = load_labeled_graph(saved_file)
+    assert g_loaded.metadata.get("generator_version") == "1.0.0"
+
+
+def test_fixed_seed_preserves_canonical_array_equality():
+    """Verify that generating with seed=42 reproduces 100% identical arrays to canonical fixture."""
+    canonical_path = Path("data/fixtures/synthetic_fraud_10k.npz")
+    assert canonical_path.exists(), "Canonical fixture synthetic_fraud_10k.npz missing"
+
+    g_canon, y_canon, t_canon = load_labeled_graph(canonical_path)
+    g_fresh, y_fresh, t_fresh = generate_synthetic_fraud_graph(
+        num_nodes=10000,
+        feature_dim=32,
+        target_fraud_rate=0.035,
+        seed=42,
+    )
+
+    np.testing.assert_array_equal(g_fresh.row_ptr, g_canon.row_ptr)
+    np.testing.assert_array_equal(g_fresh.col_idx, g_canon.col_idx)
+    np.testing.assert_array_equal(g_fresh.features, g_canon.features)
+    np.testing.assert_array_equal(y_fresh, y_canon)
+    np.testing.assert_array_equal(t_fresh, t_canon)
+
+
+def test_historical_fixture_without_generator_version_readable(tmp_path):
+    """Verify that historical fixtures lacking generator_version remain fully readable."""
+    canonical_path = Path("data/fixtures/synthetic_fraud_10k.npz")
+    g_canon, y_canon, t_canon = load_labeled_graph(canonical_path)
+
+    assert g_canon.num_nodes == 10000
+    assert g_canon.num_edges == 231984
+    assert int(np.sum(y_canon)) == 350
+    assert len(t_canon) == 10000
+
+    # Also test an explicit legacy archive created without generator_version in manifest
+    legacy_manifest = {
+        "num_nodes": 50,
+        "num_edges": 80,
+        "feature_dim": 4,
+        "is_directed": True,
+        "stats": {},
+        "metadata": {"legacy_seed": 7},
+        "fraud_stats": {"fraud_count": 2, "licit_count": 48, "fraud_percentage": 4.0},
+        "temporal_stats": {"min_timestamp_sec": 0.0, "max_timestamp_sec": 100.0},
+        "array_schema": {},
+        "idx_to_node_id": None,
+    }
+    legacy_file = tmp_path / "legacy_graph.npz"
+    row_ptr = np.zeros(51, dtype=np.int32)
+    row_ptr[-1] = 80
+    col_idx = np.zeros(80, dtype=np.int32)
+    features = np.zeros((50, 4), dtype=np.float32)
+    labels = np.zeros(50, dtype=np.int32)
+    labels[0] = 1
+    labels[1] = 1
+    timestamps = np.linspace(0.0, 100.0, 50, dtype=np.float64)
+
+    np.savez_compressed(
+        legacy_file,
+        row_ptr=row_ptr,
+        col_idx=col_idx,
+        features=features,
+        labels=labels,
+        timestamps=timestamps,
+        manifest=json.dumps(legacy_manifest),
+    )
+
+    g_leg, y_leg, t_leg = load_labeled_graph(legacy_file)
+    assert g_leg.num_nodes == 50
+    assert g_leg.metadata.get("legacy_seed") == 7
+    assert g_leg.metadata.get("generator_version") is None
+    assert int(np.sum(y_leg)) == 2

@@ -546,9 +546,9 @@ def get_dashboard_summary(
     )
 
     hardware_summary = HardwareSummaryModel(
-        local_gpu_detected=gpu_info.get("name"),
+        local_gpu_detected=gpu_info.get("name") if gpu_info.get("detected") else None,
         local_compiler_status=gpu_info.get("cuda_compiler_status", "UNAVAILABLE_LOCAL_COLAB_READY"),
-        local_vram_free_mb=gpu_info.get("vram_free_mb"),
+        local_vram_free_mb=gpu_info.get("vram_free_mb") if gpu_info.get("detected") else None,
         canonical_colab_gpu="NVIDIA Tesla T4 (Phase 6 Archive)",
         colab_kernel_latency_ms=0.0679
     )
