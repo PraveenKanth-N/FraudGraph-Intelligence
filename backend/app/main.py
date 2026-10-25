@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.config import settings
-from backend.app.api.v1.endpoints import health, dashboard, datasets
+from backend.app.api.v1.endpoints import health, dashboard, datasets, graph, transactions
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -25,6 +25,8 @@ app.add_middleware(
 app.include_router(health.router, prefix=settings.API_V1_PREFIX, tags=["Diagnostics & Telemetry"])
 app.include_router(dashboard.router, prefix=settings.API_V1_PREFIX, tags=["Dashboard & Workspaces"])
 app.include_router(datasets.router, prefix=settings.API_V1_PREFIX, tags=["Datasets"])
+app.include_router(graph.router, prefix=f"{settings.API_V1_PREFIX}/graph", tags=["Graph Analytics"])
+app.include_router(transactions.router, prefix=f"{settings.API_V1_PREFIX}/transactions", tags=["Transactions"])
 
 @app.get("/")
 def root():
