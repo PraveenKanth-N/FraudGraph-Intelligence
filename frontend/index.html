@@ -8,6 +8,37 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS Engine for Obsidian Cybernetics Styling -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'surface-obsidian': '#05070A',
+              'surface-graphite': '#0D1117',
+              'surface-raised': '#161B22',
+              'border-hairline': '#21262D',
+              'border-active': '#00F2FE',
+              'primary': '#00F2FE',
+              'primary-hover': '#0AE8B7',
+              'secondary': '#0AE8B7',
+              'alert-critical': '#FF3B30',
+              'alert-warning': '#FF9F0A',
+              'metric-dim': '#484F58',
+              'text-primary': '#E1E2E8',
+              'text-muted': '#8B949E'
+            },
+            fontFamily: {
+              sans: ['Geist', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+              serif: ['Newsreader', 'Georgia', 'serif'],
+              mono: ['Geist', 'monospace']
+            }
+          }
+        }
+      }
+    </script>
   </head>
   <body class="bg-[#05070A] text-[#E1E2E8]">
     <div id="root"></div>
