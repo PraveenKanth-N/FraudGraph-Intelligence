@@ -21,6 +21,9 @@
 % Clean line wrapping for URLs and code tokens
 \def\UrlBreaks{\do\/\do-}
 
+% Stop LaTeX from vertically stretching whitespace between paragraphs and floats
+\raggedbottom
+
 % Micro-architectural Float Tuning: Pack text and floats tightly with ZERO artificial whitespace gaps
 \renewcommand{\topfraction}{0.95}
 \renewcommand{\dbltopfraction}{0.95}
@@ -29,10 +32,17 @@
 \renewcommand{\floatpagefraction}{0.85}
 \renewcommand{\dblfloatpagefraction}{0.85}
 
+% Strict, tight spacing around figures and tables to eliminate unsightly gaps
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\dblfloatsep}{8pt plus 2pt minus 2pt}
+
 % Eliminate orphan section headings and awkward column breaks
-\clubpenalty=0
-\widowpenalty=0
-\displaywidowpenalty=0
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
 
 % Completely eliminate running top headers and footers across all pages in IEEEtran
 \makeatletter
@@ -114,11 +124,11 @@ where $\bigoplus$ denotes a permutation-invariant aggregation operator selected 
 \begin{equation}
     \bigoplus \in \{\text{SUM}, \text{MEAN}, \text{MAX}\}.
 \end{equation}
-Specifically, for element $d \in \{0, 1, \dots, D-1\}$:
+Specifically, for element $d \in \{0, 1, \dots, D-1\}$, the aggregation operators are formally aligned as:
 \begin{align}
-    \mathbf{h}_v^{\text{SUM}}[d] &= \sum_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d], \label{eq:sum}\\
-    \mathbf{h}_v^{\text{MEAN}}[d] &= \frac{1}{|\mathcal{N}_{\text{in}}(v)|} \sum_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d], \label{eq:mean}\\
-    \mathbf{h}_v^{\text{MAX}}[d] &= \max_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d]. \label{eq:max}
+    \mathbf{h}_v^{\text{SUM}}[d] &= \sum_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d], \label{eq:sum_agg} \\
+    \mathbf{h}_v^{\text{MEAN}}[d] &= \frac{1}{\max(1, |\mathcal{N}_{\text{in}}(v)|)} \sum_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d], \label{eq:mean_agg} \\
+    \mathbf{h}_v^{\text{MAX}}[d] &= \max_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d]. \label{eq:max_agg}
 \end{align}
 For isolated transactions having zero in-degree ($|\mathcal{N}_{\text{in}}(v)| = 0$), the aggregation defaults to an empty identity null vector $\mathbf{0}_D$. The composite feature vector presented to downstream classification models is formed by concatenating the raw node features with the aggregated neighbor representation: $\mathbf{z}_v = [\mathbf{x}_v \,\|\, \mathbf{h}_v] \in \mathbb{R}^{2D}$.
 
@@ -231,18 +241,18 @@ The global dataset is partitioned into discrete chunks $\mathcal{C}_k$. While St
 \centering
 \resizebox{0.98\textwidth}{!}{%
 \begin{tikzpicture}[
-    node distance=0.7cm and 0.5cm,
+    node distance=0.85cm and 0.9cm,
     font=\sffamily\scriptsize,
     tierbox/.style={
         rectangle, draw=#1!80!black, fill=#1!8,
         rounded corners=3pt, line width=0.9pt,
-        inner sep=4pt, text width=5.1cm, minimum height=2.1cm, align=left
+        inner sep=5pt, text width=5.2cm, minimum height=2.0cm, align=left
     },
     flowarr/.style={
         -{Stealth[scale=0.95]}, line width=1.1pt, draw=black!75
     },
-    looparr/.style={
-        -{Stealth[scale=0.95]}, line width=1.1pt, draw=blue!75!black, dashed
+    busarr/.style={
+        -{Stealth[scale=0.95]}, line width=1.1pt, draw=black!75
     },
     tag/.style={
         font=\tiny\bfseries, fill=white, draw=black!40, rounded corners=1pt, inner sep=1.5pt
@@ -257,14 +267,14 @@ The global dataset is partitioned into discrete chunks $\mathcal{C}_k$. While St
     $\bullet$ Entity anonymization: Card ID \& Device ID
 };
 
-\node[tierbox=blue, right=0.6cm of m1] (m2) {
+\node[tierbox=blue, right=0.9cm of m1] (m2) {
     \textbf{\textcolor{blue!90!black}{Module 2: CSR Graph Compressor}}\\
     $\bullet$ Contiguous \texttt{row\_ptr} ($40.0\text{ KB}$)\\
     $\bullet$ Packed \texttt{col\_idx} ($927.9\text{ KB}$)\\
     $\bullet$ Cryptographic SHA-256 integrity hash
 };
 
-\node[tierbox=gray, right=0.6cm of m2] (m3) {
+\node[tierbox=gray, right=0.9cm of m2] (m3) {
     \textbf{\textcolor{gray!90!black}{Module 3: Pinned Host DMA Engine}}\\
     $\bullet$ Zero-copy page-locked host RAM\\
     $\bullet$ Dual asynchronous streams: Stream 0 \& 1\\
@@ -272,21 +282,21 @@ The global dataset is partitioned into discrete chunks $\mathcal{C}_k$. While St
 };
 
 % Row 2 (directly below Row 1)
-\node[tierbox=green!60!black, below=0.8cm of m1] (m4) {
+\node[tierbox=green!60!black, below=1.0cm of m1] (m4) {
     \textbf{\textcolor{green!70!black}{Module 4: Parallel CUDA Engine}}\\
     $\bullet$ Tier 1: Baseline SIMT (1 thread/node)\\
     $\bullet$ Tier 2: Warp-coalesced 128-byte transactions\\
     $\bullet$ Tier 3: Degree-aware dynamic dispatch
 };
 
-\node[tierbox=gray, right=0.6cm of m4] (m5) {
+\node[tierbox=gray, right=0.9cm of m4] (m5) {
     \textbf{\textcolor{gray!90!black}{Module 5: Numerical Verification}}\\
     $\bullet$ Compares GPU float32 vs CPU float64 ref\\
     $\bullet$ Dual-tolerance: $\text{atol} \le 10^{-5}, \text{rtol} \le 10^{-5}$\\
     $\bullet$ Zero-drift certification across operators
 };
 
-\node[tierbox=blue, right=0.6cm of m5] (m6) {
+\node[tierbox=blue, right=0.9cm of m5] (m6) {
     \textbf{\textcolor{blue!90!black}{Module 6: Causal Temporal Slicer}}\\
     $\bullet$ Chronological 70\% Train ($N=7,000, 239\text{ F}$)\\
     $\bullet$ Chronological 15\% Val ($N=1,500, 58\text{ F}$)\\
@@ -294,50 +304,58 @@ The global dataset is partitioned into discrete chunks $\mathcal{C}_k$. While St
 };
 
 % Row 3 (directly below Row 2)
-\node[tierbox=gray, below=0.8cm of m4] (m7) {
+\node[tierbox=gray, below=1.0cm of m4] (m7) {
     \textbf{\textcolor{gray!90!black}{Module 7: Downstream Classifiers}}\\
     $\bullet$ Logistic Regression \& Random Forest\\
     $\bullet$ Multi-representation concatenation ($2D$)\\
     $\bullet$ Evaluated: Raw, Mean, Max, Multi, Sum
 };
 
-\node[tierbox=blue, right=0.6cm of m7] (m8) {
+\node[tierbox=blue, right=0.9cm of m7] (m8) {
     \textbf{\textcolor{blue!90!black}{Module 8: ADR-007 Threshold Enforcer}}\\
     $\bullet$ Optimal threshold frozen on Val: $\tau^* = 0.1090$\\
     $\bullet$ Blind out-of-sample evaluation on Test\\
     $\bullet$ Continuous PR curve omission protocol
 };
 
-\node[tierbox=orange, right=0.6cm of m8] (m9) {
+\node[tierbox=orange, right=0.9cm of m8] (m9) {
     \textbf{\textcolor{orange!90!black}{Module 9: Enterprise Cockpit \& HUD}}\\
     $\bullet$ Asynchronous FastAPI REST core microservices\\
     $\bullet$ React 18 + Vite Obsidian Cybernetics UI\\
     $\bullet$ Interactive topological radar \& Merkle audit
 };
 
-% Horizontal Row 1
+% Row 1 horizontal connections (left to right)
 \draw[flowarr] (m1) -- node[tag, midway] {Causal Stream} (m2);
 \draw[flowarr] (m2) -- node[tag, midway] {CSR Buffers} (m3);
 
-% Vertical Row 1 to Row 2
-\draw[flowarr] (m1) -- node[tag, midway] {Entity IDs} (m4);
-\draw[flowarr] (m3) -- node[tag, midway] {DMA Streams} (m6);
+% Top bus: from Module 3 top, across the top to the left, and down into Module 4 west
+\draw[busarr] (m3.north) -- ++(0, 0.45) coordinate (topbus)
+    -- ([xshift=-0.45cm]m1.west |- topbus) node[tag, midway] {Pinned Host DMA \& Invariants}
+    -- ([xshift=-0.45cm]m4.west)
+    -- (m4.west);
 
-% Horizontal Row 2
+% Vertical drop: Module 3 to Module 6
+\draw[flowarr] (m3) -- node[tag, midway] {DMA Stream Chunks} (m6);
+
+% Row 2 horizontal connections (left to right)
 \draw[flowarr] (m4) -- node[tag, midway] {GPU Embeddings} (m5);
-\draw[flowarr] (m5) -- node[tag, midway] {Verified Array} (m6);
+\draw[flowarr] (m5) -- node[tag, midway] {Verification Gate} (m6);
 
-% Vertical Row 2 to Row 3
-\draw[flowarr] (m4) -- node[tag, midway] {Topological Vectors} (m7);
-\draw[flowarr] (m5) -- node[tag, midway] {Error Bounds} (m8);
-\draw[flowarr] (m6) -- node[tag, midway] {Test Splits} (m9);
+% Vertical drop: Module 5 to Module 8
+\draw[flowarr] (m5) -- node[tag, midway] {Error Tolerance Gate} (m8);
 
-% Horizontal Row 3
-\draw[flowarr] (m7) -- node[tag, midway] {Probabilities} (m8);
-\draw[flowarr] (m8) -- node[tag, midway] {Alert Vectors} (m9);
+% Vertical drop: Module 6 to Module 9
+\draw[flowarr] (m6) -- node[tag, midway] {Causal Test Partitions} (m9);
 
-% Clean Outer Feedback Loop (routes beneath Row 3 and left around Row 1)
-\draw[looparr] (m9.south) -- ++(0,-0.45) -| node[tag, near end] {Grounded Citations \& Merkle Provenance Feedback} (m1.south);
+% Row 3 horizontal connections (RIGHT to LEFT: Module 9 -> Module 8 -> Module 7)
+\draw[flowarr] (m9) -- node[tag, midway] {Alert Vectors} (m8);
+\draw[flowarr] (m8) -- node[tag, midway] {Optimal Threshold $\tau^*$} (m7);
+
+% Bottom bus: from Module 7 bottom, across the bottom to the right, and up into Module 9 south
+\draw[busarr] (m7.south) -- ++(0, -0.45) coordinate (botbus)
+    -- (m9.south |- botbus) node[tag, midway] {Grounded Citations \& Merkle Provenance Feedback}
+    -- (m9.south);
 
 \end{tikzpicture}%
 }
@@ -467,7 +485,7 @@ Tier 3: Degree-Aware Hybrid         & MAX  & $0.0215 \pm 0.0008$ & $0.1644$ & $0
 \subsection{Skewed Graph Analysis and Degree-Aware SUM Regression}
 Table~\ref{tab:skewed_cuda} evaluates performance on a synthetic scale-free graph exhibiting severe degree skewness ($d_{\max} = 6,340$). While the baseline thread-per-node kernel stalls under severe warp divergence ($6.985$~ms latency, $0.427$~GB/s bandwidth), the degree-aware hybrid kernel achieves an astonishing \textbf{$107.71\times$ speedup} for MEAN aggregation ($0.0648$~ms).
 
-\begin{table}[!t]
+\begin{table}[!htbp]
 \centering
 \caption{CUDA Kernel Performance on Skewed Graph ($d_{\max}=6,340$)}
 \label{tab:skewed_cuda}
@@ -484,9 +502,9 @@ Tier 2: Warp-Coalesced & SUM  & $0.2121$ & $30.73\times$ & $14.05\text{ GB/s}$ \
 Tier 2: Warp-Coalesced & MEAN & $0.2198$ & $31.79\times$ & $13.56\text{ GB/s}$ \\
 Tier 2: Warp-Coalesced & MAX  & $0.2334$ & $30.91\times$ & $12.77\text{ GB/s}$ \\
 \midrule
+Tier 3: Degree-Aware   & SUM  & $\mathbf{0.4641}$ & $\mathbf{14.04\times}$  & $\mathbf{6.42\text{ GB/s}}$ \\
 Tier 3: Degree-Aware   & MEAN & $\mathbf{0.0649}$ & $\mathbf{107.71\times}$ & $\mathbf{45.95\text{ GB/s}}$ \\
 Tier 3: Degree-Aware   & MAX  & $\mathbf{0.1106}$ & $\mathbf{65.21\times}$  & $\mathbf{26.94\text{ GB/s}}$ \\
-Tier 3: Degree-Aware   & SUM  & $\mathbf{0.4641}$ & $\mathbf{14.04\times}$  & $\mathbf{6.42\text{ GB/s}}$ \\
 \bottomrule
 \end{tabular}%
 }
@@ -495,7 +513,7 @@ Tier 3: Degree-Aware   & SUM  & $\mathbf{0.4641}$ & $\mathbf{14.04\times}$  & $\
 \noindent\textbf{Investigation of Degree-Aware SUM Regression:}
 Crucially, Table~\ref{tab:skewed_cuda} documents an apparent anomaly: for the SUM operator, Tier 3 degree-aware dispatch incurs a \textbf{$2.19\times$ regression} relative to the Tier 2 coalesced kernel ($0.212\text{ ms} \to 0.464\text{ ms}$). Detailed code inspection of \texttt{hub\_degree\_block\_kernel} resolves this behavior:
 \begin{enumerate}
-    \item Due to the non-associativity of IEEE 754 single-precision floating-point addition ($((a + b) + c \neq a + (b + c)$), multi-warp parallel reduction across 6,340 edges accumulated rounding drift ($3.97 \times 10^{-4}$), failing our dual-tolerance verification gate ($\text{atol} \le 10^{-5}$).
+    \item Due to the non-associativity of IEEE 754 single-precision floating-point addition $((a + b) + c \neq a + (b + c))$, multi-warp parallel reduction across 6,340 edges accumulated rounding drift ($3.97 \times 10^{-4}$), failing our dual-tolerance verification gate ($\text{atol} \le 10^{-5}$).
     \item To guarantee numerical invariance with the CPU reference, the implementation enforces serial accumulation on Warp 0 (\texttt{if (warp\_id == 0)}), leaving 7 out of 8 warps in the hub block idle.
     \item This warp idling degrades SM occupancy and exposes memory read latency, fully explaining the observed regression without invoking unevidenced atomic contention hypotheses.
 \end{enumerate}
