@@ -11,12 +11,22 @@
 \usepackage{cite}
 \usepackage{url}
 \usepackage{microtype}
-\usepackage{placeins}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, fit, backgrounds}
 
-% Enable clean line wrapping for long URLs and hashes
+% Interactive Blue Hyperlinks for Citations, References, Equations, and URLs
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+
+% Clean line wrapping for URLs and code tokens
 \def\UrlBreaks{\do\/\do-}
+
+% Micro-architectural Float Tuning: Pack text and floats tightly with ZERO artificial whitespace gaps
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\dbltopfraction}{0.95}
+\renewcommand{\bottomfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.85}
+\renewcommand{\dblfloatpagefraction}{0.85}
 
 % Completely eliminate running top headers and footers across all pages in IEEEtran
 \makeatletter
@@ -117,7 +127,7 @@ To guarantee optimal hardware memory throughput, graph topology is flattened int
     \item \textbf{Column Index Array (\texttt{col\_idx}):} A contiguous 1D array of size $M = |\mathcal{E}|$ containing 32-bit integers, storing the packed source vertex indices $u \in \mathcal{N}_{\text{in}}(v_i)$.
 \end{enumerate}
 
-\begin{figure}[htbp]
+\begin{figure}[!t]
 \centering
 \resizebox{\columnwidth}{!}{%
 \begin{tikzpicture}[
@@ -367,12 +377,14 @@ The architecture of FraudGraph Intelligence is organized into nine modular, deco
 All GPU acceleration experiments were executed on an enterprise-grade NVIDIA Tesla T4 GPU accelerator (Turing TU104 die, 40 Streaming Multiprocessors, 2,560 CUDA cores, 14.9~GB GDDR6 VRAM, 320~GB/s theoretical memory bandwidth, PCIe 3.0 $\times 16$). The host system comprised an x86\_64 multi-core processor running Ubuntu 22.04 LTS (Linux kernel 5.15) with CUDA Toolkit version 12.2 and NVIDIA display driver 535.104. CPU reference benchmarks were compiled using Python 3.14.3, NumPy 2.5.4, and SciPy 1.15.1~\cite{virtanen2020scipy} with OpenBLAS thread binding. Downstream predictive modeling was implemented using scikit-learn 1.4~\cite{pedregosa2011scikit}.
 
 \subsection{Dataset Generation and Structural Integrity}
-To ensure rigorous reproducibility, experimental validation utilized our canonical benchmark fixture, \texttt{synthetic\_fraud\_10k.npz}, deterministically generated under pseudo-random seed 42. Structural characteristics of the graph and its partitions are detailed in Table~\ref{tab:dataset_characteristics}. Cryptographic data integrity was verified via canonical SHA-256 hash:
+To ensure rigorous reproducibility, experimental validation utilized our canonical benchmark fixture, \texttt{synthetic\_fraud\_10k.npz}, deterministically generated under pseudo-random seed 42. Structural characteristics of the graph and its partitions are detailed in Table~\ref{tab:dataset_characteristics}. Cryptographic data integrity was authenticated via canonical SHA-256 hash:
 \begin{center}
-\small\texttt{aecafe3b\allowbreak 1fd608c1\allowbreak 8d62aa15\allowbreak 86d0ab6f\allowbreak 88b867bd\allowbreak 92b20e0f\allowbreak 6bd13360\allowbreak 6c7c4430}.
+\footnotesize\ttfamily
+aecafe3b1fd608c18d62aa1586d0ab6f\\
+88b867bd92b20e0f6bd133606c7c4430
 \end{center}
 
-\begin{table}[htbp]
+\begin{table}[!t]
 \centering
 \caption{Graph Topology and Chronological Split Characteristics}
 \label{tab:dataset_characteristics}
@@ -408,7 +420,7 @@ CPU timing was captured via high-resolution Python \texttt{time.perf\_counter\_n
 \subsection{CPU Baseline vs. Vectorized SpMM Performance}
 Table~\ref{tab:cpu_benchmarks} compares scalar iterative Python aggregation loops against optimized C-extension sparse matrix-matrix multiplication (\texttt{scipy.sparse.csr\_matrix.dot}). On large graphs ($N=10k, M=100k$), vectorized SpMM achieves an execution latency of $2.5756$~ms, representing a \textbf{$44.60\times$ speedup} over sequential reference loops ($114.86$~ms) by converting scalar lookups into contiguous BLAS-level memory passes.
 
-\begin{table}[htbp]
+\begin{table}[!t]
 \centering
 \caption{CPU Neighbor Aggregation Benchmark Performance}
 \label{tab:cpu_benchmarks}
@@ -468,7 +480,7 @@ Tier 3: Degree-Aware Hybrid         & MAX  & $0.0215 \pm 0.0008$ & $0.1644$ & $0
 \subsection{Skewed Graph Analysis and Degree-Aware SUM Regression}
 Table~\ref{tab:skewed_cuda} evaluates performance on a synthetic scale-free graph exhibiting severe degree skewness ($d_{\max} = 6,340$). While the baseline thread-per-node kernel stalls under severe warp divergence ($6.985$~ms latency, $0.427$~GB/s bandwidth), the degree-aware hybrid kernel achieves an astonishing \textbf{$107.71\times$ speedup} for MEAN aggregation ($0.0648$~ms).
 
-\begin{table}[htbp]
+\begin{table}[!t]
 \centering
 \caption{CUDA Kernel Performance on Skewed Graph ($d_{\max}=6,340$)}
 \label{tab:skewed_cuda}
@@ -510,9 +522,6 @@ Downstream classifiers were trained on chronological training partitions ($N = 7
 \end{equation}
 and frozen during test evaluation~\cite{davis2006relationship,saito2015precision}. Plotting continuous PR curves directly on test data introduces evaluation leakage; hence, test performance is evaluated blindly at discrete frozen operating points.
 
-\subsection{Comparative Classifier Metrics}
-Table~\ref{tab:downstream_ml} compiles comprehensive classification performance metrics across Logistic Regression and Random Forest architectures for all five feature representations.
-
 \begin{table*}[t]
 \centering
 \caption{Downstream Fraud Classification Performance Under Causal Streaming Evaluation ($N_{\text{test}} = 1,500$, 53 Frauds, Prevalence = $3.53\%$)}
@@ -538,13 +547,13 @@ Random Forest       & Graph SUM Enriched     & 64 & $0.1236$ & $0.7424$ & $0.177
 }
 \end{table*}
 
+\subsection{Comparative Classifier Metrics}
+Table~\ref{tab:downstream_ml} compiles comprehensive classification performance metrics across Logistic Regression and Random Forest architectures for all five feature representations.
 \begin{enumerate}
     \item \textbf{Superiority of MAX Aggregation:} In Logistic Regression, MAX neighbor enrichment delivers the highest PR-AUC across all evaluations ($0.3315$, representing a $+7.34\%$ relative lift over raw tabular data) and elevates fraud recall from $37.7\%$ to $45.3\%$ (identifying 24 frauds vs 20). Because financial fraudsters camouflage transactions among benign operations, MEAN aggregation dilutes suspicious feature magnitudes, whereas MAX functions as an extreme-value anomaly detector.
     \item \textbf{Operational Trade-off in False Alerts:} In Random Forest, MEAN enrichment slashes false positive alarms from 138 down to 30 ($78.3\%$ false alarm reduction), lifting precision from $16.9\%$ to $33.3\%$ and raising F1 from $0.2557$ to $0.3061$. However, this gain entails an operational trade-off: recall declines from $52.8\%$ to $28.3\%$ (13 additional frauds missed), demonstrating that MEAN shifts the operating posture toward investigator fatigue reduction.
     \item \textbf{Catastrophic Degradation of SUM:} Unnormalized SUM aggregation degrades PR-AUC by more than 50\% across both classifiers ($0.3088 \to 0.1488$ in LR; $0.2445 \to 0.1236$ in RF). Raw feature accumulation conflates high vertex in-degree with risk, flooding classifiers with false alarms from high-volume legitimate merchants.
 \end{enumerate}
-
-\FloatBarrier
 
 \section{Conclusion}
 This article presented FraudGraph Intelligence, a hardware-conscious CUDA compute framework for real-time parallel neighbor aggregation on financial transaction networks. By coupling Compressed Sparse Row topological storage with warp-coalesced feature gathering, asynchronous pinned streaming, and degree-aware hub reduction, FGI resolves the memory-bandwidth wall and reduces edge aggregation latency to $0.0581$~ms on an NVIDIA Tesla T4 GPU. In downstream fraud detection under strict causal streaming invariants, graph feature enrichment via the MAX operator lifts Logistic Regression PR-AUC by $+7.34\%$ and elevates fraud recall from $37.7\%$ to $45.3\%$ under extreme class imbalance. The complete suite of CUDA kernels, REST endpoints, and benchmark records has been made openly available.
@@ -556,7 +565,12 @@ All source code, CUDA kernels, Python microservices, and canonical Compressed Sp
 \begin{center}
 \url{https://github.com/PraveenKanth-N/FraudGraph-Intelligence}
 \end{center}
-The canonical benchmark dataset (\texttt{synthetic\_fraud\_10k.npz}) is authenticated via cryptographic SHA-256 checksum: \texttt{aecafe3b\allowbreak 1fd608c1\allowbreak 8d62aa15\allowbreak 86d0ab6f\allowbreak 88b867bd\allowbreak 92b20e0f\allowbreak 6bd13360\allowbreak 6c7c4430}.
+The canonical benchmark dataset (\texttt{synthetic\_fraud\_10k.npz}) is authenticated via cryptographic SHA-256 checksum:
+\begin{center}
+\footnotesize\ttfamily
+aecafe3b1fd608c18d62aa1586d0ab6f\\
+88b867bd92b20e0f6bd133606c7c4430
+\end{center}
 
 \subsection*{Funding Information}
 This research received no external grant funding from commercial, governmental, or non-profit funding agencies. Computational facilities and hardware accelerators were provided by the School of Computer Science and Engineering, Vellore Institute of Technology (VIT), Vellore, India.
