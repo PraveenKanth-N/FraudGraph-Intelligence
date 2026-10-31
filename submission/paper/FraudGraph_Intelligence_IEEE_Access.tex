@@ -11,6 +11,7 @@
 \usepackage{cite}
 \usepackage{url}
 \usepackage{microtype}
+\usepackage{balance}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, fit, backgrounds}
 
@@ -27,6 +28,11 @@
 \renewcommand{\textfraction}{0.05}
 \renewcommand{\floatpagefraction}{0.85}
 \renewcommand{\dblfloatpagefraction}{0.85}
+
+% Eliminate orphan section headings and awkward column breaks
+\clubpenalty=0
+\widowpenalty=0
+\displaywidowpenalty=0
 
 % Completely eliminate running top headers and footers across all pages in IEEEtran
 \makeatletter
@@ -53,9 +59,8 @@
         BharaniKumar~J,
         Kishore~B,
         and~Kovendan~A.~K.~P,~\IEEEmembership{Senior Member,~IEEE}%
-\thanks{Manuscript received October 31, 2026; revised November 15, 2026; accepted December 1, 2026. Date of publication December 8, 2026; date of current version December 15, 2026. This research was conducted within the Department of Database Systems, School of Computer Science and Engineering, Vellore Institute of Technology (VIT), Vellore, India. \emph{(Corresponding author: Kovendan A. K. P.)}}%
-\thanks{Praveen Kanth N (Register Number: 23MIC0078), BharaniKumar J (Register Number: 23MIC0039), and Kishore B (Register Number: 23MIC0050) are with the School of Computer Science and Engineering, Vellore Institute of Technology (VIT), Vellore, Tamil Nadu 632014, India (e-mail: praveen.kanth2023@vitstudent.ac.in; bharanikumar.j2023@vitstudent.ac.in; kishore.b2023@vitstudent.ac.in).}%
-\thanks{Dr. Kovendan A. K. P. is Assistant Professor Sr. Grade 2 with the Department of Database Systems, School of Computer Science and Engineering, Vellore Institute of Technology (VIT), Vellore, Tamil Nadu 632014, India (e-mail: kovendan.akp@vit.ac.in).}%
+\thanks{Manuscript received October 31, 2026; revised November 15, 2026; accepted December 1, 2026. Date of publication December 8, 2026. This research was conducted within the Department of Database Systems, School of Computer Science and Engineering, Vellore Institute of Technology (VIT), Vellore, India. \emph{(Corresponding author: Kovendan A. K. P.)}}%
+\thanks{Praveen Kanth N (Reg: 23MIC0078), BharaniKumar J (Reg: 23MIC0039), and Kishore B (Reg: 23MIC0050) are with SCOPE, Vellore Institute of Technology (VIT), Vellore 632014, India (e-mail: praveen.kanth2023@vitstudent.ac.in; bharanikumar.j2023@vitstudent.ac.in; kishore.b2023@vitstudent.ac.in). Dr. Kovendan A. K. P. is Assistant Professor Sr. Grade 2 with the Department of Database Systems, SCOPE, VIT, Vellore 632014, India (e-mail: kovendan.akp@vit.ac.in).}%
 }
 
 \maketitle
@@ -111,9 +116,9 @@ where $\bigoplus$ denotes a permutation-invariant aggregation operator selected 
 \end{equation}
 Specifically, for element $d \in \{0, 1, \dots, D-1\}$:
 \begin{align}
-    \mathbf{h}_v^{\text{SUM}}[d] &= \sum_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d], \\
-    \mathbf{h}_v^{\text{MEAN}}[d] &= \frac{1}{|\mathcal{N}_{\text{in}}(v)|} \sum_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d], \\
-    \mathbf{h}_v^{\text{MAX}}[d] &= \max_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d].
+    \mathbf{h}_v^{\text{SUM}}[d] &= \sum_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d], \label{eq:sum}\\
+    \mathbf{h}_v^{\text{MEAN}}[d] &= \frac{1}{|\mathcal{N}_{\text{in}}(v)|} \sum_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d], \label{eq:mean}\\
+    \mathbf{h}_v^{\text{MAX}}[d] &= \max_{u \in \mathcal{N}_{\text{in}}(v)} \mathbf{x}_u[d]. \label{eq:max}
 \end{align}
 For isolated transactions having zero in-degree ($|\mathcal{N}_{\text{in}}(v)| = 0$), the aggregation defaults to an empty identity null vector $\mathbf{0}_D$. The composite feature vector presented to downstream classification models is formed by concatenating the raw node features with the aggregated neighbor representation: $\mathbf{z}_v = [\mathbf{x}_v \,\|\, \mathbf{h}_v] \in \mathbb{R}^{2D}$.
 
@@ -123,6 +128,7 @@ To guarantee optimal hardware memory throughput, graph topology is flattened int
     \item \textbf{Row Pointer Array (\texttt{row\_ptr}):} A 1D array of size $(N+1)$ containing 32-bit signed integers. Entry $\texttt{row\_ptr}[i]$ specifies the index in \texttt{col\_idx} where the neighbor list of vertex $v_i$ begins. The localized in-degree $d_i$ is computed in $\mathcal{O}(1)$ time as:
     \begin{equation}
         d_i = \texttt{row\_ptr}[i+1] - \texttt{row\_ptr}[i].
+        \label{eq:indegree}
     \end{equation}
     \item \textbf{Column Index Array (\texttt{col\_idx}):} A contiguous 1D array of size $M = |\mathcal{E}|$ containing 32-bit integers, storing the packed source vertex indices $u \in \mathcal{N}_{\text{in}}(v_i)$.
 \end{enumerate}
@@ -184,21 +190,10 @@ As depicted in Fig.~\ref{fig:csr_layout}, the entire active topology and attribu
 \section{Proposed CUDA Acceleration Architecture}
 
 \subsection{Tier 1: Baseline Thread-Parallel Aggregation}
-Our initial GPU kernel maps one hardware thread to each target vertex $v_i \in \mathcal{V}$~\cite{nvidia2023cuda}. The global grid is dimensioned with block size $B = 256$ threads, launching $\lceil N / B \rceil$ thread blocks. Thread $i$ executes:
-\begin{algorithmic}[1]
-\STATE $i \leftarrow \text{blockIdx.x} \times \text{blockDim.x} + \text{threadIdx.x}$
-\IF{$i < N$}
-    \STATE $\text{start} \leftarrow \texttt{row\_ptr}[i]$; $\text{end} \leftarrow \texttt{row\_ptr}[i+1]$
-    \FOR{$d = 0$ \TO $D-1$}
-        \STATE $\text{accum} \leftarrow 0.0$
-        \FOR{$p = \text{start}$ \TO $\text{end} - 1$}
-            \STATE $u \leftarrow \texttt{col\_idx}[p]$
-            \STATE $\text{accum} \leftarrow \text{accum} + \texttt{features}[u \cdot D + d]$
-        \ENDFOR
-        \STATE $\texttt{out\_features}[i \cdot D + d] \leftarrow \text{accum}$
-    \ENDFOR
-\ENDIF
-\end{algorithmic}
+Our initial GPU kernel maps one hardware thread to each target vertex $v_i \in \mathcal{V}$~\cite{nvidia2023cuda}. The global grid is dimensioned with block size $B = 256$ threads, launching $\lceil N / B \rceil$ thread blocks. Each thread computes its global transaction index $i = \text{blockIdx.x} \times \text{blockDim.x} + \text{threadIdx.x}$. If $i < N$, the thread fetches the neighborhood boundary offsets $\text{start} = \texttt{row\_ptr}[i]$ and $\text{end} = \texttt{row\_ptr}[i+1]$. Across each feature dimension $d \in \{0, \dots, D-1\}$, it sequentially accumulates neighbor features:
+\begin{equation}
+    \texttt{out}[i \cdot D + d] = \sum_{p=\text{start}}^{\text{end}-1} \texttt{features}[\texttt{col\_idx}[p] \cdot D + d].
+\end{equation}
 
 While straightforward, Tier 1 suffers from acute hardware inefficiency. Because adjacent threads $i$ and $i+1$ access disparate neighbor lists located at distinct offsets in \texttt{col\_idx}, their global memory read requests cannot be coalesced by the hardware memory controller. Furthermore, if vertex $v_i$ possesses two neighbors while vertex $v_{i+1}$ is a hub with 200 neighbors, thread $i$ sits idle in warp execution divergency while thread $i+1$ serializes across 200 memory loads.
 
@@ -208,21 +203,9 @@ To enforce spatial locality across the 128-byte memory bus interface, Tier 2 ass
 Within warp $w$, lane ID $\lambda = \text{threadIdx.x} \pmod{32}$ maps directly to feature dimension index $d \in \{0, 1, \dots, 31\}$. When reading the feature vector of neighbor $u$, lane $\lambda$ requests 32-bit floating-point address $\&(\texttt{features}[u \cdot D + \lambda])$. Because consecutive lanes request consecutive 4-byte words:
 \begin{equation}
     \text{Address}(\lambda) = \text{Base} + 4 \times \lambda,
+    \label{eq:warp_addr}
 \end{equation}
-the memory management unit coalesces all 32 individual thread requests into a single, unified 128-byte DRAM cache-line transaction. Edge traversal proceeds along the neighbor sequence while keeping feature gathering perfectly coalesced across the warp lanes:
-\begin{algorithmic}[1]
-\STATE $\text{warp\_id} \leftarrow \text{threadIdx.x} / 32$; $\lambda \leftarrow \text{threadIdx.x} \pmod{32}$
-\STATE $i \leftarrow \text{blockIdx.x} \times (\text{blockDim.x}/32) + \text{warp\_id}$
-\IF{$i < N \land \lambda < D$}
-    \STATE $\text{start} \leftarrow \texttt{row\_ptr}[i]$; $\text{end} \leftarrow \texttt{row\_ptr}[i+1]$
-    \STATE $\text{reg\_accum} \leftarrow 0.0$
-    \FOR{$p = \text{start}$ \TO $\text{end} - 1$}
-        \STATE $u \leftarrow \texttt{col\_idx}[p]$
-        \STATE $\text{reg\_accum} \mathrel{+}= \texttt{features}[u \cdot D + \lambda]$
-    \ENDFOR
-    \STATE $\texttt{out\_features}[i \cdot D + \lambda] \leftarrow \text{reg\_accum}$
-\ENDIF
-\end{algorithmic}
+the memory management unit coalesces all 32 individual thread requests into a single, unified 128-byte DRAM cache-line transaction. Edge traversal proceeds along the neighbor sequence while keeping feature gathering perfectly coalesced across the warp lanes, storing accumulated values into register $\text{reg\_accum}$ before writing to device memory.
 
 \subsection{Tier 3: Degree-Aware Dynamic Dispatch}
 Financial graphs exhibit extreme degree variances; allocating an entire warp to isolated vertices ($d_i=0$) or low-degree leaves ($d_i \le 2$) wastes compute capacity, whereas allocating a single warp to an extreme super-hub ($d_i > 200$) saturates register files. Tier 3 introduces a pre-dispatch degree classification partition that bins nodes into three computational regimes:
@@ -232,6 +215,7 @@ Financial graphs exhibit extreme degree variances; allocating an entire warp to 
         \mathcal{B}_{\text{mid}} & \text{if } 32 \le d_i \le 128, \\
         \mathcal{B}_{\text{hub}} & \text{if } d_i > 128.
     \end{cases}
+    \label{eq:degree_bin}
 \end{equation}
 
 For vertices in $\mathcal{B}_{\text{hub}}$, execution dispatches to a dedicated cooperative block kernel allocating 256 threads (8 warps) per hub. The 8 warps interleave edge traversal across strides of 8 ($p \mathrel{+}= 8$), accumulating partial sums into shared memory scratchpad arrays $\mathbf{S}_{\text{warp}}[8][32]$. After thread synchronization via \texttt{\_\_syncthreads()}, Warp 0 conducts an 8-way reduction across the shared memory lines.
@@ -247,12 +231,12 @@ The global dataset is partitioned into discrete chunks $\mathcal{C}_k$. While St
 \centering
 \resizebox{0.98\textwidth}{!}{%
 \begin{tikzpicture}[
-    node distance=0.8cm and 0.65cm,
+    node distance=0.7cm and 0.5cm,
     font=\sffamily\scriptsize,
     tierbox/.style={
         rectangle, draw=#1!80!black, fill=#1!8,
         rounded corners=3pt, line width=0.9pt,
-        inner sep=5pt, text width=5.1cm, align=left
+        inner sep=4pt, text width=5.1cm, minimum height=2.1cm, align=left
     },
     flowarr/.style={
         -{Stealth[scale=0.95]}, line width=1.1pt, draw=black!75
@@ -261,100 +245,103 @@ The global dataset is partitioned into discrete chunks $\mathcal{C}_k$. While St
         -{Stealth[scale=0.95]}, line width=1.1pt, draw=blue!75!black, dashed
     },
     tag/.style={
-        font=\tiny\bfseries, fill=white, draw=black!40, rounded corners=1pt, inner sep=1.8pt
+        font=\tiny\bfseries, fill=white, draw=black!40, rounded corners=1pt, inner sep=1.5pt
     }
 ]
 
-% Row 1: Ingestion, CSR, Pinned Memory
+% Row 1
 \node[tierbox=blue] (m1) {
     \textbf{\textcolor{blue!90!black}{Module 1: Chronological Ingestion}}\\
-    $\bullet$ Enforces monotonic timestamp order: $t_u < t_v$\\
-    $\bullet$ Evaluates 7-day sliding window ($604,800\text{ s}$)\\
-    $\bullet$ Sanitizes entity hashes: Card ID \& Device ID
+    $\bullet$ Monotonic timestamp order: $t_u < t_v$\\
+    $\bullet$ 7-day retrospective window ($604,800\text{ s}$)\\
+    $\bullet$ Entity anonymization: Card ID \& Device ID
 };
 
-\node[tierbox=blue, right=of m1] (m2) {
+\node[tierbox=blue, right=0.6cm of m1] (m2) {
     \textbf{\textcolor{blue!90!black}{Module 2: CSR Graph Compressor}}\\
-    $\bullet$ Generates flattened \texttt{row\_ptr} ($40.0\text{ KB}$)\\
-    $\bullet$ Packs target vertices \texttt{col\_idx} ($927.9\text{ KB}$)\\
-    $\bullet$ Cryptographic SHA-256 integrity validation
+    $\bullet$ Contiguous \texttt{row\_ptr} ($40.0\text{ KB}$)\\
+    $\bullet$ Packed \texttt{col\_idx} ($927.9\text{ KB}$)\\
+    $\bullet$ Cryptographic SHA-256 integrity hash
 };
 
-\node[tierbox=gray, right=of m2] (m3) {
+\node[tierbox=gray, right=0.6cm of m2] (m3) {
     \textbf{\textcolor{gray!90!black}{Module 3: Pinned Host DMA Engine}}\\
-    $\bullet$ Zero-copy page-locked RAM allocation\\
+    $\bullet$ Zero-copy page-locked host RAM\\
     $\bullet$ Dual asynchronous streams: Stream 0 \& 1\\
-    $\bullet$ Double-buffered overlap of PCIe transfers
+    $\bullet$ Overlapped PCIe bus transfers
 };
 
-% Row 2: CUDA Engine, Verification, Temporal Partition
-\node[tierbox=green!60!black, below=0.9cm of m1] (m4) {
+% Row 2 (directly below Row 1)
+\node[tierbox=green!60!black, below=0.8cm of m1] (m4) {
     \textbf{\textcolor{green!70!black}{Module 4: Parallel CUDA Engine}}\\
     $\bullet$ Tier 1: Baseline SIMT (1 thread/node)\\
     $\bullet$ Tier 2: Warp-coalesced 128-byte transactions\\
     $\bullet$ Tier 3: Degree-aware dynamic dispatch
 };
 
-\node[tierbox=gray, right=of m4] (m5) {
+\node[tierbox=gray, right=0.6cm of m4] (m5) {
     \textbf{\textcolor{gray!90!black}{Module 5: Numerical Verification}}\\
     $\bullet$ Compares GPU float32 vs CPU float64 ref\\
-    $\bullet$ Dual-tolerance gate: $\text{atol} \le 10^{-5}, \text{rtol} \le 10^{-5}$\\
-    $\bullet$ Zero-drift certification across aggregations
+    $\bullet$ Dual-tolerance: $\text{atol} \le 10^{-5}, \text{rtol} \le 10^{-5}$\\
+    $\bullet$ Zero-drift certification across operators
 };
 
-\node[tierbox=blue, right=of m5] (m6) {
+\node[tierbox=blue, right=0.6cm of m5] (m6) {
     \textbf{\textcolor{blue!90!black}{Module 6: Causal Temporal Slicer}}\\
     $\bullet$ Chronological 70\% Train ($N=7,000, 239\text{ F}$)\\
-    $\bullet$ Chronological 15\% Validation ($N=1,500, 58\text{ F}$)\\
+    $\bullet$ Chronological 15\% Val ($N=1,500, 58\text{ F}$)\\
     $\bullet$ Chronological 15\% Blind Test ($N=1,500, 53\text{ F}$)
 };
 
-% Row 3: Classifiers, ADR-007, Cockpit
-\node[tierbox=gray, below=0.9cm of m4] (m7) {
+% Row 3 (directly below Row 2)
+\node[tierbox=gray, below=0.8cm of m4] (m7) {
     \textbf{\textcolor{gray!90!black}{Module 7: Downstream Classifiers}}\\
     $\bullet$ Logistic Regression \& Random Forest\\
     $\bullet$ Multi-representation concatenation ($2D$)\\
-    $\bullet$ Operators: Raw, Mean, Max, Multi, Sum
+    $\bullet$ Evaluated: Raw, Mean, Max, Multi, Sum
 };
 
-\node[tierbox=blue, right=of m7] (m8) {
+\node[tierbox=blue, right=0.6cm of m7] (m8) {
     \textbf{\textcolor{blue!90!black}{Module 8: ADR-007 Threshold Enforcer}}\\
     $\bullet$ Optimal threshold frozen on Val: $\tau^* = 0.1090$\\
     $\bullet$ Blind out-of-sample evaluation on Test\\
     $\bullet$ Continuous PR curve omission protocol
 };
 
-\node[tierbox=orange, right=of m8] (m9) {
+\node[tierbox=orange, right=0.6cm of m8] (m9) {
     \textbf{\textcolor{orange!90!black}{Module 9: Enterprise Cockpit \& HUD}}\\
     $\bullet$ Asynchronous FastAPI REST core microservices\\
     $\bullet$ React 18 + Vite Obsidian Cybernetics UI\\
     $\bullet$ Interactive topological radar \& Merkle audit
 };
 
-% Connections Row 1
+% Horizontal Row 1
 \draw[flowarr] (m1) -- node[tag, midway] {Causal Stream} (m2);
 \draw[flowarr] (m2) -- node[tag, midway] {CSR Buffers} (m3);
 
-% Transition Row 1 to Row 2
-\draw[flowarr] (m3.south) -- ++(0,-0.45) -| node[tag, near start] {DMA Overlap} (m4.north);
+% Vertical Row 1 to Row 2
+\draw[flowarr] (m1) -- node[tag, midway] {Entity IDs} (m4);
+\draw[flowarr] (m3) -- node[tag, midway] {DMA Streams} (m6);
 
-% Connections Row 2
+% Horizontal Row 2
 \draw[flowarr] (m4) -- node[tag, midway] {GPU Embeddings} (m5);
 \draw[flowarr] (m5) -- node[tag, midway] {Verified Array} (m6);
 
-% Transition Row 2 to Row 3
-\draw[flowarr] (m6.south) -- ++(0,-0.45) -| node[tag, near start] {Causal Partitions} (m7.north);
+% Vertical Row 2 to Row 3
+\draw[flowarr] (m4) -- node[tag, midway] {Topological Vectors} (m7);
+\draw[flowarr] (m5) -- node[tag, midway] {Error Bounds} (m8);
+\draw[flowarr] (m6) -- node[tag, midway] {Test Splits} (m9);
 
-% Connections Row 3
+% Horizontal Row 3
 \draw[flowarr] (m7) -- node[tag, midway] {Probabilities} (m8);
 \draw[flowarr] (m8) -- node[tag, midway] {Alert Vectors} (m9);
 
-% Feedback Loop Bottom to Top
-\draw[looparr] (m9.south) -- ++(0,-0.45) -| node[tag, near end] {Incremental Graph Updates \& Provenance Feedback} (m1.south);
+% Clean Outer Feedback Loop (routes beneath Row 3 and left around Row 1)
+\draw[looparr] (m9.south) -- ++(0,-0.45) -| node[tag, near end] {Grounded Citations \& Merkle Provenance Feedback} (m1.south);
 
 \end{tikzpicture}%
 }
-\caption{End-to-end nine-module architecture of FraudGraph Intelligence (FGI) spanning chronological ingestion, GPU parallel reduction, mathematical verification, causal model evaluation, and enterprise cockpit visualization.}
+\caption{End-to-end nine-module architecture of FraudGraph Intelligence (FGI), illustrating causal stream ingestion, Compressed Sparse Row memory compression, parallel CUDA neighbor aggregation, mathematical verification, causal model evaluation, and real-time forensic visualization.}
 \label{fig:system_architecture}
 \end{figure*}
 
@@ -519,6 +506,7 @@ Crucially, Table~\ref{tab:skewed_cuda} documents an apparent anomaly: for the SU
 Downstream classifiers were trained on chronological training partitions ($N = 7,000$, 239 frauds) and tested strictly on future unseen transactions ($N = 1,500$, 53 frauds, $3.53\%$ prevalence) under severe class imbalance~\cite{chawla2002smote}. Per Architectural Decision Record ADR-007, decision thresholds $\tau^*$ were optimized strictly on the independent validation partition ($N = 1,500$, 58 frauds) to maximize F1-score:
 \begin{equation}
     \tau^* = \arg\max_{\tau \in [0, 1]} F_1(\text{Val}, \tau),
+    \label{eq:threshold}
 \end{equation}
 and frozen during test evaluation~\cite{davis2006relationship,saito2015precision}. Plotting continuous PR curves directly on test data introduces evaluation leakage; hence, test performance is evaluated blindly at discrete frozen operating points.
 
@@ -586,6 +574,9 @@ This article is licensed under a Creative Commons Attribution 4.0 International 
 
 \section*{Acknowledgment}
 The authors express their gratitude to the Department of Database Systems and the School of Computer Science and Engineering at Vellore Institute of Technology, Vellore, for providing experimental infrastructure and administrative support.
+
+% Balanced columns on final page to eliminate whitespace gaps
+\balance
 
 % Self-contained IEEE bibliography directly inside tex file to eliminate [?] citation errors
 \begin{thebibliography}{99}
